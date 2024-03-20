@@ -1,5 +1,4 @@
 import psycopg2
-from psycopg2 import sql
 
 # List of database connection strings
 DATABASE_URLS = [
@@ -8,37 +7,41 @@ DATABASE_URLS = [
     "postgres://nchemrjv:CRSus5sf-6lyOuVx7987xohUWIymuo34@bubble.db.elephantsql.com/nchemrjv"
 ]
 
-# SQL command to create the "bike" table
-create_table_command = sql.SQL("""
-CREATE TABLE IF NOT EXISTS bike (
-    bike_id SERIAL PRIMARY KEY,
-    bike_model VARCHAR(255) NOT NULL,
-    bike_price DECIMAL(10, 2)
-)
-""")
+# Bikes to insert
+bikes_to_insert = [
+    ('Mountain Bike', 500.00),
+    ('Road Bike', 700.00),
+    ('Hybrid Bike', 300.00),
+    ('Electric Bike', 2500.00),
+    ('Kids Bike', 150.00)
+]
 
-# Function to create table in a given database
-def create_table_in_database(db_url):
+insert_command = """
+INSERT INTO bike (bike_model, bike_price) VALUES (%s, %s)
+"""
+
+# Function to insert bikes into a given database
+def insert_bikes_into_database(db_url):
     try:
         # Connect to the database using the database URL
         conn = psycopg2.connect(db_url)
         cur = conn.cursor()
         
-        # Execute the create table command
-        cur.execute(create_table_command)
+        # Insert bikes into the table
+        cur.executemany(insert_command, bikes_to_insert)
         
         # Commit the changes
         conn.commit()
         
-        print("Table 'bike' created successfully in database:", db_url)
+        print(f"5 bikes inserted successfully into database: {db_url}")
         
     except psycopg2.DatabaseError as e:
         print(f"An error occurred in database {db_url}: {e}")
     finally:
-        # Close communication with the database
+        # Ensure that the database connection is closed
         if cur: cur.close()
         if conn: conn.close()
 
-# Iterate over each database URL and create the table
+# Iterate over each database URL and insert the bikes
 for db_url in DATABASE_URLS:
-    create_table_in_database(db_url)
+    insert_bikes_into_database(db_url)
