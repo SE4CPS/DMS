@@ -32,6 +32,10 @@ def insert_bikes_into_database(db_url):
         
         # Insert bikes into the table
         for bike_model, bike_price in bikes_to_insert:
+
+            # Insert the bike
+            cur.execute(insert_command, (bike_model, bike_price))
+
             # Check if a bike with the same model and price already exists
             cur.execute("SELECT * FROM bike WHERE bike_model = %s AND bike_price = %s", (bike_model, bike_price))
             existing_bike = cur.fetchone()
@@ -40,9 +44,6 @@ def insert_bikes_into_database(db_url):
                 # Rollback the transaction and exit the loop
                 conn.rollback()
                 return
-                
-            # Insert the bike
-            cur.execute(insert_command, (bike_model, bike_price))
         
         # Commit the changes
         conn.commit()
