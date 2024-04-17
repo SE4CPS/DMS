@@ -58,7 +58,7 @@ if __name__ == "__main__":
     app = Neo4japp("neo4j+s://a5ea6fe5.databases.neo4j.io", "neo4j", "Pok3oqnX5cCDXIpHJbercXu1hukp8cQX3ZASd7_vJe4")
 
     # Delete all nodes and relationships
-    app.delete_all()
+    # app.delete_all()
 
     # Create person and bike nodes
     app.create_nodes()
