@@ -62,6 +62,7 @@ INSERT INTO Spaceship (name, shiptype, fuelLevel) VALUES
 ('USS SULACO', 'Mothership', 10),
 ('Apollo 23', 'Shuttle', 80),
 ('Galaxy Doo Ship', 'Rover', 7),
+('Andromeda Explorer', 'Shuttle', 85),
 ('Starship Enterprise', 'Mothership', 9);
 
 CREATE TABLE IF NOT EXISTS AlienEncounters (
