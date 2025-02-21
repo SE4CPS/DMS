@@ -1,6 +1,5 @@
-Scientist; Engineer,0; 3,Mission Difficult,Planet Far Away,4,Ongoing,Apollo 23,Shuttle,80,,,Gold Team,0
-Scientist; Engineer,0; 4,Easy,Beteigeuze,4,Completed,Starship Enterprise,Mothership,9,Enderman,Neutral,Rebel Alliance,1
-Scientist,1907,Flora Collection,P4-20,6,Planned,UPS,Mothership,3,Tyrinid,Neutral,Game Addicts,0
-Scientist; Engineer,0; 4,Mission Extremely Difficult,Planet Area 51,3,Completed,Abandoned ship,Mothership,0,,,Ultramarines,0
-Commander; Engineer,0,Mission 0,Jupiter,2,Ongoing,Good ship,Shuttle,4,Enderman,Hostile,Solo Squads,0
-Scientist,4,Mission Easy,Jupiter,4,Completed,WALL-E,Rover,10,Pretzel; Enderman,Hostile; Hostile,Solo Squads,0
+Engineer,0,Mission Extremely Difficult,Planet Area 51,3,Completed,Apollo 23,Shuttle,80,Enderman; Pretzel,Hostile; Hostile,Hostile; Friendly,Gold Team,0
+Scientist; Engineer,17; 2,Flora Collection,P4-20,6,Planned,Andromeda Explorer,Shuttle,85,Pretzel; Tyrinid,Hostile; Hostile,Hostile; Friendly,B Team,1
+Engineer,0,Mission Extremely Difficult,Planet Area 51,3,Completed,Slave 1,Rover,2,,,,Rebel Alliance,1
+Commander; Scientist; Engineer,0; 20; 5,Mission Extremely Difficult,Planet Area 51,3,Completed,Abandoned ship,Mothership,0,,,,Avengers,1
+Engineer,0,Mission Extremely Difficult,Planet Area 51,3,Completed,Abandoned ship,Mothership,0,Enderman; Spring,Hostile; Hostile,Hostile; Hostile,Rebel Alliance,1
