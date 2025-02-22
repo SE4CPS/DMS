@@ -4,10 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flower Shop</title>
+    <title>Water Run</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
+    <script src="{{ url_for('static', filename='Scripts/scripts.js') }}"></script>
 </head>
 
 <body>
+    <audio id="introMusic" loop autoplay muted>
+        <source src="{{url_for('static', filename='Audio/longnight.mp3') }}" type="audio/mpeg">
+    </audio>
+
     <h2>Flower Management</h2>
 
     <form action="/add_flower" method="post">
@@ -30,6 +36,8 @@
         <li>No flowers available.</li>
         {% endif %}
     </ul>
+
+    <button id="muteButton">Mute</button>
 </body>
 
 </html>

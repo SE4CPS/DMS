@@ -9,7 +9,8 @@ def get_db_connection():
 
 @app.route('/')
 def index():
-    return '''
+    return render_template('flowers.html')
+    '''
     <h2>Flower Shop Management</h2>
     <button onclick="location.href='/flowers'">Manage Flowers</button>
     <button onclick="location.href='/customers'">Manage Customers</button>
