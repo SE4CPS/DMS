@@ -9,12 +9,7 @@ def get_db_connection():
 
 @app.route('/')
 def index():
-    return '''
-    <h2>Flower Shop Management</h2>
-    <button onclick="location.href='/flowers'">Manage Flowers</button>
-    <button onclick="location.href='/customers'">Manage Customers</button>
-    <button onclick="location.href='/orders'">Manage Orders</button>
-    '''
+    return render_template('flowers.html')
 
 @app.route('/flowers')
 def manage_flowers():
