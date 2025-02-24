@@ -50,22 +50,34 @@ def manage_flowers():
 @app.route('/add_flower', methods=['POST'])
 def add_flower():
     name = request.form['name']
-    color = request.form['color']
-    price = request.form['price']
-    stock = request.form['stock']
+    last_watered = request.form['last_watered']
+    water_level = request.form['water_level']
+    min_water_required = request.form['min_water_required']
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("INSERT INTO team4_flowers (name, color, price, stock) VALUES (%s, %s, %s, %s)", (name, color, price, stock))
+    cur.execute("INSERT INTO team4_flowers (name, last_watered, water_level, min_water_required) VALUES (%s, %s, %s, %s)", (name, last_watered, water_level, min_water_required))
     conn.commit()
     cur.close()
     conn.close()
     return redirect('/flowers')
 
-@app.route('/delete_flower/<int:flower_id>')
-def delete_flower(flower_id):
+@app.route('/delete_team4_flower/<int:id>')
+def delete_flower(id):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("DELETE FROM team4_flowers WHERE flower_id = %s", (flower_id,))
+    cur.execute("DELETE FROM team4_flowers WHERE id = %s", (id,))
+    conn.commit()
+    cur.close()
+    conn.close()
+    return redirect('/flowers')
+
+# -- Reset the Database ID to 1 (Testing purpose ONLY)
+@app.route('/reset_flower_ids')
+def reset_flower_ids():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM team4_flowers")  # Deletes all records
+    cur.execute("ALTER SEQUENCE team4_flowers_id_seq RESTART WITH 1")  # Resets ID
     conn.commit()
     cur.close()
     conn.close()
