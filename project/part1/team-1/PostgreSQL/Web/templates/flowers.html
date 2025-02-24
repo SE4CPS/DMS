@@ -14,30 +14,34 @@
         <source src="{{url_for('static', filename='Audio/longnight.mp3') }}" type="audio/mpeg">
     </audio>
 
-    <h2>Flower Management</h2>
+    <!--Container for the menu, form, and form inputs-->
+    <div id="menuContainer">
+        <h2>Flower Management</h2>
 
-    <form action="/add_flower" method="post">
-        <input type="text" name="name" placeholder="Flower Name">
-        <input type="text" name="color" placeholder="Color">
-        <input type="number" name="price" placeholder="Price" >
-        <input type="number" name="stock" placeholder="Stock" >
-        <button type="submit">Add Flower</button>
-    </form>
+        <form action="/add_flower" method="post">
+            <input type="text" name="name" placeholder="Flower Name">
+            <input type="text" name="color" placeholder="Color">
+            <input type="number" name="price" placeholder="Price" >
+            <input type="number" name="stock" placeholder="Stock" >
+            <button type="submit">Add Flower</button>
+        </form>
 
-    <h3>Available Flowers</h3>
-    <ul>
-        {% if flowers %}
-        {% for flower in flowers %}
-        <li>
-            {{ flower }}
-        </li>
-        {% endfor %}
-        {% else %}
-        <li>No flowers available.</li>
-        {% endif %}
-    </ul>
+        <h3>Available Flowers</h3>
+        <ul>
+            {% if flowers %}
+            {% for flower in flowers %}
+            <li>
+                {{ flower }}
+            </li>
+            {% endfor %}
+            {% else %}
+            <li>No flowers available.</li>
+            {% endif %}
+        </ul>
 
-    <button id="muteButton">Mute</button>
+        <button id="muteButton">Mute</button>
+    </div>
+    
 </body>
 
 </html>
