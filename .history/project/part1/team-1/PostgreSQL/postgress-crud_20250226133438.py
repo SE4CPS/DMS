@@ -47,7 +47,7 @@ try:
     # --- INSERT DATA ---
     # -- into team1_flowers table
     
-    cur.execute("INSERT INTO team1_flowers (name, initial_water_level,  current_water_level, min_water_level, last_watered) VALUES ('Rose',10, 15, 12, '2024-02-34');")
+    cur.execute("INSERT INTO team1_flowers (name, initial_water_level,  current_water_level, min_water_level, last_watered) VALUES ('Rose',10, 15, 12, '2024-02-34') RETURNING flower_id;")
     # water level was intially 10, it's current water level is 15, and the min water level is 12 (last watered was feb 24)
 
 
