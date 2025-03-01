@@ -8,10 +8,60 @@ body {
     background-repeat: no-repeat;
     display: flex;
     flex-direction: column;
+    /*Prevent horizontal scrolling*/
+    overflow-x: hidden;
 }
 
 #introMusic {
     display: none;
+}
+
+#menuContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    height: 80vh;
+    width: 80vh;
+    /*set max-width to 800px, adjust as needed*/
+    max-width: 800px;
+    margin: auto;
+    background-color: gray;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+}
+
+#menuContainer * {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.label-input-grouped{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+form label{
+    width: 40%;
+    text-align: right;
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+form input{
+    width: 55%;
+    padding: 5px;
+}
+
+form select{
+    width: 55%;
+    padding: 5px;
 }
 
 button{
@@ -24,30 +74,4 @@ button{
     border: 2px solid #000;
     background-color: #fff;
     border-radius: 5px;
-}
-
-#menuContainer{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 20px;
-    height: 80vh;
-    width: 80vh;
-    margin: auto;
-    background-color: gray;
-    border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-    overflow: auto;
-}
-
-#menuContainer h2 {
-    margin: 100%;
-    text-align: center;
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-
-form{
-    display: block;
 }

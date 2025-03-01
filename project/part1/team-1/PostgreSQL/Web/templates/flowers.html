@@ -19,23 +19,31 @@
         <h2>Water Run Management</h2>
 
         <form action="/add_flower" method="post">
-            <label for="name">Flower:</label>
-            <input type="text" name="name" placeholder="Flower Name">
-            <br>
-            <label for="environment">Enviornment:</label>
-            <select name="environment">
-                <option value="indoor">Indoor</option>
-                <option value="outdoor">Outdoor</option>
-            </select>
-            <br>
-            <label>Initial Water Level (inches):</label>
-            <input type="number" name="initial_water_level_in_inches" placeholder="Initial Water Level in Inches">
-            <br>
-            <label>Minimum Water Level Required (inches):</label>
-            <input type="number" name="minimum_water_level_in_inches" placeholder="Minimum Water Level Required (Inches)">
+            <div class="label-input-grouped">
+                <label for="name">Flower:</label>
+                <input type="text" name="name" placeholder="Flower Name">
+            </div>
 
-            <button type="submit">Add Flower</button>
+            <div class="label-input-grouped">
+                <label for="environment">Enviornment:</label>
+                <select name="environment">
+                    <option value="indoor">Indoor</option>
+                    <option value="outdoor">Outdoor</option>
+                </select>
+            </div>
+            
+            <div class="label-input-grouped">
+                <label>Initial Water Level (inches):</label>
+                <input type="number" name="initial_water_level_in_inches" placeholder="Initial Water Level in Inches" min="0">
+            </div>
+            
+            <div class="label-input-grouped">
+                <label>Minimum Water Level Required (inches):</label>
+                <input type="number" name="minimum_water_level_in_inches" placeholder="Minimum Water Level Required (Inches)" min="0">
+            </div>
+            
         </form>
+        <button type="submit">Add Flower</button>
 
         <h3>Available Flowers</h3>
         <ul>
