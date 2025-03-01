@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower Shop</title>
+</head>
+<!-- (name, last_watered, water_level, min_water_required) VALUES ('Rose', '2025-02-27', 10, 100) -->
+
+<body>
+    <h2>Flower Management</h2>
+
+    <form action="/add_flower" method="post">
+        <input type="text" name="name" placeholder="flower name" required>
+        <input type="date" name="last_watered" placeholder="last watered">
+        <input type="number" name="water_level" placeholder="current water level" required value="0">
+        <input type="number" name="min_water_required" placeholder="min water required">
+        <button type="submit">Add Flower</button>
+    </form>
+
+    <form action="/update_flower" method="post">
+        <button type="submit">Update Flower</button>
+    </form>
+
+    <form action="/delete_flower" method="post">
+        <input type="number" name="id" placeholder="flower ID" required>
+        <button type="submit">Delete Flower</button>
+    </form>
+
+    <h3>Available Flowers</h3>
+    <ul>
+        {% if flowers %}
+        {% for flower in flowers %}
+        <li>
+            {{ flower }}
+        </li>
+        {% endfor %}
+        {% else %}
+        <li>No flowers available.</li>
+        {% endif %}
+    </ul>
+</body>
+
+</html>
