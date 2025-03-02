@@ -32,11 +32,23 @@ try:
 
     # --- INSERT DATA ---
     # -- into team1_flowers table
-    #cur.execute("INSERT INTO team1_flowers (name, initial_water_level,  current_water_level, min_water_level, last_watered) VALUES ('Rose',10, 15, 12, '2024-02-34');")
-    # water level was intially 10, it's current water level is 15, and the min water level is 12 (last watered was feb 24)
-    #cur.fetchone()[0]
+    cur.execute("INSERT INTO team1_flowers (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches, last_watered) VALUES ('Rose','outdoor',20, 15, 12, '2025-02-28') RETURNING flower_id;")
+    rose_id = cur.fetchone()[0]
 
-   # print("Inserted sample data.")
+    cur.execute("INSERT INTO team1_flowers (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches, last_watered) VALUES ('Marigold','indoor', 18, 10, 16, '2025-02-26') RETURNING flower_id;")
+    marigold_id = cur.fetchone()[0]
+
+    cur.execute("INSERT INTO team1_flowers (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches, last_watered) VALUES ('Jasmine','indoor',23, 14, 15, '2025-03-01')  RETURNING flower_id;")
+    jasmine_id = cur.fetchone()[0]
+   
+    cur.execute("INSERT INTO team1_flowers (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches, last_watered) VALUES ('Sunflower','outdoor',19, 16, 13, '2025-02-25')  RETURNING flower_id;")
+    sunflower_id = cur.fetchone()[0]
+
+    cur.execute("INSERT INTO team1_flowers (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches, last_watered) VALUES ('Tulip','outdoor',24, 20, 18, '2025-03-02')  RETURNING flower_id;")
+    tulip_id = cur.fetchone()[0]
+    
+
+    print("Inserted sample data.")
 
     
     # Close cursor and connection
