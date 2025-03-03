@@ -3,15 +3,92 @@ body {
     padding: 0;
     height: 100vh;
     font-family: sans-serif;
+    color: #FFF;
     background-image: url("/static/Images/StardewValleyBackground.png");
     background-size: cover;
     background-repeat: no-repeat;
     display: flex;
     flex-direction: column;
+    /*Prevent horizontal scrolling*/
+    overflow-x: hidden;
 }
 
 #introMusic {
     display: none;
+}
+
+#menuContainer{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background-image: url("/static/Images/rustic_wood_background.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    padding: 20px;
+    height: 80vh;
+    width: 80vh;
+    /*set max-width to 800px, adjust as needed*/
+    max-width: 800px;
+    margin: auto;
+    background-color: gray;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+}
+
+#menuContainer * {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+#buttonContainer{
+    display: flex;
+    margin-bottom: 20px;
+}
+
+#buttonContainer button{
+    padding: 5px;
+    margin: 2px;
+}
+ 
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+form button[type="submit"]{
+    display: block;
+    margin: 10px auto;
+}
+
+.label-input-grouped{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+form label{
+    width: 40%;
+    text-align: right;
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+form input{
+    width: 55%;
+    padding: 5px;
+}
+
+form select{
+    width: 55%;
+    padding: 5px;
 }
 
 button{
@@ -26,14 +103,17 @@ button{
     border-radius: 5px;
 }
 
-#menuContainer{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 80vh;
-    width: 80vh;
-    margin: auto;
-    background-color: gray;
-    border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+/* Placed in the upper right corner */
+#muteButton{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+    border: 2px solid #000;
+    background-color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
 }

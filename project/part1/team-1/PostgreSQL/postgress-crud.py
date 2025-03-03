@@ -12,44 +12,41 @@ try:
     # Create a cursor object
     cur = conn.cursor()
 
-    # --- CREATE TABLES ---
-    # water level -> in inches
+
+    # --- CREATING TABLE ---
+
     cur.execute("""
         CREATE TABLE IF NOT EXISTS team1_flowers (
             flower_id SERIAL PRIMARY KEY,
-            name VARCHAR(100) NOT NULL,
-            initial_water_level INTEGER,
-            current_water_level INTEGER NOT NULL,
-            min_water_level INTEGER,
-            last_watered DATE NOT NULL,
-            needs_water BOOL CHECK(current_water_level < min_water_level)
+            name VARCHAR(50) NOT NULL,
+            environment TEXT NOT NULL DEFAULT 'outdoor' CHECK (environment = 'indoor' OR environment = 'outdoor'),
+            initial_water_level_in_inches INTEGER NOT NULL DEFAULT 20,
+            current_water_level_in_inches INTEGER NOT NULL CHECK (current_water_level_in_inches >= 0),
+            minimum_water_level_in_inches INTEGER NOT NULL CHECK (minimum_water_level_in_inches >= 0),
+            last_watered DATE,
+            needs_water BOOL GENERATED ALWAYS AS (current_water_level_in_inches < minimum_water_level_in_inches) STORED
         );
     """)
 
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS outdoor (
-            outdoor_id SERIAL PRIMARY KEY,
-            did_it_rain BOOL DEFAULT FALSE,
-           flower_id INTEGER  REFERENCES team1_flowers(flower_id);
-        );
-    """)
-
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS indoor (
-            indoor_id SERIAL PRIMARY KEY,
-            did_it_rain BOOL DEFAULT FALSE,
-            flower_id INTEGER  REFERENCES team1_flowers(flower_id)
-        );
-    """)
-
-    print("Tables created successfully.")
+    print("Table created successfully.")
 
     # --- INSERT DATA ---
     # -- into team1_flowers table
-    
-    cur.execute("INSERT INTO team1_flowers (name, initial_water_level,  current_water_level, min_water_level, last_watered) VALUES ('Rose',10, 15, 12, '2024-02-34');")
-    # water level was intially 10, it's current water level is 15, and the min water level is 12 (last watered was feb 24)
+    cur.execute("INSERT INTO team1_flowers (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches, last_watered) VALUES ('Rose','outdoor',20, 15, 12, '2025-02-28') RETURNING flower_id;")
+    rose_id = cur.fetchone()[0]
 
+    cur.execute("INSERT INTO team1_flowers (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches, last_watered) VALUES ('Marigold','indoor', 18, 10, 16, '2025-02-26') RETURNING flower_id;")
+    marigold_id = cur.fetchone()[0]
+
+    cur.execute("INSERT INTO team1_flowers (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches, last_watered) VALUES ('Jasmine','indoor',23, 14, 15, '2025-03-01')  RETURNING flower_id;")
+    jasmine_id = cur.fetchone()[0]
+   
+    cur.execute("INSERT INTO team1_flowers (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches, last_watered) VALUES ('Sunflower','outdoor',19, 16, 13, '2025-02-25')  RETURNING flower_id;")
+    sunflower_id = cur.fetchone()[0]
+
+    cur.execute("INSERT INTO team1_flowers (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches, last_watered) VALUES ('Tulip','outdoor',24, 20, 18, '2025-03-02')  RETURNING flower_id;")
+    tulip_id = cur.fetchone()[0]
+    
 
     print("Inserted sample data.")
 

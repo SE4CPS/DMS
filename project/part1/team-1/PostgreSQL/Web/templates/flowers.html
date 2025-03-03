@@ -16,16 +16,47 @@
 
     <!--Container for the menu, form, and form inputs-->
     <div id="menuContainer">
-        <h2>Flower Management</h2>
+        <h2>Water Run Management</h2>
 
+        <div id="buttonContainer">
+            <button>Add Flower</button>
+            <button>Remove Flower</button>
+            <button>See All Flowers</button>
+            <button>See All Flowers That Need Water</button>
+            <button>See Outdoor Flowers</button>
+            <button>See Indoor Flowers</button>
+            <button>Water Flower</button>
+            <button>Simulate Rain</button>
+        </div>
+
+        <!--Form populates when "Add Flower" button is clicked-->
         <form action="/add_flower" method="post">
-            <input type="text" name="name" placeholder="Flower Name">
-            <input type="text" name="color" placeholder="Color">
-            <input type="number" name="price" placeholder="Price" >
-            <input type="number" name="stock" placeholder="Stock" >
-            <button type="submit">Add Flower</button>
-        </form>
+            <div class="label-input-grouped">
+                <label for="name">Flower:</label>
+                <input type="text" name="name" placeholder="Flower Name">
+            </div>
 
+            <div class="label-input-grouped">
+                <label for="environment">Enviornment:</label>
+                <select name="environment">
+                    <option value="indoor">Indoor</option>
+                    <option value="outdoor">Outdoor</option>
+                </select>
+            </div>
+            
+            <div class="label-input-grouped">
+                <label>Initial Water Level (inches):</label>
+                <input type="number" name="initial_water_level_in_inches" placeholder="Initial Water Level in Inches" min="0">
+            </div>
+            
+            <div class="label-input-grouped">
+                <label>Minimum Water Level Required (inches):</label>
+                <input type="number" name="minimum_water_level_in_inches" placeholder="Minimum Water Level Required (Inches)" min="0">
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+        
+        <!--
         <h3>Available Flowers</h3>
         <ul>
             {% if flowers %}
@@ -38,8 +69,9 @@
             <li>No flowers available.</li>
             {% endif %}
         </ul>
+        -->
 
-        <button id="muteButton">Mute</button>
+        <button id="muteButton"></button>
     </div>
     
 </body>
