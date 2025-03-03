@@ -15,9 +15,16 @@ document.addEventListener("DOMContentLoaded", function () {
     // Waits for the user to click anywhere on the page before playing the audio
     document.body.addEventListener("click", playAudio, { once: true });
 
+    // Function to update the mute button icon
+    function updateMuteButton() {
+        muteButton.textContent = audio.muted ? "\uD83D\uDD07" : "\uD83D\uDD0A";
+    }
+
+    updateMuteButton();
+
     muteButton.addEventListener("click", () => {
         audio.muted = !audio.muted; // Toggles the muted state
-        muteButton.textContent = audio.muted ? "Unmute" : "Mute";   // Changes the button text
         if (!audio.muted) audio.play(); // Plays the audio if it's not muted
+        updateMuteButton(); // Toggles the unicode icon
     });
 });
