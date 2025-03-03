@@ -77,19 +77,23 @@ button:hover {
     background-color: #9b95ec;
 }
 
-.actions {
-    display: flex;
-    align-items: center;
-}
-
 .actions form {
     margin: 0;
 }
 
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    width: 100%;
+}
+
 .edit-btn {
-    width: 40%;
+    flex: 0;
+    padding: 5px;
 }
 
 .delete-btn {
-    width: 100%;
+    flex: 0;
+    padding: 5px;
 }
