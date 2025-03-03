@@ -25,9 +25,6 @@ try:
         );
     """)
 
-# --- UPDATE Water Level ---
-    #curr.execute("""()""")
-
 except Exception as e:
     print("Error:", e)
 
@@ -38,6 +35,7 @@ def get_db_connection():
 def index():
     return render_template('flowers.html')
 
+# --- Main Structure --- #
 @app.route('/flowers')
 def flowers():
     conn = get_db_connection()
