@@ -4,7 +4,7 @@
 }
 
 body {
-    background-image: linear-gradient(rgba(4,9,30,0.7), rgba(4,9,30,0.7)), url("/static/Database Html background.jpg");
+    background-image: linear-gradient(rgba(4,9,30,0.7), rgba(4,9,30,0.7)), url("/static/watering-plants.jpg");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
