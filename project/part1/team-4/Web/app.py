@@ -40,7 +40,7 @@ def index():
 def flowers():
     conn = get_db_connection()
     cur = conn.cursor()
-    
+
     cur.execute("SELECT id, name, last_watered, water_level, min_water_required FROM team4_flowers")
     flowers = cur.fetchall()
     
@@ -118,6 +118,24 @@ def delete_flower(flower_id):
     conn.commit()
     cur.close()
     conn.close()
+    return redirect('/flowers')
+
+# Water Loss Algorithm
+@app.route('/simulate_water_loss')
+def simulate_water_loss():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("""
+                UPDATE team4_flowers
+                SET water_level = water_level - (5 * (CURRENT_DATE - last_watered));
+        """)
+        conn.commit()
+    except Exception as e:
+        print("Error updating water levels:", e)
+    finally:
+        cur.close()
+        conn.close()
     return redirect('/flowers')
 
 # -- Reset the Database ID to 1 (Testing purpose ONLY)
