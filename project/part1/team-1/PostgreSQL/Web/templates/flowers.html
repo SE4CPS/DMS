@@ -21,15 +21,23 @@
         <div id="buttonContainer">
             <button>Add Flower</button>
             <button>Remove Flower</button>
-            <button>See All Flowers</button>
-            <button>See All Flowers That Need Water</button>
-            <button>See Outdoor Flowers</button>
-            <button>See Indoor Flowers</button>
+            
+            <!--Start of the clickable dropdown-->
+            <div id="dropDownContainer">
+                <button id="dropDownButton" onclick="dropDown()">Display</button>
+                <div id="dropDownOptions">
+                    <!--TO DO/ADD: Implement a call to fetch the respective data from table-->
+                    <button>See All Flowers</button>
+                    <button>See All Flowers That Need Water</button>
+                    <button>See Outdoor Flowers</button>
+                    <button>See Indoor Flowers</button>
+                </div>
+            </div>
             <button>Water Flower</button>
             <button>Simulate Rain</button>
         </div>
 
-        <!--Form populates when "Add Flower" button is clicked-->
+        <!--TO DO: Form ONLY populates when "Add Flower" button is clicked-->
         <form action="/add_flower" method="post">
             <div class="label-input-grouped">
                 <label for="name">Flower:</label>

@@ -28,3 +28,17 @@ document.addEventListener("DOMContentLoaded", function () {
         updateMuteButton(); // Toggles the unicode icon
     });
 });
+
+// User clicks on the button to show the dropdown options
+function dropDown(){
+    document.getElementById("dropDownOptions").classList.toggle("show");
+}
+
+window.onclick = function(event) {
+    if(!event.target.matches('#dropDownButton')){
+        let dropdown = document.getElementById("dropDownOptions");
+        if(dropdown.classList.contains("show")){
+            dropdown.classList.remove("show");
+        }
+    }
+}

@@ -50,9 +50,47 @@ body {
 
 #buttonContainer button{
     padding: 5px;
-    margin: 2px;
+    margin: 5px;
+    width: 130px;
 }
- 
+
+#buttonContainer button:hover{
+    background-color: #3498DB;
+}
+
+#dropDownContainer{
+    position: relative;
+    display: inline-block;
+}
+
+#dropDownOptions{
+    display: none;
+    position: absolute;
+    left: 0;
+    top:100%;
+    background-color: #f1f1f1;
+    z-index: 1;
+    border-radius: 5px;
+    min-width: 160px;
+}
+
+#dropDownOptions button{
+    padding: 12px 16px;
+    text-align: center;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#dropDownOptions button:hover{
+    background-color: #3498DB;
+}
+
+#dropDownOptions.show{
+    display: block;
+}
+
 form {
     display: flex;
     flex-direction: column;
