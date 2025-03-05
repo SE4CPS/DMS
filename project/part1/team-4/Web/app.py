@@ -29,7 +29,11 @@ except Exception as e:
     print("Error:", e)
 
 def get_db_connection():
-    return psycopg2.connect(DATABASE_URL)
+    conn = psycopg2.connect(DATABASE_URL)
+    # Set Timezone for every new connection as well
+    with conn.cursor() as cur:
+        cur.execute("SET TIMEZONE = 'America/Los_Angeles';")  # Change timezone to match CURRENT_DATE timezone
+    return conn
 
 @app.route('/')
 def index():
@@ -123,12 +127,23 @@ def delete_flower(flower_id):
 # Water Loss Algorithm
 @app.route('/simulate_water_loss')
 def simulate_water_loss():
+    print("Simulating water loss...")  # Debugging
     conn = get_db_connection()
     cur = conn.cursor()
     try:
+        # Debugging the number of days
+        cur.execute("SELECT id, last_watered FROM team4_flowers")
+        flowers = cur.fetchall()
+        for flower in flowers:
+            flower_id, last_watered = flower
+            # Calculate the difference between the current date and last watered date
+            date_diff = (datetime.date.today() - last_watered).days
+            print(f"Flower ID: {flower_id}, Last Watered: {last_watered}, Days Diff: {date_diff}")
+
         cur.execute("""
                 UPDATE team4_flowers
-                SET water_level = water_level - (5 * (CURRENT_DATE - last_watered));
+                SET water_level = water_level - (5 * (CURRENT_DATE - last_watered)),
+                last_watered = CURRENT_DATE
         """)
         conn.commit()
     except Exception as e:
