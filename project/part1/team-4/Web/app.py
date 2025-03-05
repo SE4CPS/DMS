@@ -25,6 +25,21 @@ try:
         );
     """)
 
+    # Creates the table with sample data if empty
+    cur.execute("SELECT COUNT(*) FROM team4_flowers;")
+    count = cur.fetchone()[0]
+    if count == 0:
+        cur.execute("""
+            INSERT INTO team4_flowers (name, last_watered, water_level, min_water_required)
+            VALUES
+            ('Rose', '2025-03-05', 20, 10),
+            ('Lily', '2025-03-05', 4, 5),
+            ('Tulip', '2025-03-05', 10, 8);
+        """)
+        print("Sample data inserted.")
+    else:
+        print("Sample data already exists.")
+
 except Exception as e:
     print("Error:", e)
 
