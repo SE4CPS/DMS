@@ -2,7 +2,10 @@ from flask import Flask, render_template, request, redirect
 import psycopg2
 
 app = Flask(__name__)
-DATABASE_URL = "postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
+DATABASE_URL = "water-run-comp163.c9qsek28w0ok.us-east-2.rds.amazonaws.com"
+DB_USER = "team_1_COMP163"
+DB_PASSWORD = "COMP163WaterRun"
+DB_NAME = "water_run_COMP163"
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
