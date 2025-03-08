@@ -1,24 +1,29 @@
 from flask import Flask, render_template, request, redirect
 import psycopg2
 
+# import postgress-crud.py into app.py
+import postgress_crud as db
+
 app = Flask(__name__)
+
+# Commented out the below code as it is already present in postgress-crud.py
+'''
 DATABASE_URL = "water-run-comp163.c9qsek28w0ok.us-east-2.rds.amazonaws.com"
 DB_USER = "team_1_COMP163"
 DB_PASSWORD = "COMP163WaterRun"
 DB_NAME = "water_run_COMP163"
+'''
 
+# Database connect done in postgress-crud.py
+'''
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
+'''
 
+# Flask route to display the home page
 @app.route('/')
 def index():
     return render_template('flowers.html')
-    '''
-    <h2>Flower Shop Management</h2>
-    <button onclick="location.href='/flowers'">Manage Flowers</button>
-    <button onclick="location.href='/customers'">Manage Customers</button>
-    <button onclick="location.href='/orders'">Manage Orders</button>
-    '''
 
 @app.route('/flowers')
 def manage_flowers():
