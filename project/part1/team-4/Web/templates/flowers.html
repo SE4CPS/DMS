@@ -14,70 +14,79 @@
 </head>
 
 <body>
-    <div class="container">
-        <h2>Flower Watering Status</h2>
-
-        <!-- Input Form Top of Table-->
-        <form action="/add_flower" method="post">
-            <input type="text" name="name" placeholder="Flower Name">
-            <input type="text" name="last_watered" placeholder="Last Water Date">
-            <input type="number" name="water_level" placeholder="Water Level" >
-            <input type="number" name="min_water_required" placeholder="Min Water Required" >
-            <button type="submit">Add Flower</button>
-        </form>
-
-        <!-- Scrollable Table -->
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Flower ID</th>
-                        <th>Flower Name</th>
-                        <th>Last Watered Date</th>
-                        <th>Water Level</th>
-                        <th>Min Water Required</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if flowers %}
-                    {% for flower in flowers %}
-                    <tr>
-                        <td>{{ flower.id }}</td>
-                        <td>{{ flower.name }}</td>
-                        <td>{{ flower.last_watered }}</td>
-                        <td>{{ flower.water_level }}</td>
-                        <td>{{ flower.min_water_required }}</td>
-                        <td>
-                            <div class="actions">
-                                <!-- Edit Button -->
-                                <button class="edit-btn" button onclick="showUpdateForm({{ flower.id }})">Edit</button>
-
-                                <!-- DELETE Button (Sends DELETE request) -->
-                                <form action="{{ url_for('delete_flower', flower_id=flower.id) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this flower?');">
-                                    <button class="delete-btn" button type="submit" style="color: red;">Delete</button>
+    
+    <section class="header">
+        <div class="container">
+            <h1>Flower Watering Status</h1>
+    
+            <!-- Input Form Top of Table-->
+            <form action="/add_flower" method="post">
+                <input type="text" name="name" placeholder="Flower Name">
+                <input type="text" name="last_watered" placeholder="Last Water Date">
+                <input type="number" name="water_level" placeholder="Water Level" >
+                <input type="number" name="min_water_required" placeholder="Min Water Required" >
+                <button type="submit">Add Flower</button>
+            </form>
+            
+            <!-- Scrollable Table -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Flower ID</th>
+                            <th>Flower Name</th>
+                            <th>Last Watered Date</th>
+                            <th>Water Level</th>
+                            <th>Min Water Required</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if flowers %}
+                        {% for flower in flowers %}
+                        <tr>
+                            <td>{{ flower.id }}</td>
+                            <td>{{ flower.name }}</td>
+                            <td>{{ flower.last_watered }}</td>
+                            <td>{{ flower.water_level }}</td>
+                            <td>{{ flower.min_water_required }}</td>
+                            <td>
+                                <div class="actions">
+                                    <!-- Edit Button -->
+                                    <button class="edit-btn" button onclick="showUpdateForm({{ flower.id }})">Edit</button>
+    
+                                    <!-- DELETE Button (Sends DELETE request) -->
+                                    <form action="{{ url_for('delete_flower', flower_id=flower.id) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this flower?');">
+                                        <button class="delete-btn" button type="submit" style="color: red;">Delete</button>
+                                    </form>
+                                </div>
+    
+                                <!-- Update Form (Initially Hidden) -->
+                                <form id="update-form-{{ flower.id }}" action="/update_flower/{{ flower.id }}" method="post" style="display: none;">
+                                    <input type="text" name="name" value="{{ flower.name }}" required>
+                                    <input type="date" name="last_watered" value="{{ flower.last_watered }}" required>
+                                    <input type="number" name="water_level" value="{{ flower.water_level }}" required>
+                                    <input type="number" name="min_water_required" value="{{ flower.min_water_required }}" required>
+                                    <button type="submit">Update Flower</button>
                                 </form>
-                            </div>
-
-                            <!-- Update Form (Initially Hidden) -->
-                            <form id="update-form-{{ flower.id }}" action="/update_flower/{{ flower.id }}" method="post" style="display: none;">
-                                <input type="text" name="name" value="{{ flower.name }}" required>
-                                <input type="date" name="last_watered" value="{{ flower.last_watered }}" required>
-                                <input type="number" name="water_level" value="{{ flower.water_level }}" required>
-                                <input type="number" name="min_water_required" value="{{ flower.min_water_required }}" required>
-                                <button type="submit">Update Flower</button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    {% else %}
-                    <tr>
-                        <td colspan="5">No flowers avilable.</td>
-                    </tr>
-                    {% endif %}
-                </tbody>
-            </table>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="5">No flowers avilable.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
+    </section>
+
+    <section class="main">
+        <h1>Flowers</h1>
+
+    </section>
+
 </body>
 </html>
