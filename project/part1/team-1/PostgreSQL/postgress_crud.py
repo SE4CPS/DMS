@@ -1,12 +1,13 @@
 import psycopg2
 
 # AWS PostgreSQL connection
-DATABASE_URL = "postgresql://team_1_COMP163:COMP163WaterRun@water-run-comp163.c9qsek28w0ok.us-east-2.rds.amazonaws.com:5432/water_run_COMP163"
+DATABASE_URL = ""
 
 try:
     # Connect to PostgreSQL database
     def get_db_connection():
         return psycopg2.connect(DATABASE_URL)
+    
     '''
     conn = psycopg2.connect(DATABASE_URL)
     conn.autocommit = True  # Enable auto-commit for transactions
@@ -17,7 +18,6 @@ try:
 
 
     # --- CREATING TABLE ---
-
     cur.execute("""
         CREATE TABLE IF NOT EXISTS team1_flowers (
             flower_id SERIAL PRIMARY KEY,
