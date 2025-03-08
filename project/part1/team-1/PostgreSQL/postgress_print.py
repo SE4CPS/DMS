@@ -1,7 +1,7 @@
 import psycopg2
 
 # Neon PostgreSQL connection details
-DATABASE_URL = "postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
+DATABASE_URL = "postgresql://team_1_COMP163:COMP163WaterRun@water-run-comp163.c9qsek28w0ok.us-east-2.rds.amazonaws.com:5432/water_run_COMP163"
 
 try:
     # Connect to PostgreSQL

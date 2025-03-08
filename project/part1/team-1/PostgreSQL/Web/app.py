@@ -6,20 +6,6 @@ import postgress_crud as db
 
 app = Flask(__name__)
 
-# Commented out the below code as it is already present in postgress-crud.py
-'''
-DATABASE_URL = "water-run-comp163.c9qsek28w0ok.us-east-2.rds.amazonaws.com"
-DB_USER = "team_1_COMP163"
-DB_PASSWORD = "COMP163WaterRun"
-DB_NAME = "water_run_COMP163"
-'''
-
-# Database connect done in postgress-crud.py
-'''
-def get_db_connection():
-    return psycopg2.connect(DATABASE_URL)
-'''
-
 # Flask route to display the home page
 @app.route('/')
 def index():

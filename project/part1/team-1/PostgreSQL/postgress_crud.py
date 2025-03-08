@@ -1,17 +1,17 @@
 import psycopg2
 
-# AWS PostgreSQL connection details
-DATABASE_URL = "water-run-comp163.c9qsek28w0ok.us-east-2.rds.amazonaws.com"
-DB_USER = "team_1_COMP163"
-DB_PASSWORD = "COMP163WaterRun"
-DB_NAME = "water_run_COMP163"
+# AWS PostgreSQL connection
+DATABASE_URL = "postgresql://team_1_COMP163:COMP163WaterRun@water-run-comp163.c9qsek28w0ok.us-east-2.rds.amazonaws.com:5432/water_run_COMP163"
 
 try:
-    # Connect to PostgreSQL
+    # Connect to PostgreSQL database
+    def get_db_connection():
+        return psycopg2.connect(DATABASE_URL)
+    '''
     conn = psycopg2.connect(DATABASE_URL)
     conn.autocommit = True  # Enable auto-commit for transactions
     print("Connected to PostgreSQL successfully!")
-
+    '''
     # Create a cursor object
     cur = conn.cursor()
 
