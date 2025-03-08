@@ -8,16 +8,18 @@ body {
     text-align: center;
 }
 
+/* Header Section */
 .header {
     background-image: linear-gradient(rgba(4,9,30,0.7), rgba(4,9,30,0.7)), url("/static/watering-plants.jpg");
     background-size: cover;
     background-position: center;
-    background-attachment: fixed;
     font-family: Arial, sans-serif;
     height: 100vh;
     position: relative;
 }
 
+
+/* Container */
 .container {
     width: 75%;
     margin: auto;
@@ -46,6 +48,8 @@ input, button {
     border-radius: 5px;
 }
 
+
+/* Table Container */
 .table-container {
     max-height: 573px;
     overflow-y: auto;
@@ -62,7 +66,6 @@ th, td {
     padding: 10px;
     text-align: center;
 }
-
 
 button {
     cursor: pointer;
@@ -95,6 +98,84 @@ button:hover {
     padding: 5px;
 }
 
+
+/* Main Section */
 .main {
-    
+    /*background-image: linear-gradient(rgba(4,9,30,0.7), rgba(4,9,30,0.7)), url("/static/soil.jpg");*/
+    background-size: cover;
+    background-position: center;
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    position: relative;
+    width: 80%;
+    margin: auto;
+    text-align: center;
+    padding-top: 80px;
 }
+
+.row {
+    margin-top: 5%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.card {
+    width: 370px;
+    height: 370px;
+    aspect-ratio: 1 / 0.7;
+    border-radius: 8px;
+    position: relative;
+    cursor: pointer;
+}
+
+.card .image-box {
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+}
+
+.card .image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 90%;
+    border-radius: inherit;
+    transition: 0.5s ease-in-out;
+}
+
+.card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 2px solid white;
+    border-radius: inherit;
+    opacity: 0;
+    transition: 0.4s ease-in-out;
+}
+
+.card:hover img {
+    filter: grayscale(0.7) brightness(0.4);
+}
+
+.card:hover::after {
+    opacity: 1;
+    inset: 20px;
+}
+
+.content {
+    width: 80%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+/*.column {
+    flex-basis: 31%;
+    background: #fff3f3;
+    border-radius: 10px;
+    margin-bottom: 5%;
+    padding: 20px 12px;
+    box-sizing: border-box;
+}*/
