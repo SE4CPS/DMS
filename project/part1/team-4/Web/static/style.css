@@ -114,11 +114,14 @@ button:hover {
 }
 
 .row {
-    margin-top: 5%;
+    margin-top: 1%;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
+/* First Row */
 .card {
     width: 370px;
     height: 370px;
@@ -162,6 +165,10 @@ button:hover {
     inset: 20px;
 }
 
+.card:hover .content {
+    opacity: 1;
+}
+
 .content {
     width: 80%;
     position: absolute;
@@ -169,13 +176,7 @@ button:hover {
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+    color: white;
 }
-
-/*.column {
-    flex-basis: 31%;
-    background: #fff3f3;
-    border-radius: 10px;
-    margin-bottom: 5%;
-    padding: 20px 12px;
-    box-sizing: border-box;
-}*/
