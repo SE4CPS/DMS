@@ -60,18 +60,33 @@ def flowers():
     conn = get_db_connection()
     cur = conn.cursor()
 
-    cur.execute("SELECT id, name, last_watered, water_level, min_water_required FROM team4_flowers")
+    cur.execute("SELECT id, name, last_watered, water_level, min_water_required FROM team4_flowers by ORDER BY id ASC")
     flowers = cur.fetchall()
     
-    # Convert fetched data into dictionaries
+    today = datetime.date.today()
     formatted_flowers = []
+
     for flower in flowers:
+        
+        days_since_watered = (today - flower[2]).days
+
+        if 0 <= days_since_watered <= 2:
+            watering_status = 'Well-watered'
+        elif 3 <= days_since_watered <= 5:
+            watering_status = 'Needs Watering'
+        elif 6 <= days_since_watered <= 8:
+            watering_status = 'Dry'
+        else: 
+            watering_status = 'Severely dehydrated'
+
+    # Convert fetched data into dictionaries
         formatted_flowers.append({
             "id": flower[0],
             "name": flower[1] if flower[1] else "Unnamed",
             "last_watered": flower[2].strftime("%Y-%m-%d") if isinstance(flower[2], datetime.date) else "Unknown",
             "water_level": flower[3] if flower[3] is not None else 0,
-            "min_water_required": flower[4] if flower[4] is not None else 0
+            "min_water_required": flower[4] if flower[4] is not None else 0,
+            "watering_status": watering_status
         })
     
     cur.close()
