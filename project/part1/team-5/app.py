@@ -13,7 +13,7 @@ def index():
     return '''
     <h2>Flower Shop Management</h2>
     <button onclick="location.href='/flowers'">Manage Flowers</button>
-    <button onclick="location.href='/customers'">Manage Customers</button>
+    <button onclick="location.href='/flowers/needs_watering'">Manage Water Levels</button>
     <button onclick="location.href='/orders'">Manage Orders</button>
     '''
 
@@ -31,12 +31,13 @@ def manage_flowers():
 # Get all flowers that need to be watered
 @app.route('/flowers/needs_watering', methods=['GET'])
 def get_flowers_needing_water():
-    conn = get_db_connection(),
-    cur= conn.cursor(),
+    conn = get_db_connection()
+    cur= conn.cursor()
     cur.execute("SELECT * FROM team5_flowers WHERE water_level < min_water_required")
-    cur.close(),
-    conn.close(),
-    return redirect('/flowers')
+    flowers = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template('flowers.html', flowers=flowers)
 
 # Add a new flower
 @app.route('/add_flower', methods=['POST'])

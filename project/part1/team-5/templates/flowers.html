@@ -9,11 +9,11 @@
   <body>
     <h2>Flower Management</h2>
 
-    <form action="/add_flower" method="post">
-      <input type="text" name="name" placeholder="Flower Name" />
-      <input type="text" name="last_watered" placeholder="Last Watered" />
-      <input type="number" name="water_level" placeholder="Water Level" />
-      <input type="number" name="min_water_required" placeholder="Min Water Required" />
+    <form id="flower_form" action="/add_flower" method="post">
+      <input id="name" type="text" name="name" placeholder="Flower Name" />
+      <input id="last_watered" type="text" name="last_watered" placeholder="Last Watered" />
+      <input id="water_level" type="number" name="water_level" placeholder="Water Level" />
+      <input id="min_water_required" type="number" name="min_water_required" placeholder="Min Water Required" />
       <button type="submit">Add Flower</button>
     </form>
 
@@ -25,5 +25,34 @@
       <li>No flowers available.</li>
       {% endif %}
     </ul>
+
+    <script>
+      const flower_f = document.getElementById("flower_form");
+      flower_f.addEventListener("submit", function (event) {
+        const name = document.getElementById("name");
+        const last_watered = document.getElementById("last_watered");
+        const water_level = document.getElementById("water_level");
+        const min_water_required = document.getElementById("min_water_required");
+        if (name.value && last_watered.value && water_level.value && min_water_required.value) {
+          fetch("/flowers")
+            .then((response) => response.json())
+            .then((data) => {
+              let rows = "";
+              data.forEach((flower) => {
+                rows += `<tr>
+                        <td>${flower.name}</td>
+                        <td>${flower.last_watered}</td>
+                        <td>${flower.water_level} inches</td>
+                        <td>${flower.needs_watering ? "Yes" : "No"}</td>
+                    </tr>`;
+              });
+              document.getElementById("flower-data").innerHTML = rows;
+            });
+        } else {
+          event.preventDefault();
+          alert("Please enter all fields.");
+        }
+      });
+    </script>
   </body>
 </html>
