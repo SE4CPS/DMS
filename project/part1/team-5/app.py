@@ -47,7 +47,7 @@ def add_flower():
     min_water_required = request.form['min_water_required']
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("INSERT INTO flowers (name, color, price, stock) VALUES (%s, %s, %s, %s)", (name, last_watered, water_level, min_water_required))
+    cur.execute("INSERT INTO team5_flowers (name, last_watered, water_level, min_water_required) VALUES (%s, %s, %s, %s)", (name, last_watered, water_level, min_water_required))
     conn.commit()
     cur.close()
     conn.close()
@@ -59,7 +59,7 @@ def update_flower(id):
     data = request.json
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("UPDATE flowers SET last_watered = %s, water_level = %s WHERE flower_id = %s",
+    cur.execute("UPDATE team5_flowers SET last_watered = %s, water_level = %s WHERE flower_id = %s",
     (data['last_watered'], data['water_level'], id))
     conn.commit()
     cur.close()
@@ -71,7 +71,7 @@ def update_flower(id):
 def delete_flower(flower_id):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("DELETE FROM flowers WHERE flower_id = %s", (flower_id,))
+    cur.execute("DELETE FROM team5_flowers WHERE flower_id = %s", (flower_id,))
     conn.commit()
     cur.close()
     conn.close()
