@@ -68,16 +68,22 @@ def flowers():
 
     for flower in flowers:
         
+        water_level = flower[3]
+        min_water_required = flower[4]
         days_since_watered = (today - flower[2]).days
 
-        if 0 <= days_since_watered <= 2:
+        if water_level >= min_water_required and days_since_watered <= 2:
             watering_status = 'Well-watered'
+        elif water_level > 0 and water_level < min_water_required:
+            watering_status = 'Needs Watering'
+        elif water_level <= 0:
+            watering_status = 'Severely Dehydrated'
         elif 3 <= days_since_watered <= 5:
             watering_status = 'Needs Watering'
         elif 6 <= days_since_watered <= 8:
             watering_status = 'Dry'
-        else: 
-            watering_status = 'Severely dehydrated'
+        else:
+            watering_status = 'Severely Dehydrated'
 
     # Convert fetched data into dictionaries
         formatted_flowers.append({
