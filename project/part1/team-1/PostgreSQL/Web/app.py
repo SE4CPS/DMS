@@ -15,7 +15,7 @@ def index():
 def manage_flowers():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM flowers")
+    cur.execute("SELECT * FROM flowerTest ")
     flowers = cur.fetchall()
     cur.close()
     conn.close()
@@ -24,12 +24,13 @@ def manage_flowers():
 @app.route('/add_flower', methods=['POST'])
 def add_flower():
     name = request.form['name']
-    color = request.form['color']
-    price = request.form['price']
-    stock = request.form['stock']
+    environment = request.form['environment']
+    initial_water_level_in_inches = request.form['initial_water_level_in_inches']
+    current_water_level_in_inches = initial_water_level_in_inches
+    minimum_water_level_in_inches = request.form['minimum_water_level_in_inches']
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("INSERT INTO flowers (name, color, price, stock) VALUES (%s, %s, %s, %s)", (name, color, price, stock))
+    cur.execute("INSERT INTO flowerTest (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches) VALUES (%s, %s, %s, %s, %s)", (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches))
     conn.commit()
     cur.close()
     conn.close()
@@ -39,7 +40,7 @@ def add_flower():
 def delete_flower(flower_id):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("DELETE FROM flowers WHERE flower_id = %s", (flower_id,))
+    cur.execute("DELETE FROM flowerTest WHERE flower_id = %s", (flower_id,))
     conn.commit()
     cur.close()
     conn.close()
