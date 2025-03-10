@@ -39,6 +39,7 @@
                             <th>Water Level</th>
                             <th>Min Water Required</th>
                             <th>Watering Status</th>
+                            <th>Watered Amount</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -52,6 +53,12 @@
                             <td>{{ flower.water_level }}</td>
                             <td>{{ flower.min_water_required }}</td>
                             <td>{{ flower.watering_status }}</td>
+                            <td>
+                                <form action="/water_flower/{{ flower.id }}" method="POST">
+                                    <input type="number" name="water_added" value="0" min="0">
+                                    <button type="submit">Water</button>
+                                </form>
+                            </td>
                             <td>
                                 <div class="actions">
                                     <!-- Edit Button -->
@@ -76,7 +83,7 @@
                         {% endfor %}
                         {% else %}
                         <tr>
-                            <td colspan="5">No flowers avilable.</td>
+                            <td colspan="10">No Flowers Available</td>
                         </tr>
                         {% endif %}
                     </tbody>

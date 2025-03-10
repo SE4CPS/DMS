@@ -14,6 +14,12 @@ try:
     # Create a cursor object
     cur = conn.cursor()
 
+    # Ensure the 'water_added' column exists, if not add it
+    cur.execute("""
+        ALTER TABLE team4_flowers 
+        ADD COLUMN IF NOT EXISTS water_added INT DEFAULT 0;
+    """)
+
 # --- CREATE TABLES ---
     cur.execute("""
         CREATE TABLE IF NOT EXISTS team4_flowers (
@@ -21,7 +27,8 @@ try:
             name VARCHAR(100) NOT NULL,
             last_watered DATE NOT NULL,
             water_level INT NOT NULL,
-            min_water_required INT NOT NULL
+            min_water_required INT NOT NULL,
+            water_added INT NOT NULL DEFAULT 0
         );
     """)
 
@@ -60,7 +67,7 @@ def flowers():
     conn = get_db_connection()
     cur = conn.cursor()
 
-    cur.execute("SELECT id, name, last_watered, water_level, min_water_required FROM team4_flowers by ORDER BY id ASC")
+    cur.execute("SELECT id, name, last_watered, water_level, min_water_required, water_added FROM team4_flowers by ORDER BY id ASC")
     flowers = cur.fetchall()
     
     today = datetime.date.today()
@@ -70,6 +77,7 @@ def flowers():
         
         water_level = flower[3]
         min_water_required = flower[4]
+        #water_added = flower[5]
         days_since_watered = (today - flower[2]).days
 
         if water_level >= min_water_required and days_since_watered <= 2:
@@ -92,6 +100,7 @@ def flowers():
             "last_watered": flower[2].strftime("%Y-%m-%d") if isinstance(flower[2], datetime.date) else "Unknown",
             "water_level": flower[3] if flower[3] is not None else 0,
             "min_water_required": flower[4] if flower[4] is not None else 0,
+            "water_added" : flower[5] if flower[5] is not None else 0,
             "watering_status": watering_status
         })
     
@@ -187,6 +196,35 @@ def simulate_water_loss():
     finally:
         cur.close()
         conn.close()
+    return redirect('/flowers')
+
+# Water Flower
+@app.route('/water_flower/<int:flower_id>', methods=['POST'])
+def water_flower(flower_id):
+    water_added = int(request.form['water_added'])
+
+    # Get the current water level for the flower 
+    # Only the water level column
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT water_level FROM team4_flowers WHERE id = %s", (flower_id,))
+    flower = cur.fetchone()
+    current_water_level = flower[0]
+
+    # Update the water level
+    new_water_level = current_water_level + water_added
+
+    # Update the water_added column to track the water added
+    cur.execute("""
+        UPDATE team4_flowers 
+        SET water_level = %s, water_added = water_added + %s, last_watered = CURRENT_DATE
+        WHERE id = %s
+    """, (new_water_level, water_added, flower_id))
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
     return redirect('/flowers')
 
 # -- Reset the Database ID to 1 (Testing purpose ONLY)
