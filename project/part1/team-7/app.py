@@ -4,11 +4,14 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 # Database connection details
+DATABASE_URL = "postgresql://neondb_owner:npg_QuIm1wktTiV0@ep-nameless-base-aab6w7ti-pooler.westus3.azure.neon.tech/neondb?sslmode=require"
+conn = psycopg2.connect(DATABASE_URL)
+print("Connected to PostgreSQL successfully!")
 
 # Get all flowers
 @app.route('/flowers', methods=['GET'])
 def get_flowers():
-    conn = get_db_connection()
+    conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
     cur.execute("SELECT * FROM team7_flowers;")
     flowers = cur.fetchall()
@@ -22,7 +25,7 @@ def get_flowers():
 
 @app.route('/flowers/needs_watering', methods=['GET'])
 def get_flowers_needing_water():
-    conn = get_db_connection()
+    conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
     cur.execute("SELECT * FROM team7_flowers WHERE water_level < min_water_required;")
     flowers = cur.fetchall()
@@ -38,7 +41,7 @@ def get_flowers_needing_water():
 @app.route('/flowers', methods=['POST'])
 def add_flower():
     data = request.json
-    conn = get_db_connection()
+    conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
     cur.execute("INSERT INTO team7_flowers (name, last_watered, water_level, min_water_required) VALUES (%s, %s, %s, %s)", 
                 (data['name'], data['last_watered'], data['water_level'], data['min_water_required']))
@@ -51,7 +54,7 @@ def add_flower():
 @app.route('/flowers/<int:id>', methods=['PUT'])
 def update_flower(id):
     data = request.json
-    conn = get_db_connection()
+    conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
     cur.execute("UPDATE team7_flowers SET last_watered=%s, water_level=%s WHERE id=%s", 
                 (data['last_watered'], data['water_level'], id))
@@ -63,7 +66,7 @@ def update_flower(id):
 # Delete a flower by ID
 @app.route('/flowers/<int:id>', methods=['DELETE'])
 def delete_flower(id):
-    conn = get_db_connection()
+    conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
     cur.execute("DELETE FROM team7_flowers WHERE id=%s", (id,))
     conn.commit()
