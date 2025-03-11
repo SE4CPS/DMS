@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect
 import psycopg2
-
+import datetime
 # import postgress-crud.py into app.py
 import postgress_crud as db
 
@@ -21,6 +21,7 @@ def manage_flowers():
     conn.close()
     return render_template('flowers.html', flowers=flowers)
 
+# Adding Flower Function
 @app.route('/add_flower', methods=['POST'])
 def add_flower():
     name = request.form['name']
@@ -36,6 +37,7 @@ def add_flower():
     conn.close()
     return redirect('/flowers')
 
+# Deleting Flower Function
 @app.route('/delete_flower/<int:flower_id>')
 def delete_flower(flower_id):
     conn = get_db_connection()
@@ -45,6 +47,55 @@ def delete_flower(flower_id):
     cur.close()
     conn.close()
     return redirect('/flowers')
+
+
+# Watering Flower Function
+@app.route('/water_flower/<int:flower_id>')
+def delete_flower(flower_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    currDate = datetime.datetime.now()
+    cur.execute("UPDATE FROM flowerTest SET current_water_level_in_inches = current_water_level_in_inches + 5 WHERE flower_id = %s", (flower_id,))
+    cur.execute("UPDATE FROM flowerTest SET last_watered = currDate WHERE flower_id = %s", (flower_id,))
+    conn.commit()
+    cur.close()
+    conn.close()
+    return redirect('/flowers')
+
+# Retrieving flowers that need to be watered
+@app.route('/needs_water')
+def need_to_be_watered_flowers():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM flowerTest WHERE needs_water = TRUE")
+    flowers = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template('flowers.html', flowers=flowers)
+
+# Retrieving flowers that are outdoor
+@app.route('/outdoor_water')
+def outdoor_flowers():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM flowerTest WHERE environment = 'outdoor'")
+    flowers = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template('flowers.html', flowers=flowers)
+
+# Retrieving flowers that are indoor
+@app.route('/indoor_water')
+def indoor_flowers():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM flowerTest WHERE environment = 'indoor'")
+    flowers = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template('flowers.html', flowers=flowers)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -3,6 +3,7 @@ import psycopg2
 # AWS PostgreSQL connection
 DATABASE_URL = ""
 
+# change flowerTest to team1_flowers after testing is sucessful
 try:
     # Connect to PostgreSQL database
     def get_db_connection():
@@ -14,12 +15,13 @@ try:
     print("Connected to PostgreSQL successfully!")
     '''
     # Create a cursor object
+    conn = get_db_connection()
     cur = conn.cursor()
 
 
     # --- CREATING TABLE ---
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS team1_flowers (
+        CREATE TABLE IF NOT EXISTS flowerTest (
             flower_id SERIAL PRIMARY KEY,
             name VARCHAR(50) NOT NULL,
             environment TEXT NOT NULL DEFAULT 'outdoor' CHECK (environment = 'indoor' OR environment = 'outdoor'),
@@ -31,23 +33,23 @@ try:
         );
     """)
 
-    print("Table created successfully.")
+   # print("Table created successfully.")
 
     # --- INSERT DATA ---
     # -- into team1_flowers table
-    cur.execute("INSERT INTO team1_flowers (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches, last_watered) VALUES ('Rose','outdoor',20, 15, 12, '2025-02-28') RETURNING flower_id;")
+    cur.execute("INSERT INTO flowerTest (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches, last_watered) VALUES ('Rose','outdoor',20, 15, 12, '2025-02-28') RETURNING flower_id;")
     rose_id = cur.fetchone()[0]
 
-    cur.execute("INSERT INTO team1_flowers (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches, last_watered) VALUES ('Marigold','indoor', 18, 10, 16, '2025-02-26') RETURNING flower_id;")
+    cur.execute("INSERT INTO flowerTest (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches, last_watered) VALUES ('Marigold','indoor', 18, 10, 16, '2025-02-26') RETURNING flower_id;")
     marigold_id = cur.fetchone()[0]
 
-    cur.execute("INSERT INTO team1_flowers (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches, last_watered) VALUES ('Jasmine','indoor',23, 14, 15, '2025-03-01')  RETURNING flower_id;")
+    cur.execute("INSERT INTO flowerTest (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches, last_watered) VALUES ('Jasmine','indoor',23, 14, 15, '2025-03-01')  RETURNING flower_id;")
     jasmine_id = cur.fetchone()[0]
    
-    cur.execute("INSERT INTO team1_flowers (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches, last_watered) VALUES ('Sunflower','outdoor',19, 16, 13, '2025-02-25')  RETURNING flower_id;")
+    cur.execute("INSERT INTO flowerTest (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches, last_watered) VALUES ('Sunflower','outdoor',19, 16, 13, '2025-02-25')  RETURNING flower_id;")
     sunflower_id = cur.fetchone()[0]
 
-    cur.execute("INSERT INTO team1_flowers (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches, last_watered) VALUES ('Tulip','outdoor',24, 20, 18, '2025-03-02')  RETURNING flower_id;")
+    cur.execute("INSERT INTO flowerTest (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches, last_watered) VALUES ('Tulip','outdoor',24, 20, 18, '2025-03-02')  RETURNING flower_id;")
     tulip_id = cur.fetchone()[0]
     
 
