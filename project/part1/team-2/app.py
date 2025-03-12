@@ -9,32 +9,29 @@ def get_db_connection():
 
 @app.route('/')
 def index():
-    return '''
-    <h2>Flower Shop Management</h2>
-    <button onclick="location.href='/flowers'">Manage Flowers</button>
-    <button onclick="location.href='/customers'">Manage Customers</button>
-    <button onclick="location.href='/orders'">Manage Orders</button>
-    '''
+    return render_template('team2_flowers.html')
 
 @app.route('/flowers')
 def manage_flowers():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM flowers")
+    cur.execute("SELECT * FROM team2_flowers")
     flowers = cur.fetchall()
     cur.close()
     conn.close()
-    return render_template('flowers.html', flowers=flowers)
+    return render_template('team2_flowers.html', flowers=flowers)
 
 @app.route('/add_flower', methods=['POST'])
 def add_flower():
     name = request.form['name']
-    color = request.form['color']
-    price = request.form['price']
-    stock = request.form['stock']
+    last_watered = request.form['last_watered']
+    water_level = int(request.form['water_level'])
+    min_water_required = int(request.form['min_water_required'])
+
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("INSERT INTO flowers (name, color, price, stock) VALUES (%s, %s, %s, %s)", (name, color, price, stock))
+    cur.execute("INSERT INTO team2_flowers (name, last_watered, water_level, min_water_required) VALUES (%s, %s, %s, %s)",
+                (name, last_watered, water_level, min_water_required))
     conn.commit()
     cur.close()
     conn.close()
@@ -44,7 +41,7 @@ def add_flower():
 def delete_flower(flower_id):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("DELETE FROM flowers WHERE flower_id = %s", (flower_id,))
+    cur.execute("DELETE FROM team2_flowers WHERE id = %s", (flower_id,))
     conn.commit()
     cur.close()
     conn.close()
