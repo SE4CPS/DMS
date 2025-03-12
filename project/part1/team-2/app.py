@@ -9,10 +9,11 @@ def get_db_connection():
 
 @app.route('/')
 def index():
-    return render_template('team2_flowers.html')
+    return redirect('/team2_flowers')
 
-@app.route('/flowers')
+@app.route('/team2_flowers')
 def manage_flowers():
+    print("Rendering team2_flowers.html")
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("SELECT * FROM team2_flowers")
