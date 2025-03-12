@@ -36,7 +36,7 @@ def add_flower():
     conn.commit()
     cur.close()
     conn.close()
-    return redirect('/flowers')
+    return redirect('/team2_flowers')
 
 @app.route('/delete_flower/<int:flower_id>')
 def delete_flower(flower_id):
@@ -46,7 +46,28 @@ def delete_flower(flower_id):
     conn.commit()
     cur.close()
     conn.close()
-    return redirect('/flowers')
+    return redirect('/team2_flowers')
+
+@app.route('/team2_flowers_water_loss')
+def water_loss():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    try:
+        # Run the SQL update query to decrease the water level
+        cur.execute("""
+            UPDATE team2_flowers
+            SET water_level = water_level - (5 * (CURRENT_DATE - last_watered))
+        """)
+        conn.commit()
+        print("Water levels updated successfully.")
+    except Exception as e:
+        print(f"Error updating water levels: {e}")
+    finally:
+        cur.close()
+        conn.close()
+
+    return redirect('/team2_flowers')  # Redirect back to the flowers page to see updated values
 
 if __name__ == '__main__':
     app.run(debug=True)
