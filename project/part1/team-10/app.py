@@ -1,16 +1,19 @@
+import sqlite3
 import psycopg2
-from flask import Flask, request, jsonify
+from datetime import datetime, timedelta
+from flask import Flask, request, jsonify, render_template
 
 app = Flask(__name__)
 
 # Database connection details
-DATABASE = 'team-10.db'
+DB_FILE = 'team-10.db'
 
 def get_db_connection():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
-    return db
+    return sqlite3.connect(DB_FILE)
+
+@app.route('/')
+def index():
+    return render_template("flowers.html")
 
 # Get all flowers
 @app.route('/flowers', methods=['GET'])
@@ -23,7 +26,7 @@ def get_flowers():
     conn.close()
     
     return jsonify([{
-        "id": f[0], "name": f[1], "last_watered": f[2].strftime("%Y-%m-%d"),
+        "id": f[0], "name": f[1], "last_watered": f[2],
         "water_level": f[3], "needs_watering": f[3] < f[4]
     } for f in flowers])
 
@@ -42,12 +45,15 @@ def get_flowers_needing_water():
     } for f in flowers])
 
 # Add a flower
-@app.route('/flowers', methods=['POST'])
+@app.route('/add_flower', methods=['POST'])
 def add_flower():
-    data = request.json
+    name = request.form['name']
+    last_watered = request.form['last_watered']
+    water_level = request.form['water_level']
+    min_water_required = request.form['min_water_required']
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("INSERT INTO team10_flowers(name, last_watered, water_level, min_water_required) values({}, {}, {}, {});".format(data['name'], data['last_watered'], data['water_level'], data['min_water_required']))  # Placeholder
+    cur.execute("INSERT INTO team10_flowers (name, last_watered, water_level, min_water_required) VALUES('{}', '{}', {}, {})".format(name, last_watered, water_level, min_water_required))  # Placeholder
     conn.commit()
     cur.close()
     conn.close()
@@ -74,3 +80,8 @@ def delete_flower(id):
     conn.commit()
     cur.close()
     conn.close()
+
+print(sqlite3.connect(DB_FILE).cursor().execute('SELECT * FROM team10_flowers;').fetchall())
+
+if __name__ == "__main__":
+    app.run(debug=True)

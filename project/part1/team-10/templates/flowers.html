@@ -1,0 +1,73 @@
+<DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Flower Watering Status</title>
+<style>
+	ul {
+		list-style-type: none;
+	}
+	li {
+		margin: 10px 0;
+	}
+</style>
+</head>
+<body>
+    <h2>Flower Watering Status</h2>
+    <ul style="list-style-type: none; margin: 20px 0;">
+	    <li>
+		    <p>Refresh Table</p>
+		    <button onclick="getFlowers()">Update</button>
+	    </li>
+	    <li>
+		    <p>Add New Flower</p>
+		    <form name="flowersubmit" action="/add_flower" method="post" style="display: grid">
+			    <label for="name">Name: </label>
+			    <input type="text" name="name" id="name" placeholder="Flower Name">
+			    <label for="last_watered">Last Date Watered: </label>
+			    <input type="date" name="last_watered" id="last_watered">
+			    <label for="water_level">Current Water Level: </label>
+			    <input type="number" name="water_level" id="water_level">
+			    <label for="min_water_required">Minimum Water Required: </label>
+			    <input type="number" name="min_water_required" id="min_water_required" placeholder="Minimum Water Required">
+			    <button type="submit" style="margin: 10px 0;">Add Flower</button>
+		    </form>
+	    </li>
+	    <li>
+		    <p>Matthew Add Edit Flowers Here</p>
+		    <p>Reference the above form to how you need it</p>
+	    </li>
+	    <li>
+		    <p>Matthew Add Remove Flowers Here</p>
+	    </li>
+    </ul>
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Last Watered</th>
+            <th>Water Level</th>
+            <th>Needs Watering</th>
+        </tr>
+        <tbody id="flower-data"></tbody>
+    </table>
+
+    <script>
+	getFlowers()
+	function getFlowers() {
+       		fetch('/flowers')
+        	    .then(response => response.json())
+        	    .then(data => {
+        	        let rows = "";
+        	        data.forEach(flower => {
+        	            rows += `<tr>
+        	                <td>${flower.name}</td>
+        	                <td>${flower.last_watered}</td>
+        	                <td>${flower.water_level} inches</td>
+        	                <td>${flower.needs_watering ? "Yes" : "No"}</td>
+        	            </tr>`;
+        	        });
+        	        document.getElementById("flower-data").innerHTML = rows;
+        	    });
+	}
+    </script>
+</body>
+</html>
