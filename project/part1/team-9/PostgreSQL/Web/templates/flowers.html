@@ -1,35 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flower Shop</title>
+    <title>Flower Watering Status</title>
 </head>
 
 <body>
-    <h2>Flower Management</h2>
+    <h2>Flower Watering Status</h2>
+    
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Last Watered</th>
+            <th>Water Level</th>
+            <th>Needs Watering</th>
+        </tr>
+        <tbody id="flower-data"></tbody>
+    </table>
 
-    <form action="/add_flower" method="post">
-        <input type="text" name="name" placeholder="Flower Name">
-        <input type="text" name="color" placeholder="Color">
-        <input type="number" name="price" placeholder="Price" >
-        <input type="number" name="stock" placeholder="Stock" >
-        <button type="submit">Add Flower</button>
-    </form>
-
-    <h3>Available Flowers</h3>
-    <ul>
-        {% if flowers %}
-        {% for flower in flowers %}
-        <li>
-            {{ flower }}
-        </li>
-        {% endfor %}
-        {% else %}
-        <li>No flowers available.</li>
-        {% endif %}
-    </ul>
+    <script>
+        fetch('/flowers')
+            .then(response => response.json())
+            .then(data => {
+                let rows = "";
+                data.forEach(flower => {
+                    rows += `<tr>
+                        <td>${flower.name}</td>
+                        <td>${flower.last_watered}</td>
+                        <td>${flower.water_level} inches</td>
+                        <td>${flower.needs_watering ? "Yes" : "No"}</td>
+                    </tr>`;
+                });
+                document.getElementById("flower-data").innerHTML = rows;
+            });
+    </script>
 </body>
-
 </html>
