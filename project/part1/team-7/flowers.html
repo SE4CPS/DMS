@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower Watering Status</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        h2 {
+            color: #333;
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .needs-water {
+            background-color: #ffdddd;
+        }
+        .refresh-btn {
+            padding: 10px 20px;
+            margin-top: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        .refresh-btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Flower Watering Status</h2>
+    <button class="refresh-btn" onclick="fetchFlowers()">Refresh Data</button>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Last Watered</th>
+            <th>Water Level</th>
+            <th>Needs Watering</th>
+        </tr>
+        <tbody id="flower-data"></tbody>
+    </table>
+
+    <script>
+        function fetchFlowers() {
+            fetch('/flowers')
+                .then(response => response.json())
+                .then(data => {
+                    let rows = "";
+                    data.forEach(flower => {
+                        let needsWaterClass = flower.needs_watering ? "needs-water" : "";
+                        rows += `<tr class="${needsWaterClass}">
+                            <td>${flower.name}</td>
+                            <td>${flower.last_watered}</td>
+                            <td>${flower.water_level} inches</td>
+                            <td>${flower.needs_watering ? "Yes" : "No"}</td>
+                        </tr>`;
+                    });
+                    document.getElementById("flower-data").innerHTML = rows;
+                })
+                .catch(error => console.error("Error fetching flowers:", error));
+        }
+
+        // Fetch data on page load and refresh every 10 seconds
+        fetchFlowers();
+        setInterval(fetchFlowers, 10000);
+    </script>
+
+</body>
+</html>
