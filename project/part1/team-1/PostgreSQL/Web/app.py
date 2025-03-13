@@ -11,11 +11,21 @@ app = Flask(__name__)
 def index():
     return render_template('flowers.html')
 
+# updating current_water_level_in_inches
+def update_flowers():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    currDate = datetime.datetime.now()
+    cur.execute("UPDATE FROM flowerTest SET current_water_level_in_inches = current_water_level_in_inches - (5 * (%s - last_watered))", (currDate))
+    cur.close()
+    conn.close()
+    
+
 @app.route('/flowers')
 def manage_flowers():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM flowerTest ")
+    cur.execute("SELECT * FROM flowerTest")
     flowers = cur.fetchall()
     cur.close()
     conn.close()
@@ -56,7 +66,7 @@ def delete_flower(flower_id):
     cur = conn.cursor()
     currDate = datetime.datetime.now()
     cur.execute("UPDATE FROM flowerTest SET current_water_level_in_inches = current_water_level_in_inches + 5 WHERE flower_id = %s", (flower_id,))
-    cur.execute("UPDATE FROM flowerTest SET last_watered = currDate WHERE flower_id = %s", (flower_id,))
+    cur.execute("UPDATE FROM flowerTest SET last_watered = %s currDate WHERE flower_id = %s", (currDate,flower_id))
     conn.commit()
     cur.close()
     conn.close()
