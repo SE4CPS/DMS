@@ -14,7 +14,7 @@ def index():
     <h2>Flower Shop Management</h2>
     <button onclick="location.href='/flowers'">Manage Flowers</button>
     <button onclick="location.href='/flowers/needs_watering'">Manage Water Levels</button>
-    <button onclick="location.href='/orders'">Manage Orders</button>
+    <button onclick="location.href='/flowers/<int:flower_id>'">Manage Orders</button>
     '''
 
 # Get all flowers
@@ -56,12 +56,12 @@ def add_flower():
 
     # Update a flower by ID
 @app.route('/flowers/<int:flower_id>', methods=['PUT'])
-def update_flower(id):
+def update_flower(flower_id):
     data = request.json
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("UPDATE team5_flowers SET last_watered = %s, water_level = %s WHERE flower_id = %s",
-    (data['last_watered'], data['water_level'], id))
+    cur.execute("UPDATE team5_flowers SET last_watered = %s, water_level = water_level + %s WHERE id = %s",
+    (data['last_watered'], data['water_level'], flower_id))
     conn.commit()
     cur.close()
     conn.close()
