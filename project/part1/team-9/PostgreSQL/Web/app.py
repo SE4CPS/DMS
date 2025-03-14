@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 
 
 app = Flask(__name__)
-DATABASE_URL = "postgresql://neondb_owner:npg_CFVPJu3s8wUT@ep-crimson-mountain-a86mgmjx-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
+DATABASE_URL = "postgresql://flower_db_owner:npg_51HLIvYdpuVQ@ep-green-block-a8ifhr0o-pooler.eastus2.azure.neon.tech/flower_db?sslmode=require"
 
 # Database connection details
 def get_db_connection():
