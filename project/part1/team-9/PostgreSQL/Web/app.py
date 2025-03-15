@@ -39,7 +39,7 @@ def get_flowers_needing_water():
     } for f in flowers])
 
 # Add a flower
-@app.route('/flowers', methods=['POST'])
+@app.route('/add_flowers', methods=['POST'])
 def add_flower():
     data = request.json
     conn = get_db_connection()

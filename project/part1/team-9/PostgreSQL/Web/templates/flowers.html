@@ -4,22 +4,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flower Watering Status</title>
+    <style>
+        /* Body styling */
+        body {
+            background-image: url(https://everettpark.com/cdn/shop/products/FieldofFlowers.jpg?v=1674777361);
+            background-size: 100%;
+            text-align: center; /* Centers text horizontally */
+        }
+
+        /* Style for the h2 element */
+        h2 {
+            color: rgb(229, 140, 195);
+            background-color: white;
+            max-width: 245px;
+            margin: 0 auto; /* Centers the h2 by setting margins to auto */
+            padding: 10px;
+        }
+
+        /* Center the table */
+        table {
+            margin: 20px auto; /* Centers the table horizontally with some margin */
+            width: 80%; /* specific width for the table */
+            border-collapse: collapse; /* Makes the table borders collapse into a single line */
+        }
+
+        /* Styling for table header and cells */
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 2px solid rgb(229, 140, 195);
+        }
+
+        th,tr {
+            background-color: white;
+            color: rgb(229, 140, 195);
+        }
+
+        button {
+            background-color: white;
+            border: 2px solid rgb(229, 140, 195);
+            color:rgb(229, 140, 195); /* Button text color */
+            height: 30px;
+            width: 90px;
+            font-size: 20px;
+        }
+
+        input{
+            color:rgb(229, 140, 195); /* Input color when user is typing */
+        }
+
+        input::placeholder{
+            color:rgb(229, 140, 195); /* Color of the placeholder text */
+        }
+    </style>
 </head>
 
-<!-- <body style="background-image: url('Flowers.webp');"> -->
-<body style = "background-image: url(https://everettpark.com/cdn/shop/products/FieldofFlowers.jpg?v=1674777361); background-size: 50%;">
+<body>
 
     <h2>Flower Watering Status</h2>
     
-    <table border="1">
-        <tr>
-            <th>Name</th>
-            <th>Last Watered</th>
-            <th>Water Level</th>
-            <th>Needs Watering</th>
-        </tr>
-        <tbody id="flower-data"></tbody>
-    </table>
+    <form action="/add_flowers" method="post">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Last Watered</th>
+                    <th>Water Level</th>
+                    <th>Needs Watering</th>
+                </tr>
+            </thead>
+            <tbody id="flower-data">
+                <tr>
+                    <td><input type="text" name="name" placeholder="Name"></td>
+                    <td><input type="text" name="last_watered" placeholder="Last Watered"></td>
+                    <td><input type="number" name="water_level" placeholder="Water Level"></td>
+                    <td><input type="number" name="min_water_required" placeholder="Min Water Required"></td>
+                </tr>
+            </tbody>
+        </table>
+        <button type="submit">Submit</button>
+    </form>
 
     <script>
         fetch('/flowers')
@@ -37,5 +101,6 @@
                 document.getElementById("flower-data").innerHTML = rows;
             });
     </script>
+
 </body>
 </html>
