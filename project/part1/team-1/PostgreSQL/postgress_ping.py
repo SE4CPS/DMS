@@ -1,7 +1,7 @@
 import psycopg2
 
 # AWS PostgreSQL connection
-DATABASE_URL = ""
+DATABASE_URL = "postgresql://team_1_COMP163:PostgreSQLCOMP163-team1@water-run-comp163.c9qsek28w0ok.us-east-2.rds.amazonaws.com:5432/water_run_COMP163"
 
 try:
     # Connect to PostgreSQL
