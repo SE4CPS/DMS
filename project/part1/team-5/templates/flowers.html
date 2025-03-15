@@ -18,7 +18,7 @@
     </form>
 
     <h3>Available Flowers</h3>
-    <ul id="flower-data">
+    <ul id="flower-data" onload="updateFlowers">
       {% if flowers %} {% for flower in flowers %}
       <li>{{ flower }}</li>
       {% endfor %} {% else %}
@@ -26,7 +26,7 @@
       {% endif %}
     </ul>
 
-    <form id="flower-water" action="/flowers">
+    <form id="flower-water">
       <input type="text" name="id" id="flower_id" placeholder="Flower Id" />
       <input type="text" name="name" id="flower_name" placeholder="Flower name" />
       <input type="text" name="water_level" id="flower_water" placeholder="How much water to add" />
@@ -78,6 +78,36 @@
           alert("Please enter all fields");
         }
       });
+    </script>
+
+    <script>
+      function updateFlowers() {
+        fetch("/flowers")
+          .then((response) => response.json())
+          .then((flowers) => {
+            const today = new Date();
+            flowers.forEach;
+            (flower) => {
+              const last_watered_date = new Date(flower.last_watered);
+              if (today !== last_watered_date) {
+                const new_water_level = flower.water_level - 5 * (today - last_watered_date);
+              }
+
+              fetch(`/flowers/${flower_id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  last_watered: today.toISOString.split("T")[0],
+                  water_level: new_water_level,
+                })
+                  .then((response) => response.json())
+                  .then(() => {
+                    location.reload();
+                  }),
+              });
+            };
+          });
+      }
     </script>
   </body>
 </html>
