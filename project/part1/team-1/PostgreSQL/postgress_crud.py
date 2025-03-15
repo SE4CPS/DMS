@@ -1,7 +1,12 @@
+from dotenv import load_dotenv, dotenv_values
 import psycopg2
+import os
+
+# Input the absolute path to the .env file
+load_dotenv()
 
 # AWS PostgreSQL connection
-DATABASE_URL = "postgresql://team_1_COMP163:PostgreSQLCOMP163-team1@water-run-comp163.c9qsek28w0ok.us-east-2.rds.amazonaws.com:5432/water_run_COMP163"
+DATABASE_URL = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_URI')}:5432/{os.getenv('DB_NAME')}"
 
 # change flowerTest to team1_flowers after testing is sucessful
 try:
