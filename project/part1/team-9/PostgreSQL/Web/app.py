@@ -10,11 +10,11 @@ def get_db_connection():
     return  psycopg2.connect(DATABASE_URL)
 
 # Get all flowers
-@app.route('/flowers', methods=['GET'])
+@app.route('/team9_flowers', methods=['GET'])
 def get_flowers():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM flowers")  # This Query gets all of the flowers from the database
+    cur.execute("SELECT * FROM team9_flowers")  # This Query gets all of the flowers from the database
     flowers = cur.fetchall()
     cur.close()
     conn.close()
@@ -24,11 +24,11 @@ def get_flowers():
         "water_level": f[3], "needs_watering": f[3] < f[4]
     } for f in flowers])
 
-@app.route('/flowers/needs_watering', methods=['GET'])
+@app.route('/team9_flowers/needs_watering', methods=['GET'])
 def get_flowers_needing_water():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM flowers WHERE water_level < min_water_required")  # Placeholder for SELECT query
+    cur.execute("SELECT * FROM team9_flowers WHERE water_level < min_water_required")  # Placeholder for SELECT query
     flowers = cur.fetchall()
     cur.close()
     conn.close()
@@ -39,12 +39,12 @@ def get_flowers_needing_water():
     } for f in flowers])
 
 # Add a flower
-@app.route('/add_flowers', methods=['POST'])
+@app.route('/add_team9_flowers', methods=['POST'])
 def add_flower():
     data = request.json
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("INSERT INTO flowers (name, last_watered, water_level, min_water_required) VALUES (%s, %s, %s, %s)", 
+    cur.execute("INSERT INTO team9_flowers (name, last_watered, water_level, min_water_required) VALUES (%s, %s, %s, %s)", 
                 (data['name'], data['last_watered'], data['water_level'], data['min_water_required']))  # Placeholder
     conn.commit()
     cur.close()
@@ -52,12 +52,12 @@ def add_flower():
     return jsonify({"message": "Flower added successfully!"})
 
 # Update a flower by ID
-@app.route('/flowers/<int:id>', methods=['PUT'])
+@app.route('/team9_flowers/<int:id>', methods=['PUT'])
 def update_flower(id):
     data = request.json
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("UPDATE flowers SET last_watered = %s, water_level = %s WHERE id = %s", 
+    cur.execute("UPDATE team9_flowers SET last_watered = %s, water_level = %s WHERE id = %s", 
                 (data['last_watered'], data['water_level'], id))  # Placeholder
     conn.commit()
     cur.close()
@@ -65,11 +65,11 @@ def update_flower(id):
     return jsonify({"message": "Flower updated successfully!"})
 
 # Delete a flower by ID
-@app.route('/flowers/<int:id>', methods=['DELETE'])
+@app.route('/team9_flowers/<int:id>', methods=['DELETE'])
 def delete_flower(id):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("DELETE FROM flowers WHERE id = %s", (id,))  # Placeholder
+    cur.execute("DELETE FROM team9_flowers WHERE id = %s", (id,))  # Placeholder
     conn.commit()
     cur.close()
     conn.close()

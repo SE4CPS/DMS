@@ -13,7 +13,7 @@ try:
     cur = conn.cursor()
 
     # Retrieve all flowers
-    cur.execute("SELECT * FROM flowers;")
+    cur.execute("SELECT * FROM team9_flowers;")
     flower_data = cur.fetchall()
 
     # Get column names

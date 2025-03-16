@@ -63,7 +63,7 @@
 
     <h2>Flower Watering Status</h2>
     
-    <form action="/add_flowers" method="post">
+    <form action="/add_team9_flowers" method="post">
         <table>
             <thead>
                 <tr>
@@ -86,7 +86,7 @@
     </form>
 
     <script>
-        fetch('/flowers')
+        fetch('/team9_flowers')
             .then(response => response.json())
             .then(data => {
                 let rows = "";
