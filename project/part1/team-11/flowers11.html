@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Flower Watering Status</title>
+</head>
+<body>
+    <h2>Flower Watering Status</h2>
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Last Watered</th>
+            <th>Water Level</th>
+            <th>Needs Watering</th>
+        </tr>
+        <tbody id="flower-data"></tbody>
+    </table>
+
+    <script>
+        fetch('http://127.0.0.1:5000/flowers')
+            .then(response => response.json())
+            .then(data => {
+                let rows = "";
+                data.forEach(flower => {
+                    rows += `<tr>
+                        <td>${flower.name}</td>
+                        <td>${flower.last_watered}</td>
+                        <td>${flower.water_level} inches</td>
+                        <td>${flower.needs_watering ? "Yes" : "No"}</td>
+                    </tr>`;
+                });
+                document.getElementById("flower-data").innerHTML = rows;
+            });
+    </script>
+</body>
+</html>
