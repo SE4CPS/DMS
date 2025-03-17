@@ -39,7 +39,7 @@ def add_flower():
     conn.close()
     return redirect('/team2_flowers')
 
-@app.route('/delete_flower/<int:flower_id>', methods=['DELETE'])
+@app.route('/delete_flower/<int:flower_id>', methods=['POST'])
 def delete_flower(flower_id):
     conn = get_db_connection()
     cur = conn.cursor()
