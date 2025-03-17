@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect
 import psycopg2
+from datetime import datetime
 
 app = Flask(__name__)
 DATABASE_URL = "postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
@@ -11,7 +12,7 @@ def get_db_connection():
 def index():
     return redirect('/team2_flowers')
 
-@app.route('/team2_flowers')
+@app.route('/team2_flowers', methods=['GET'])
 def manage_flowers():
     print("Rendering team2_flowers.html")
     conn = get_db_connection()
@@ -38,7 +39,7 @@ def add_flower():
     conn.close()
     return redirect('/team2_flowers')
 
-@app.route('/delete_flower/<int:flower_id>')
+@app.route('/delete_flower/<int:flower_id>', methods=['DELETE'])
 def delete_flower(flower_id):
     conn = get_db_connection()
     cur = conn.cursor()
@@ -48,7 +49,24 @@ def delete_flower(flower_id):
     conn.close()
     return redirect('/team2_flowers')
 
-@app.route('/team2_flowers_water_loss')
+@app.route('/water_flowers', methods=['POST'])
+def water_flower():
+    # Gets flower ID
+    flower_id = int(request.form['flower_id'])
+    # Get the new water level
+    new_water_level = int(request.form['water_level'])
+    # gets current date
+    current_date = datetime.now().strftime('%Y-%m-%d')
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE team2_flowers SET water_level = %s, last_watered = %s WHERE id = %s", (new_water_level, current_date, flower_id,))
+    conn.commit()
+    cur.close()
+    conn.close()
+    return redirect('/team2_flowers')
+
+@app.route('/team2_flowers_water_loss', methods=['GET'])
 def water_loss():
     conn = get_db_connection()
     cur = conn.cursor()
