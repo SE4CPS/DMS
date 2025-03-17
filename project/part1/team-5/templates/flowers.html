@@ -18,7 +18,7 @@
     </form>
 
     <h3>Available Flowers</h3>
-    <ul id="flower-data" onload="updateFlowers">
+    <ul id="flower-data">
       {% if flowers %} {% for flower in flowers %}
       <li>{{ flower }}</li>
       {% endfor %} {% else %}
@@ -81,33 +81,41 @@
     </script>
 
     <script>
-      function updateFlowers() {
-        fetch("/flowers")
+      window.onload = function updateFlowers() {
+        fetch("/flowers/daily_loss")
           .then((response) => response.json())
           .then((flowers) => {
             const today = new Date();
-            flowers.forEach;
-            (flower) => {
+            let reload = false;
+            const updates = flowers.map((flower) => {
               const last_watered_date = new Date(flower.last_watered);
-              if (today !== last_watered_date) {
-                const new_water_level = flower.water_level - 5 * (today - last_watered_date);
+              let new_water_level = flower.water_level;
+              const daysDifference = Math.floor(today - lastWateredDate);
+
+              if (daysDifference > 0) {
+                new_water_level = flower.water_level - 5 * daysDifference;
+                reload = true;
               }
 
-              fetch(`/flowers/${flower_id}`, {
+              fetch(`/flowers/${flower.id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                  last_watered: today.toISOString.split("T")[0],
+                  last_watered: today.toISOString().split("T")[0],
                   water_level: new_water_level,
-                })
-                  .then((response) => response.json())
-                  .then(() => {
-                    location.reload();
-                  }),
-              });
-            };
-          });
-      }
+                }),
+              }).then((response) => response.json());
+            });
+            return Promise.resolve();
+          })
+          .catch((error) => console.error("Error updating flowers:", error));
+
+        Promise.all(updates).then(() => {
+          if (reload) {
+            setTimeout(() => location.reload(), 1000);
+          }
+        });
+      };
     </script>
   </body>
 </html>

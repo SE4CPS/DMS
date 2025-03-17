@@ -28,6 +28,25 @@ def manage_flowers():
     conn.close()
     return render_template('flowers.html', flowers=flowers)
 
+@app.route('/flowers/daily_loss', methods=['GET'])
+def daily_water_loss():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id,name,last_watered,water_level FROM team5_flowers")
+    flowers = cur.fetchall()
+    cur.close()
+    conn.close()
+    flower_list = [
+        {
+            "id": flower[0],
+            "name": flower[1],
+            "last_watered": flower[2],
+            "water_level": flower[3]
+        } for flower in flowers
+    ]
+    return jsonify(flower_list)
+
+
 # Get all flowers that need to be watered
 @app.route('/flowers/needs_watering', methods=['GET'])
 def get_flowers_needing_water():
@@ -60,7 +79,7 @@ def update_flower(flower_id):
     data = request.json
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("UPDATE team5_flowers SET last_watered = %s, water_level = water_level + %s WHERE id = %s",
+    cur.execute("UPDATE team5_flowers SET last_watered = %s, water_level = %s WHERE id = %s",
     (data['last_watered'], data['water_level'], flower_id))
     conn.commit()
     cur.close()
