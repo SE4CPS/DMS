@@ -3,40 +3,79 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
     <title>Flower Shop</title>
   </head>
 
   <body>
-    <h2>Flower Management</h2>
+    <div class="container">
+      <h2>Flower Management</h2>
 
-    <form id="flower_form" action="/add_flower" method="post">
-      <input id="name" type="text" name="name" placeholder="Flower Name" />
-      <input id="last_watered" type="text" name="last_watered" placeholder="Last Watered" />
-      <input id="water_level" type="number" name="water_level" placeholder="Water Level" />
-      <input id="min_water_required" type="number" name="min_water_required" placeholder="Min Water Required" />
-      <button type="submit">Add Flower</button>
-    </form>
+      <form id="flower_form" action="/add_flower" method="post">
+        <div class="">
+          <input class="text_entry_flower" id="name" type="text" name="name" placeholder="Flower Name" />
+          <input
+            class="text_entry_flower"
+            id="last_watered"
+            type="text"
+            name="last_watered"
+            placeholder="Last Watered" />
+          <input
+            class="text_entry_flower"
+            id="water_level"
+            type="number"
+            name="water_level"
+            placeholder="Water Level" />
+          <input
+            class="text_entry_flower"
+            id="min_water_required"
+            type="number"
+            name="min_water_required"
+            placeholder="Min Water Required" />
+        </div>
+        <button class="add_flower" type="submit">Add Flower</button>
+      </form>
 
-    <h3>Available Flowers</h3>
-    <ul id="flower-data">
-      {% if flowers %} {% for flower in flowers %}
-      <li>{{ flower }}</li>
-      {% endfor %} {% else %}
-      <li>No flowers available.</li>
-      {% endif %}
-    </ul>
+      <h3>Available Flowers</h3>
+      <ul id="flower-data">
+        {% if flowers %} {% for flower in flowers %}
+        <li>{{ flower }}</li>
+        {% endfor %} {% else %}
+        <li>No flowers available.</li>
+        {% endif %}
+      </ul>
 
-    <form id="flower-water">
-      <input type="text" name="id" id="flower_id" placeholder="Flower Id" />
-      <input type="text" name="name" id="flower_name" placeholder="Flower name" />
-      <input type="text" name="water_level" id="flower_water" placeholder="How much water to add" />
-      <button type="submit">Update Flowers Water</button>
-    </form>
-    <form id="delete-flower">
-      <input type="text" name="id" id="delete_flower_id" placeholder="Flower Id" />
-      <input type="text" name="name" id="delete_flower_name" placeholder="Flower name" />
-      <button type="submit">Remove FLower</button>
-    </form>
+      <form id="flower-water">
+        <div class="text_entry_water">
+          <input class="text_entry_flower" type="text" name="id" id="flower_id" placeholder="Flower Id" />
+          <input class="text_entry_flower" type="text" name="name" id="flower_name" placeholder="Flower name" />
+          <input
+            class="text_entry_flower"
+            type="text"
+            name="water_level"
+            id="flower_water"
+            placeholder="How much water to add" />
+        </div>
+        <button class="update_flower" type="submit">Update Flowers Water</button>
+      </form>
+      <form id="delete-flower">
+        <div class="delete_flower_margin">
+          <div class="text_entry_delete">
+            <input class="text_entry_flower" type="text" name="id" id="delete_flower_id" placeholder="Flower Id" />
+            <input
+              class="text_entry_flower"
+              type="text"
+              name="name"
+              id="delete_flower_name"
+              placeholder="Flower name" />
+          </div>
+        </div>
+        <button class="delete_flower" type="submit">Remove Flower</button>
+      </form>
+    </div>
 
     <!-- Gathering all the flowers from db -->
     <script>

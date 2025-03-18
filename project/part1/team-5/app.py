@@ -14,7 +14,6 @@ def index():
     <h2>Flower Shop Management</h2>
     <button onclick="location.href='/flowers'">Manage Flowers</button>
     <button onclick="location.href='/flowers/needs_watering'">Manage Water Levels</button>
-    <button onclick="location.href='/flowers/<int:flower_id>'">Manage Orders</button>
     '''
 
 # Get all flowers
