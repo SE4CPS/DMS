@@ -2,7 +2,6 @@ from dotenv import load_dotenv, dotenv_values
 import psycopg2
 import os
 
-
 # Input the absolute path to the .env file
 load_dotenv()
 
