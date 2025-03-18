@@ -95,22 +95,24 @@
 
     <script>
         function fetchFlowers() {
-            fetch('/flowers')
-                .then(response => response.json())
-                .then(data => {
-                    let rows = "";
-                    data.forEach(flower => {
-                        let needsWaterClass = flower.needs_watering ? "needs-water" : "";
-                        rows += `<tr class="${needsWaterClass}">
-                            <td>${flower.name}</td>
-                            <td>${flower.last_watered}</td>
-                            <td>${flower.water_level} inches</td>
-                            <td>${flower.needs_watering ? "Yes" : "No"}</td>
-                        </tr>`;
-                    });
+            fetch('http://127.0.0.1:5000/flowers')
+            .then(response => response.json())
+            .then(data => {
+                let rows = "";
+                for (let flowerKey in data) {
+                    const flower = data[flowerKey];
+                    console.log(flower);
+                    let needsWaterClass = flower.needs_watering ? "needs-water" : "";
+                    rows += `<tr class="${needsWaterClass}">
+                    <td>${flower.name}</td>
+                    <td>${flower.last_watered}</td>
+                    <td>${flower.water_level} </td>
+                    <td>${flower.needs_watering ? "Yes" : "No"}</td>
+                    </tr>`;
                     document.getElementById("flower-data").innerHTML = rows;
-                })
-                .catch(error => console.error("Error fetching flowers:", error));
+                };
+            })
+            .catch(error => console.error("Error fetching flowers:", error));
         }
 
         function addFlower() {
@@ -148,7 +150,7 @@
 
         // Fetch data on page load and refresh every 10 seconds
         fetchFlowers();
-        setInterval(fetchFlowers, 10000);
+        // setInterval(fetchFlowers, 10000);
     </script>
 
 </body>

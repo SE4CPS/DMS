@@ -1,5 +1,6 @@
 import psycopg2
-from flask import Flask, request, jsonify
+import json
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
@@ -7,6 +8,11 @@ app = Flask(__name__)
 DATABASE_URL = "postgresql://neondb_owner:npg_QuIm1wktTiV0@ep-nameless-base-aab6w7ti-pooler.westus3.azure.neon.tech/neondb?sslmode=require"
 conn = psycopg2.connect(DATABASE_URL)
 print("Connected to PostgreSQL successfully!")
+
+# Get all flowers
+@app.route('/', methods=['GET'])
+def get_index():
+    return render_template('flowers.html')
 
 # Get all flowers
 @app.route('/flowers', methods=['GET'])
@@ -17,59 +23,16 @@ def get_flowers():
     flowers = cur.fetchall()
     cur.close()
     conn.close()
-    
-    return jsonify([{
-        "id": f[0], "name": f[1], "last_watered": f[2].strftime("%Y-%m-%d"),
-        "water_level": f[3], "needs_watering": f[3] < f[4]
-    } for f in flowers])
+    flowerJson = {}
+    for flower in flowers:
+        flowerJson[flower[0]] = {
+            "name": flower[1],
+            "last_watered": flower[2].strftime("%Y-%m-%d"),
+            "water_level": flower[3],
+            "min_water_required": flower[4]
+        }
+    return json.dumps(flowerJson)
 
-@app.route('/flowers/needs_watering', methods=['GET'])
-def get_flowers_needing_water():
-    conn = psycopg2.connect(DATABASE_URL)
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM team7_flowers WHERE water_level < min_water_required;")
-    flowers = cur.fetchall()
-    cur.close()
-    conn.close()
-
-    return jsonify([{
-        "id": f[0], "name": f[1], "last_watered": f[2].strftime("%Y-%m-%d"),
-        "water_level": f[3], "needs_watering": f[3] < f[4]
-    } for f in flowers])
-
-# Add a flower
-@app.route('/flowers', methods=['POST'])
-def add_flower():
-    data = request.json
-    conn = psycopg2.connect(DATABASE_URL)
-    cur = conn.cursor()
-    cur.execute("INSERT INTO team7_flowers (name, last_watered, water_level, min_water_required) VALUES (%s, %s, %s, %s)", 
-                (data['name'], data['last_watered'], data['water_level'], data['min_water_required']))
-    conn.commit()
-    cur.close()
-    conn.close()
-    return jsonify({"message": "Flower added successfully!"})
-
-# Update a flower by ID
-@app.route('/flowers/<int:id>', methods=['PUT'])
-def update_flower(id):
-    data = request.json
-    conn = psycopg2.connect(DATABASE_URL)
-    cur = conn.cursor()
-    cur.execute("UPDATE team7_flowers SET last_watered=%s, water_level=%s WHERE id=%s", 
-                (data['last_watered'], data['water_level'], id))
-    conn.commit()
-    cur.close()
-    conn.close()
-    return jsonify({"message": "Flower updated successfully!"})
-
-# Delete a flower by ID
-@app.route('/flowers/<int:id>', methods=['DELETE'])
-def delete_flower(id):
-    conn = psycopg2.connect(DATABASE_URL)
-    cur = conn.cursor()
-    cur.execute("DELETE FROM team7_flowers WHERE id=%s", (id,))
-    conn.commit()
-    cur.close()
-    conn.close()
-    return jsonify({"message": "Flower deleted successfully!"})  
+# Add a new flower
+if __name__ == '__main__':
+    app.run(debug=True)
