@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect
 import psycopg2, os, sys, datetime
+import random
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
@@ -13,6 +14,16 @@ app = Flask(__name__)
 def index():
     return render_template('flowers.html')
 
+@app.route('/flowers')
+def manage_flowers():
+    conn = db.get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM flower")
+    flowers = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template('flowers.html', flowers=flowers)
+
 # updating current_water_level_in_inches
 def update_flowers():
     conn = db.get_db_connection()
@@ -23,16 +34,6 @@ def update_flowers():
     cur.close()
     conn.close()
     
-
-@app.route('/flowers')
-def manage_flowers():
-    conn = db.get_db_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM flower")
-    flowers = cur.fetchall()
-    cur.close()
-    conn.close()
-    return render_template('flowers.html', flowers=flowers)
 
 # Adding Flower Function
 @app.route('/add_flower', methods=['POST'])
@@ -76,40 +77,42 @@ def water_flower(flower_id):
     conn.close()
     return redirect('/flowers')
 
-# Retrieving flowers that need to be watered
+def simulate_rainfall():
+    conn = db.get_db_connection()
+    cur = conn.cursor()
+    currDate = datetime.datetime.now()
+    rand_inch = random.randint(1,10)
+    cur.execute("UPDATE FROM flower SET last_watered = %s currDate WHERE environment = 'outdoor'", (currDate))
+    cur.execute("UPDATE FROM flower SET current_water_level_in_inches = current_water_level_in_inches + %s currDate WHERE environment = 'outdoor'", (rand_inch))
+    conn.commit()
+    cur.close()
+    conn.close()
+    return redirect('/flowers')
+
+
+# Query Functions
+@app.route('/all_flower')
+def all_flowers_query():
+    flowers = db.manage_flowers()
+    return render_template('all_flower.html', flowers=flowers)
+
+
 @app.route('/needs_water')
-def need_to_be_watered_flowers():
-    conn = db.get_db_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM flower WHERE needs_water = TRUE")
-    flowers = cur.fetchall()
-    cur.close()
-    conn.close()
-    return render_template('flowers.html', flowers=flowers)
+def need_water_query():
+    flowers = db.need_to_be_watered_flowers()
+    return render_template('needs_water.html', flowers=flowers)
 
-# Retrieving flowers that are outdoor
-@app.route('/outdoor_water')
-def outdoor_flowers():
-    conn = db.get_db_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM flower WHERE environment = 'outdoor'")
-    flowers = cur.fetchall()
-    cur.close()
-    conn.close()
-    return render_template('flowers.html', flowers=flowers)
+@app.route('/outdoor_flower')
+def outdoor_flower_query():
+    flowers = db.outdoor_flowers()
+    return render_template('outdoor_flower.html', flowers=flowers)
 
-# Retrieving flowers that are indoor
-@app.route('/indoor_water')
-def indoor_flowers():
-    conn = db.get_db_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM flower WHERE environment = 'indoor'")
-    flowers = cur.fetchall()
-    cur.close()
-    conn.close()
-    return render_template('flowers.html', flowers=flowers)
-
+@app.route('/indoor_flower')
+def indoor_flower_query():
+    flowers = db.indoor_flowers()
+    return render_template('indoor_flower.html', flowers=flowers)
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+

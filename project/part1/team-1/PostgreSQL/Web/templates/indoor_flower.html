@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Indoor Flowers </title>
+    </head>
+
+    <body>
+        <h3> Flowers that are indoor</h3>
+        <ul>
+            {% if flowers %}
+            {% for flower in flowers %}
+            <li>
+                {{ flower }}
+            </li>
+            {% endfor %}
+            {% else %}
+            <li>No flowers available.</li>
+            {% endif %}
+        </ul>
+    </body>
+
+</html>
