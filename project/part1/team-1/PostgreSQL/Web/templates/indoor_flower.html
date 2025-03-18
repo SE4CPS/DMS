@@ -1,22 +1,52 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title> Indoor Flowers </title>
-    </head>
+<html lang="en">
 
-    <body>
-        <h3> Flowers that are indoor</h3>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Run</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
+    <script src="{{ url_for('static', filename='Scripts/scripts.js') }}"></script>
+</head>
+
+<body>
+    <audio id="introMusic" loop autoplay muted>
+        <source src="{{url_for('static', filename='Audio/longnight.mp3') }}" type="audio/mpeg">
+    </audio>
+
+    <!--Container for the menu, form, and form inputs-->
+    <div id="menuContainer">
+        <h2>Water Run Management</h2>
+
+        <div id="buttonContainer">
+            <button>Add Flower</button>
+            <button>Remove Flower</button>
+            
+            <!--Start of the clickable dropdown-->
+            <div id="dropDownContainer">
+                <button id="dropDownButton" onclick="dropDown()">Display</button>
+                <div id="dropDownOptions">
+                    <!--TO DO/ADD: Implement a call to fetch the respective data from table-->
+                    <button>See All Flowers</button>
+                    <button>See All Flowers That Need Water</button>
+                    <button>See Outdoor Flowers</button>
+                    <a href="/indoor_flower"><button>See Indoor Flowers</button></a>
+                </div>
+            </div>
+            <button>Water Flower</button>
+            <button>Simulate Rain</button>
+        </div>
+        <h3> Indoor Flowers</h3>
         <ul>
             {% if flowers %}
-            {% for flower in flowers %}
-            <li>
-                {{ flower }}
-            </li>
-            {% endfor %}
+                {% for flower in flowers %}
+                    <li>{{ flower }}</li>
+                {% endfor %}
             {% else %}
-            <li>No flowers available.</li>
+                <li>No flowers available.</li>
             {% endif %}
         </ul>
+        <button id="muteButton"></button>
     </body>
 
 </html>
