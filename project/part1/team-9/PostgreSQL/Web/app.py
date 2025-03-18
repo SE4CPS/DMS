@@ -35,25 +35,16 @@ def get_flowers():
     except (OperationalError, DatabaseError) as e:
         return jsonify({"error": str(e)}), 500
 
-# Flowers needing watering
-@app.route('/team9_flowers/needs_watering', methods=['GET'])
-def get_flowers_needing_water():
-    try:
-        with get_db_connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute("SELECT * FROM team9_flowers WHERE water_level < min_water_required;")
-                flowers = cur.fetchall()
-        return jsonify([{
-            "id": f[0], "name": f[1], "last_watered": f[2].strftime("%Y-%m-%d"),
-            "water_level": f[3], "needs_watering": True
-        } for f in flowers])
-    except (OperationalError, DatabaseError) as e:
-        return jsonify({"error": str(e)}), 500
-
 # Add a flower
 @app.route('/add_team9_flowers', methods=['POST'])
 def add_flower():
+    # Extract data from the incoming JSON request
     data = request.json
+    name = data.get('name')
+    last_watered = data.get('last_watered')
+    water_level = data.get('water_level')
+    min_water_required = data.get('min_water_required')
+
     try:
         with get_db_connection() as conn:
             with conn.cursor() as cur:
@@ -61,7 +52,7 @@ def add_flower():
                     INSERT INTO team9_flowers 
                     (name, last_watered, water_level, min_water_required) 
                     VALUES (%s, %s, %s, %s)
-                """, (data['name'], data['last_watered'], data['water_level'], data['min_water_required']))
+                """, (name, last_watered, water_level, min_water_required))
         return jsonify({"message": "Flower added successfully!"})
     except (OperationalError, DatabaseError) as e:
         return jsonify({"error": str(e)}), 500
