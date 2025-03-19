@@ -3,7 +3,7 @@ import psycopg2
 import os
 
 # Input the absolute path to the .env file
-load_dotenv()
+load_dotenv(r"C:\Users\david\OneDrive\Desktop\UoP\Spring 2025\COMP 163\Water_Run_Env\water_run.env")
 
 # AWS PostgreSQL connection
 DATABASE_URL = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_URI')}:5432/{os.getenv('DB_NAME')}"
@@ -63,6 +63,7 @@ def water_outdoor_flowers():
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("UPDATE flower SET current_water_level_in_inches = current_water_level_in_inches + 10 WHERE environment = 'outdoor'")
+    cur.execute("UPDATE flower SET last_watered = current_timestamp WHERE environment = 'outdoor'")
     conn.commit()
     cur.close()
     conn.close()
