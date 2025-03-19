@@ -1,23 +1,22 @@
-import psycopg2
+import sqlite3
 
-# PostgreSQL connection details
-DATABASE_URL = "postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
+# SQLite database file
+DATABASE_FILE = "example.db"
 
 def create_table():
     try:
-        conn = psycopg2.connect(DATABASE_URL)
-        conn.autocommit = True  # Enable autocommit
-        cur = conn.cursor()
-        cur.execute("CREATE TABLE IF NOT EXISTS demo (id SERIAL PRIMARY KEY, value TEXT);")
-        cur.close()
+        conn = sqlite3.connect(DATABASE_FILE)
+        conn.execute("PRAGMA journal_mode=WAL;")  # Enable Write-Ahead Logging for better concurrency
+        conn.execute("CREATE TABLE IF NOT EXISTS demo (id INTEGER PRIMARY KEY AUTOINCREMENT, value TEXT);")
+        conn.commit()
         conn.close()
     except Exception as e:
         print("Error creating table:", e)
 
 def execute_without_transaction():
     try:
-        conn = psycopg2.connect(DATABASE_URL)
-        conn.autocommit = True  # Enable autocommit
+        conn = sqlite3.connect(DATABASE_FILE)
+        conn.isolation_level = None  # Enable autocommit
         cur = conn.cursor()
         print("Executing without transaction...")
         
@@ -34,12 +33,13 @@ def execute_without_transaction():
 
 def execute_with_transaction():
     try:
-        conn = psycopg2.connect(DATABASE_URL)
+        conn = sqlite3.connect(DATABASE_FILE)
+        conn.isolation_level = None  # Disable autocommit to manually control transactions
         cur = conn.cursor()
         print("Executing with transaction...")
         
         try:
-            cur.execute("BEGIN;")
+            conn.execute("BEGIN;")  # Ensure full transaction control
             cur.execute("INSERT INTO demo (value) VALUES ('With Transaction 1');")
             cur.execute("INSERT INTO demo (value) VALUES ('With Transaction 2');")
             
@@ -48,7 +48,7 @@ def execute_with_transaction():
             
             conn.commit()  # This is never reached due to the error
         except Exception as e:
-            conn.rollback()
+            conn.rollback()  # Rollback the entire transaction
             print("Transaction rolled back due to:", e)
         
         cur.close()
@@ -58,8 +58,7 @@ def execute_with_transaction():
 
 def show_data():
     try:
-        conn = psycopg2.connect(DATABASE_URL)
-        conn.autocommit = True  # Enable autocommit
+        conn = sqlite3.connect(DATABASE_FILE)
         cur = conn.cursor()
         cur.execute("SELECT * FROM demo;")
         rows = cur.fetchall()
