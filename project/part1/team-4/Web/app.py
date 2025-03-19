@@ -39,9 +39,9 @@ try:
         cur.execute("""
             INSERT INTO team4_flowers (name, last_watered, water_level, min_water_required)
             VALUES
-            ('Rose', '2025-03-05', 20, 10),
-            ('Lily', '2025-03-05', 4, 5),
-            ('Tulip', '2025-03-05', 10, 8);
+            ('Rose', '2025-03-05', 20, 5),
+            ('Lily', '2025-03-05', 10, 7),
+            ('Tulip', '2025-03-05', 3, 5);
         """)
         print("Sample data inserted.")
     else:
