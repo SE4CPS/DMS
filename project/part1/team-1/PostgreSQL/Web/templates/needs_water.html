@@ -36,52 +36,17 @@
             <button>Water Flower</button>
             <button>Simulate Rain</button>
         </div>
-
-        <!--TO DO: Form ONLY populates when "Add Flower" button is clicked-->
-        <form action="/add_flower" method="post">
-            <div class="label-input-grouped">
-                <label for="name">Flower:</label>
-                <input type="text" name="name" placeholder="Flower Name">
-            </div>
-
-            <div class="label-input-grouped">
-                <label for="environment">Enviornment:</label>
-                <select name="environment">
-                    <option value="indoor">Indoor</option>
-                    <option value="outdoor">Outdoor</option>
-                </select>
-            </div>
-            
-            <div class="label-input-grouped">
-                <label>Initial Water Level (inches):</label>
-                <input type="number" name="initial_water_level_in_inches" placeholder="Initial Water Level in Inches" min="0">
-            </div>
-            
-            <div class="label-input-grouped">
-                <label>Minimum Water Level Required (inches):</label>
-                <input type="number" name="minimum_water_level_in_inches" placeholder="Minimum Water Level Required (Inches)" min="0">
-            </div>
-            <button type="submit">Submit</button>
-        </form>
-        
-        <!--
-        <h3>Available Flowers</h3>
+        <h3> Flowers That Need Water</h3>
         <ul>
             {% if flowers %}
-            {% for flower in flowers %}
-            <li>
-                {{ flower }}
-            </li>
-            {% endfor %}
+                {% for flower in flowers %}
+                    <li>{{ flower }}</li>
+                {% endfor %}
             {% else %}
-            <li>No flowers available.</li>
+                <li>No flowers available.</li>
             {% endif %}
         </ul>
-        -->
-
         <button id="muteButton"></button>
-    </div>
-    
-</body>
+    </body>
 
 </html>

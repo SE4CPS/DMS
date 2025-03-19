@@ -14,7 +14,6 @@ def index():
     <h2>Flower Shop Management</h2>
     <button onclick="location.href='/flowers'">Manage Flowers</button>
     <button onclick="location.href='/flowers/needs_watering'">Manage Water Levels</button>
-    <button onclick="location.href='/flowers/<int:flower_id>'">Manage Orders</button>
     '''
 
 # Get all flowers
@@ -91,7 +90,7 @@ def update_flower(flower_id):
 def delete_flower(flower_id):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("DELETE FROM team5_flowers WHERE flower_id = %s", (flower_id,))
+    cur.execute("DELETE FROM team5_flowers WHERE id = %s", (flower_id,))
     conn.commit()
     cur.close()
     conn.close()

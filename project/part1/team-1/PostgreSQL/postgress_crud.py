@@ -2,7 +2,6 @@ from dotenv import load_dotenv, dotenv_values
 import psycopg2
 import os
 
-
 # Input the absolute path to the .env file
 load_dotenv()
 
@@ -79,7 +78,7 @@ except Exception as e:
 def need_to_be_watered_flowers():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM flower WHERE needs_water = TRUE")
+    cur.execute("SELECT * FROM flower WHERE current_water_level_in_inches < minimum_water_level_in_inches")
     flowers = cur.fetchall()
     cur.close()
     conn.close()

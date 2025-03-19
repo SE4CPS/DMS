@@ -1,5 +1,8 @@
 import psycopg2
 
+
+#This file only prints out the database content. 
+
 # Neon PostgreSQL connection details
 DATABASE_URL = "postgresql://flower_db_owner:npg_51HLIvYdpuVQ@ep-green-block-a8ifhr0o-pooler.eastus2.azure.neon.tech/flower_db?sslmode=require"
 

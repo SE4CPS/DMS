@@ -112,7 +112,6 @@ def indoor_flower_query():
     flowers = db.indoor_flowers()
     return render_template('indoor_flower.html', flowers=flowers)
 
-
 if __name__ == '__main__':
     app.run(debug=True)
 

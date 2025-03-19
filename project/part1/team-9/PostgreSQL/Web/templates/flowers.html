@@ -63,14 +63,14 @@
 
     <h2>Flower Watering Status</h2>
     
-    <form action="/add_team9_flowers" method="post">
+    <form id="flowerForm">
         <table>
             <thead>
                 <tr>
                     <th>Name</th>
                     <th>Last Watered</th>
                     <th>Water Level</th>
-                    <th>Needs Watering</th>
+                    <th>Min Water Required</th>
                 </tr>
             </thead>
             <tbody id="flower-data">
@@ -86,20 +86,40 @@
     </form>
 
     <script>
-        fetch('/team9_flowers')
+        // Handle form submission via JavaScript (AJAX)
+        document.getElementById('flowerForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting the traditional way
+
+            const formData = new FormData(event.target);
+            const data = {
+                name: formData.get('name'),
+                last_watered: formData.get('last_watered'),
+                water_level: formData.get('water_level'),
+                min_water_required: formData.get('min_water_required')
+            };
+
+            // Send the form data to the backend as JSON
+            fetch('/add_team9_flowers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
             .then(response => response.json())
-            .then(data => {
-                let rows = "";
-                data.forEach(flower => {
-                    rows += `<tr>
-                        <td>${flower.name}</td>
-                        <td>${flower.last_watered}</td>
-                        <td>${flower.water_level} inches</td>
-                        <td>${flower.needs_watering ? "Yes" : "No"}</td>
-                    </tr>`;
-                });
-                document.getElementById("flower-data").innerHTML = rows;
+            .then(result => {
+                if (result.message) {
+                    alert(result.message); // Show success message
+                    location.reload(); // Reload the page to show the new flower in the table
+                } else {
+                    alert('Failed to add flower: ' + result.error); // Show error message
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while adding the flower');
             });
+        });
     </script>
 
 </body>

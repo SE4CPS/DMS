@@ -66,7 +66,7 @@ def water_flower():
     conn.close()
     return redirect('/team2_flowers')
 
-@app.route('/team2_flowers_water_loss', methods=['GET'])
+@app.route('/team2_flowers_water_loss', methods=['POST'])
 def water_loss():
     conn = get_db_connection()
     cur = conn.cursor()
