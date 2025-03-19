@@ -112,6 +112,12 @@ def indoor_flower_query():
     flowers = db.indoor_flowers()
     return render_template('indoor_flower.html', flowers=flowers)
 
+# Simulate Rainfall
+@app.route('/simulate_rainfall')
+def water_outdoor_flowers():
+    flowers = db.water_outdoor_flowers()
+    return redirect('/flowers')
+
 if __name__ == '__main__':
     app.run(debug=True)
 
