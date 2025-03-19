@@ -13,20 +13,6 @@ try:
     # Connect to PostgreSQL database
     def get_db_connection():
         return psycopg2.connect(DATABASE_URL)
-    
-    '''
-    conn = psycopg2.connect(DATABASE_URL)
-    conn.autocommit = True  # Enable auto-commit for transactions
-    print("Connected to PostgreSQL successfully!")
-    '''
-    # Create a cursor object
-    conn = get_db_connection()
-    cur = conn.cursor()    
-    # Close cursor and connection
-    cur.close()
-    conn.close()
-    print("Connection closed.")
-
 except Exception as e:
     print("Error:", e)
 
@@ -66,7 +52,7 @@ def indoor_flowers():
 def manage_flowers():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM flower")
+    cur.execute("SELECT * FROM flower ORDER BY flower_id") # Specifying the order of ALL the flowers
     flowers = cur.fetchall()
     cur.close()
     conn.close()
