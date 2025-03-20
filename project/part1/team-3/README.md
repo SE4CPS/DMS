@@ -19,7 +19,7 @@ Backend: Python - Flask framework <br>
 
 ## Project stucture:
 .gitignore  
-.env                        # Store db_url
+.env                        # Store db_url, remember to delete pooler for it to work.
 
 /database:<br>
     db_connection.py        # Connect to database <br>
