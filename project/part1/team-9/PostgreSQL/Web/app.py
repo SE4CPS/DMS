@@ -88,6 +88,23 @@ def delete_flower(id):
         return jsonify({"message": "Flower deleted successfully!"})
     except (OperationalError, DatabaseError) as e:
         return jsonify({"error": str(e)}), 500
+    
+# New route to update the water levels
+@app.route('/water_flowers', methods=['POST'])
+def water_flowers():
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    UPDATE team9_flowers
+                    SET water_level = water_level - (5 * (CURRENT_DATE - last_watered))
+                    WHERE CURRENT_DATE > last_watered;
+                """)
+                conn.commit()  # Commit the transaction
+        return jsonify({"message": "Water levels updated successfully!"})
+    except (OperationalError, DatabaseError) as e:
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
