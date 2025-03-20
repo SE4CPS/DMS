@@ -12,6 +12,6 @@ def init_db():
                 last_watered DATE NOT NULL,
                 water_level INT NOT NULL,
                 min_water_required INT NOT NULL  
-            )
+            );
             """
         )
