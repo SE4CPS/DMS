@@ -1,6 +1,6 @@
 from db_connection import get_db_connection
 
-def init_db():
+def db_init():
     conn=get_db_connection()
     if conn:
         cur=conn.cursor()
@@ -15,3 +15,11 @@ def init_db():
             );
             """
         )
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+        print("Initialize database.")
+        
+if __name__ == "__main__":
+        db_init()
