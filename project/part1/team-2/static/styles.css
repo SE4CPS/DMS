@@ -1,7 +1,7 @@
 /* General Styles */
 body {
     font-family: 'Arial', sans-serif;
-    background-image: url("images/flower-background.jpg"); /* Relative path to the image */
+    background-image: url("images/flower-background.jpg"); 
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -32,7 +32,7 @@ h3 {
 
 /* Form Styles */
 form {
-    background-color: #fff;
+    background-color: #f8f8f8;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -83,14 +83,9 @@ li {
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     font-size: 1.1em;
-}
-
-li:nth-child(odd) {
-    background-color: #f9f9f9;
-}
-
-li:nth-child(even) {
-    background-color: #e9f5e9;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 /* No Flowers Message */
