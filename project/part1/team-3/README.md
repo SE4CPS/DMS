@@ -7,9 +7,9 @@ Junah Kim
 Web application to track flower watering status, indicate when the flower will to be watered again.
 
 ## Technologies:
-Database: PostgreSQL, Neon database 
-Frontend: HTML/CSS
-Backend: Python - Flask framework
+Database: PostgreSQL, Neon database <br> 
+Frontend: HTML/CSS <br>
+Backend: Python - Flask framework <br>
 
 ## Features:
 - Track flower watering status.
