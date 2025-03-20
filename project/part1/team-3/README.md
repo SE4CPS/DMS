@@ -21,9 +21,9 @@ Backend: Python - Flask framework <br>
 .gitignore  
 .env                        # Store db_url
 
-/database:
-    db_connection.py        # Connect to database <br>
-    db_init.py              # Initialize database schema <br>
+/database:<br>
+&nbsp;db_connection.py&nbsp;# Connect to database <br>
+&nbsp;db_init.py&nbsp;# Initialize database schema <br>
     
 
 /frontend:
