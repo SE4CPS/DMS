@@ -3,20 +3,21 @@ from psycopg2 import OperationalError, DatabaseError
 from flask import Flask, request, jsonify, render_template
 
 app = Flask(__name__)
+
 DATABASE_URL = "postgresql://flower_db_owner:npg_51HLIvYdpuVQ@ep-green-block-a8ifhr0o-pooler.eastus2.azure.neon.tech/flower_db?sslmode=require"
 
 # Database connection details
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
 
-@app.route('/', methods=['GET'])
-def home():
+@app.route('/')
+def index():
     try:
         with get_db_connection() as conn:
             with conn.cursor() as cur:
                 cur.execute("SELECT * FROM team9_flowers;")
                 flowers = cur.fetchall()
-        return render_template('flowers.html', flowers=flowers)
+        return render_template('flowers.html', flowers=flowers) #Refers to our flowers.html file. 
     except (OperationalError, DatabaseError) as e:
         return jsonify({"error": str(e)}), 500
 
@@ -29,11 +30,15 @@ def get_flowers():
                 cur.execute("SELECT * FROM team9_flowers;")
                 flowers = cur.fetchall()
         return jsonify([{
-            "id": f[0], "name": f[1], "last_watered": f[2].strftime("%Y-%m-%d"),
-            "water_level": f[3], "needs_watering": f[3] < f[4]
+            "id": f[0], 
+            "name": f[1], 
+            "last_watered": f[2].strftime("%Y-%m-%d"),
+            "water_level": f[3], 
+            "min_water_required": f[4]  # Ensure this is included
         } for f in flowers])
     except (OperationalError, DatabaseError) as e:
         return jsonify({"error": str(e)}), 500
+
 
 # Add a flower
 @app.route('/add_team9_flowers', methods=['POST'])

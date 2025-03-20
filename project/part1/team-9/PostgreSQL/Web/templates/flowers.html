@@ -43,18 +43,61 @@
         button {
             background-color: white;
             border: 2px solid rgb(229, 140, 195);
-            color:rgb(229, 140, 195); /* Button text color */
+            color: rgb(229, 140, 195); /* Button text color */
             height: 30px;
-            width: 90px;
-            font-size: 20px;
+            width: 130px; /* Increase width for better readability */
+            font-size: 16px; /* Adjusted font size to fit inside the button */
+            text-align: center; /* Center the text inside the button */
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        input{
-            color:rgb(229, 140, 195); /* Input color when user is typing */
+        input {
+            color: rgb(229, 140, 195); /* Input color when user is typing */
         }
 
-        input::placeholder{
-            color:rgb(229, 140, 195); /* Color of the placeholder text */
+        input::placeholder {
+            color: rgb(229, 140, 195); /* Color of the placeholder text */
+        }
+
+        /* Hide the buttons when in "Flowers" view */
+        #goBackButton, #updateButton, #deleteButton {
+            display: none;
+        }
+
+        /* Hide ID column initially */
+        .id-column {
+            display: none;
+        }
+
+        /* Hide the flower form when in "Flowers" view */
+        #flowerForm {
+            display: block;
+        }
+
+        #flowerTable {
+            display: none;
+        }
+
+        /* Style the button container */
+        .button-container {
+            display: flex;
+            justify-content: space-between; /* Align buttons on the left and right */
+            width: 30%; /* Adjust width to reduce spacing */
+            margin-top: 20px;
+            padding: 0 20px;
+            margin-left: auto; /* Center the buttons */
+            margin-right: auto;
+        }
+
+        /* Align the buttons */
+        #flowersButton {
+            text-align: left; /* Align the "Modify Flowers" button to the left */
+        }
+
+        #submitButton {
+            text-align: center; /* Ensure "Submit" button text is centered */
         }
     </style>
 </head>
@@ -63,10 +106,12 @@
 
     <h2>Flower Watering Status</h2>
     
+    <!-- Flower form -->
     <form id="flowerForm">
         <table>
             <thead>
                 <tr>
+                    <th class="id-column">ID</th>
                     <th>Name</th>
                     <th>Last Watered</th>
                     <th>Water Level</th>
@@ -82,8 +127,36 @@
                 </tr>
             </tbody>
         </table>
-        <button type="submit">Submit</button>
+
+        <!-- Button container for Submit and Modify Flowers buttons -->
+        <div class="button-container">
+            <button type="submit" id="submitButton">Submit</button>
+            <button type="button" id="flowersButton" onclick="getFlowers()">Modify Flowers</button>
+        </div>
     </form>
+
+    <!-- Buttons -->
+    <button id="updateButton" onclick="updateFlower()">Update</button>
+    <button id="deleteButton" onclick="deleteFlower()">Delete</button>
+    <button id="goBackButton" onclick="goBack()">Go Back</button>
+
+    <!-- Flowers Table (initially hidden) -->
+    <div id="flowerTable">
+        <table>
+            <thead>
+                <tr>
+                    <th class="id-column">ID</th>
+                    <th>Name</th>
+                    <th>Last Watered</th>
+                    <th>Water Level</th>
+                    <th>Min Water Required</th>
+                </tr>
+            </thead>
+            <tbody id="flowersList">
+                <!-- Dynamically populated -->
+            </tbody>
+        </table>
+    </div>
 
     <script>
         // Handle form submission via JavaScript (AJAX)
@@ -110,9 +183,10 @@
             .then(result => {
                 if (result.message) {
                     alert(result.message); // Show success message
-                    location.reload(); // Reload the page to show the new flower in the table
+                    // Reset the form after submission for another entry
+                    document.getElementById('flowerForm').reset();
                 } else {
-                    alert('Failed to add flower: ' + result.error); // Show error message
+                    alert('Please fill out all fields'); // Show error message
                 }
             })
             .catch(error => {
@@ -120,6 +194,135 @@
                 alert('An error occurred while adding the flower');
             });
         });
+
+        // Get flowers and display them in a table
+        function getFlowers() {
+            fetch('/team9_flowers')
+                .then(response => response.json())
+                .then(flowers => {
+                    const flowerTable = document.getElementById('flowersList');
+                    flowerTable.innerHTML = ''; // Clear existing rows
+
+                    flowers.forEach(flower => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="id-column">${flower.id}</td>
+                            <td>${flower.name}</td>
+                            <td>${flower.last_watered}</td>
+                            <td>${flower.water_level}</td>
+                            <td>${flower.min_water_required}</td>
+                        `;
+                        flowerTable.appendChild(row);
+                    });
+
+                    // Show the ID and Min Water Required columns when viewing flowers
+                    const idColumn = document.querySelectorAll('.id-column');
+                    idColumn.forEach(col => col.style.display = 'table-cell'); // Show ID column for flower list
+
+                    // Switch to "Flowers" view
+                    document.getElementById('flowerForm').style.display = 'none';
+                    document.getElementById('flowerTable').style.display = 'block';
+
+                    document.getElementById('goBackButton').style.display = 'inline-block';
+                    document.getElementById('updateButton').style.display = 'inline-block';
+                    document.getElementById('deleteButton').style.display = 'inline-block';
+                    document.getElementById('flowersButton').style.display = 'none';
+                    document.getElementById('submitButton').style.display = 'none';
+                })
+                .catch(error => console.error('Error fetching flowers:', error));
+        }
+
+        function updateFlower() {
+            const flowerId = prompt('Enter the ID of the flower you want to update:');
+
+            if (flowerId) {
+                const newLastWatered = prompt('Enter the new Last Watered date (YYYY-MM-DD):');
+                const newWaterLevel = prompt('Enter the new Water Level (e.g., 50):');
+
+                if (newLastWatered && newWaterLevel) {
+                    const data = {
+                        last_watered: newLastWatered,
+                        water_level: newWaterLevel
+                    };
+
+                    fetch(`/team9_flowers/${flowerId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        alert(result.message); // Show success message
+                        getFlowers(); // Refresh the flowers list
+                    })
+                    .catch(error => {
+                        console.error('Error updating flower:', error);
+                        alert('There was an error updating the flower.');
+                    });
+                } else {
+                    alert('Please make sure both the Last Watered date and Water Level are provided.');
+                }
+            } else {
+                alert('Please enter a valid flower ID.');
+            }
+        }
+
+        // Delete flower by ID
+        function deleteFlower() {
+            const flowerId = prompt('Enter the ID of the flower you want to delete:');
+
+            fetch(`/team9_flowers/${flowerId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(result => {
+                alert(result.message); // Show success message
+                getFlowers(); // Refresh the flowers list
+            })
+            .catch(error => console.error('Error deleting flower:', error));
+        }
+
+        // Go back to the "Add Flower" form
+        function goBack() {
+            // Show the form again and hide the flower list
+            document.getElementById('flowerForm').style.display = 'block';
+            document.getElementById('flowerTable').style.display = 'none';
+
+            // Show "Modify Flowers" button and hide "Go Back" button
+            document.getElementById('flowersButton').style.display = 'inline-block';
+            document.getElementById('goBackButton').style.display = 'none';
+
+            // Hide update/delete buttons
+            document.getElementById('updateButton').style.display = 'none';
+            document.getElementById('deleteButton').style.display = 'none';
+
+            // Reset the form for adding a new flower
+            document.getElementById('flowerForm').reset();
+            document.getElementById('submitButton').style.display = 'inline-block';
+
+            // Ensure Submit button text is centered
+            document.getElementById('submitButton').style.textAlign = 'center';
+            document.getElementById('submitButton').style.display = 'inline-flex'; // Ensure button layout is correct
+
+            // Hide the ID column in the form
+            const idColumnInputs = document.querySelectorAll('.id-column');
+            idColumnInputs.forEach(col => col.style.display = 'none');
+        }
+
+        // Check the saved view state on page load
+        window.onload = function() {
+            const view = localStorage.getItem('view');
+
+            if (view === 'flowers') {
+                getFlowers(); // Load the flowers list
+            } else {
+                document.getElementById('flowerForm').style.display = 'block';
+                document.getElementById('flowerTable').style.display = 'none';
+                document.getElementById('flowersButton').style.display = 'inline-block';
+            }
+        }
     </script>
 
 </body>
