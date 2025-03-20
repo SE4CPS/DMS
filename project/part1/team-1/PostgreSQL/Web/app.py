@@ -64,30 +64,28 @@ def delete_flower(flower_id):
 
 
 # Watering Flower Function
-@app.route('/water_flower/<int:flower_id>')
-def water_flower(flower_id):
+@app.route('/water_flower')
+def water_flowers():
+    flowers = db.manage_flowers()
+    return render_template('water_flower.html', flowers=flowers)
+
+  
+    
+@app.route('/water_flower', methods=['POST'])
+def water_selected_flowers():
     conn = db.get_db_connection()
     cur = conn.cursor()
-    currDate = datetime.datetime.now()
-    #cur.execute("UPDATE FROM flower SET current_water_level_in_inches = current_water_level_in_inches + 5 WHERE flower_id = %s", (flower_id,))
-    cur.execute("UPDATE flower SET current_water_level_in_inches = current_water_level_in_inches + 5 WHERE flower_id = %s", (flower_id,))
-    cur.execute("UPDATE FROM flower SET last_watered = %s currDate WHERE flower_id = %s", (currDate,flower_id))
+    selected_flowers = request.form.getlist('selected_flowers')
+    for f in selected_flowers:
+        flower_id = int(f[1])
+        currDate = datetime.datetime.now()
+        cur.execute("UPDATE flower SET current_water_level_in_inches = current_water_level_in_inches + 10 WHERE flower_id = %s", (flower_id,))
+        cur.execute("UPDATE flower SET last_watered = %s WHERE flower_id = %s", (currDate,flower_id))
     conn.commit()
     cur.close()
     conn.close()
     return redirect('/flowers')
 
-def simulate_rainfall():
-    conn = db.get_db_connection()
-    cur = conn.cursor()
-    currDate = datetime.datetime.now()
-    rand_inch = random.randint(1,10)
-    cur.execute("UPDATE FROM flower SET last_watered = %s currDate WHERE environment = 'outdoor'", (currDate))
-    cur.execute("UPDATE FROM flower SET current_water_level_in_inches = current_water_level_in_inches + %s currDate WHERE environment = 'outdoor'", (rand_inch))
-    conn.commit()
-    cur.close()
-    conn.close()
-    return redirect('/flowers')
 
 
 # Query Functions

@@ -3,7 +3,7 @@ import psycopg2
 import os
 
 # Input the absolute path to the .env file
-load_dotenv(r"C:\Users\david\OneDrive\Desktop\UoP\Spring 2025\COMP 163\Water_Run_Env\water_run.env")
+load_dotenv("/Users/parneet.kheira/Desktop/comp163/water_run_env/water_run.env")
 
 # AWS PostgreSQL connection
 DATABASE_URL = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_URI')}:5432/{os.getenv('DB_NAME')}"
