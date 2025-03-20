@@ -25,9 +25,6 @@ Backend: Python - Flask framework <br>
     db_connection.py        # Connect to database
     db_init.py              # Initialize database schema
     
-    crud.py                 # Handle CRUD operations for flower table
-    ping.py                 # Check database route health
-    print.py                # Formats flower data for frontend
 
 /frontend:
 
