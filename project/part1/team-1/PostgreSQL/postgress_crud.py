@@ -3,12 +3,11 @@ import psycopg2
 import os
 
 # Input the absolute path to the .env file
-load_dotenv("/Users/parneet.kheira/Desktop/comp163/water_run_env/water_run.env")
+load_dotenv()
 
 # AWS PostgreSQL connection
 DATABASE_URL = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_URI')}:5432/{os.getenv('DB_NAME')}"
 
-# change flowerTest to team1_flowers after testing is sucessful
 try:
     # Connect to PostgreSQL database
     def get_db_connection():
@@ -64,6 +63,21 @@ def water_outdoor_flowers():
     cur = conn.cursor()
     cur.execute("UPDATE flower SET current_water_level_in_inches = current_water_level_in_inches + 10 WHERE environment = 'outdoor'")
     cur.execute("UPDATE flower SET last_watered = current_timestamp WHERE environment = 'outdoor'")
+    conn.commit()
+    cur.close()
+    conn.close()
+
+# Removes selected flowers from the database
+def remove_selected_flower(flower_ids):
+    if not flower_ids:
+        return
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    format_strings = ','.join(['%s'] * len(flower_ids))
+    query = f"DELETE FROM flower WHERE flower_id IN ({format_strings})"
+
+    cur.execute(query, tuple(flower_ids))
     conn.commit()
     cur.close()
     conn.close()

@@ -24,7 +24,7 @@ def manage_flowers():
     conn.close()
     return render_template('flowers.html', flowers=flowers)
 
-# updating current_water_level_in_inches
+# TO DO: Add a function to update the current water level in inches for each flower in the database based on the time since the last watering
 def update_flowers():
     conn = db.get_db_connection()
     cur = conn.cursor()
@@ -33,7 +33,6 @@ def update_flowers():
     # cur.execute("UPDATE FROM flower SET current_water_level_in_inches = current_water_level_in_inches - (5 * (%s - last_watered))", (currDate))
     cur.close()
     conn.close()
-    
 
 # Adding Flower Function
 @app.route('/add_flower', methods=['POST'])
@@ -51,25 +50,11 @@ def add_flower():
     conn.close()
     return redirect('/flowers')
 
-# Deleting Flower Function
-@app.route('/delete_flower/<int:flower_id>')
-def delete_flower(flower_id):
-    conn = db.get_db_connection()
-    cur = conn.cursor()
-    cur.execute("DELETE FROM flower WHERE flower_id = %s", (flower_id,))
-    conn.commit()
-    cur.close()
-    conn.close()
-    return redirect('/flowers')
-
-
 # Watering Flower Function
 @app.route('/water_flower')
 def water_flowers():
     flowers = db.manage_flowers()
     return render_template('water_flower.html', flowers=flowers)
-
-  
     
 @app.route('/water_flower', methods=['POST'])
 def water_selected_flowers():
@@ -86,14 +71,11 @@ def water_selected_flowers():
     conn.close()
     return redirect('/flowers')
 
-
-
 # Query Functions
 @app.route('/all_flower')
 def all_flowers_query():
     flowers = db.manage_flowers()
     return render_template('all_flower.html', flowers=flowers)
-
 
 @app.route('/needs_water')
 def need_water_query():
@@ -116,6 +98,17 @@ def water_outdoor_flowers():
     flowers = db.water_outdoor_flowers()
     return redirect('/flowers')
 
+# Remove specific flower(s)
+@app.route('/remove_flower', methods=['GET', 'POST'])
+def remove_flower():
+    if request.method == 'POST':
+        selected_flower_ids = request.form.getlist('selected_flowers')
+
+        if selected_flower_ids:
+            db.remove_selected_flower(selected_flower_ids)
+
+    flowers = db.manage_flowers()
+    return render_template('delete_flower.html', flowers=flowers)
+
 if __name__ == '__main__':
     app.run(debug=True)
-
