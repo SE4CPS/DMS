@@ -37,7 +37,7 @@
         </div>
         <h3> Select Flower(s) To Remove</h3>
         {% if flowers %}
-            <form id = "select_flowers_delete" action="/remove_flower" method = "post">
+            <form id = "select_flowers_delete" action="/remove_flower" method = "post" onsubmit="return confirmDeleteFlower()">
                 {% for flower in flowers %}
                 <label>
                     <input type = "checkbox" name = "selected_flowers" value = "{{flower[0]}}">

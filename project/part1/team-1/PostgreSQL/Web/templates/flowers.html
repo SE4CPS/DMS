@@ -37,7 +37,7 @@
         </div>
 
         <!--TO DO: Form ONLY populates when "Add Flower" button is clicked-->
-        <form action="/add_flower" method="post">
+        <form action="/add_flower" method="post" onsubmit="return confirmAddFlower();">
             <div class="label-input-grouped">
                 <label for="name">Flower:</label>
                 <input type="text" name="name" placeholder="Flower Name">

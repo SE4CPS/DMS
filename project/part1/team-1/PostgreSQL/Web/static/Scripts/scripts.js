@@ -42,3 +42,32 @@ window.onclick = function(event) {
         }
     }
 }
+
+// Confirmation before adding a flower
+function confirmAddFlower(){
+    const flowerName = document.querySelector("input[name='name").value.trim();
+
+        if (!flowerName){
+            alert("Please enter a flower name.");
+            return false;
+        }
+
+        return confirm("Are you sure you want to add this flower?");
+}
+
+// Confirmation before deleting a flower
+function confirmDeleteFlower(){
+    const checkbox = document.querySelectorAll("input[name='selected_flowers']:checked");
+
+    if (checkbox.length === 0){
+        alert("Please select at least one flower to delete.");
+        return false;
+    }
+
+    let selectedFlowerNames = [];
+    checkbox.forEach((cb) => {
+        selectedFlowerNames.push(cb.nextSibling.textContent.trim());
+    });
+
+    return confirm(`Are you sure you want to delete the following flowers?\n\n${selectedFlowerNames.join("\n")}`);
+}
