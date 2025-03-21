@@ -36,19 +36,37 @@
             <a href="/simulate_rainfall"><button>Simulate Rain</button></a>
         </div>
         <h3> Select Flower(s) To Remove</h3>
+        
         {% if flowers %}
-            <form id = "select_flowers_delete" action="/remove_flower" method = "post">
+            <form id = "select_flowers_delete" action="/remove_flower" method = "post" onsubmit="return confirmDeleteFlower()">
+                <label>
+                    <input type="checkbox" id="selectAll" onclick="toggleCheckboxes(this)"> 
+                    <strong>Select All</strong>
+                </label>
+                <br>
+                
                 {% for flower in flowers %}
                 <label>
-                    <input type = "checkbox" name = "selected_flowers" value = "{{flower[0]}}">
-                    {{flower[1]}} 
+                    <input type = "checkbox" name = "selected_flowers" value = "{{flower[0]}}" class="flowerCheckbox">
+                    ({{ flower[0] }}, {{ flower[1] }}, {{ flower[2] }}, {{ flower[3] }} in, min: {{ flower[4] }} in) 
                 </label><br>
                 {% endfor %}
                 <button type="submit"> Submit </button>
             </form>
         {% else %}
+
+        {% if deleted_flowers %}
+            <h3>The following flowers were removed:</h3>
+            <ul>
+                {% for flower in deleted_flowers %}
+                    <li>{{flower}}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
         <h3> No Flowers Available To Remove</h3>
         {% endif %}
+        
         <button id="muteButton"></button>
     </body>
 
