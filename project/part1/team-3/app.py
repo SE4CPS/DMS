@@ -69,15 +69,34 @@ def add_flower():
     conn.close()
     return jsonify({"message": "Flower added successfully!"})
 
-# Update a flower informtation
+# Update a specific flower's information 
+@app.route('/flowers/<int:id>', methods=['PUT'])
+def update_specific_flower(id):
+    data = request.json
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        UPDATE team3_flowers 
+        SET flower_name = %s, water_level = %s, min_water_required = %s
+        WHERE flower_id = %s
+        """, 
+        (data['flower_name'], data['water_level'], data['min_water_required'], id)
+    ) 
+    conn.commit()
+    cur.close()
+    conn.close()
+    return jsonify({"message": "Flower updated successfully!"})
+
+# Update all flowers' water levels based on time
 @app.route('/updated_flowers_level/', methods=['GET'])
 def update_flower():
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute(
         """
-        UPDATE team3_flowersCURRENT_DATE
-        SET water_level = water_level - (5 * ( - last_watered)); 
+        UPDATE team3_flowers
+        SET water_level = water_level - (5 * (CURRENT_DATE - last_watered)); 
        
         """, 
         # WHERE flower_id = %s
