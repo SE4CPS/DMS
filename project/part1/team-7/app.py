@@ -56,7 +56,7 @@ def add_flower():
     cur.close()
     conn.close()
 
-    #Hi
+    #Hi2
     
     return jsonify({"message": "Flower added successfully!", "id": new_id})
 
