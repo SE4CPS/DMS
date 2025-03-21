@@ -69,6 +69,8 @@ def add_flower():
     conn.commit()
     cur.close()
     conn.close()
+
+    #Hi3
     
     return jsonify({"message": "Flower added successfully!", "id": new_id})
 
