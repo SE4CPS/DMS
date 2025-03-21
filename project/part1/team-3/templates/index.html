@@ -133,11 +133,6 @@
             })
             .then(response => response.json())
             .then(() => {
-                // Then update all flowers' water levels based on time
-                return fetch('http://127.0.0.1:5000/updated_flowers_level/');
-            })
-            .then(response => response.json())
-            .then(() => {
                 fetchFlowers();
             });
         }
