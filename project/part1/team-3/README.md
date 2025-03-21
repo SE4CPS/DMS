@@ -19,16 +19,15 @@ Backend: Python - Flask framework <br>
 
 ## Project stucture:
 .gitignore  
-.env                        # Store db_url
+.env                        # Store db_url, remember to delete pooler for it to work.
 
-/database:
-    db_connection.py        # Connect to database
-    db_init.py              # Initialize database schema
+/database:<br>
+    db_connection.py        # Connect to database <br>
+    db_init.py              # Initialize database schema <br>
     
-    crud.py                 # Handle CRUD operations for flower table
-    ping.py                 # Check database route health
-    print.py                # Formats flower data for frontend
 
 /frontend:
 
 /backend: 
+    crud.py                 # In progress <br>
+    # Insert data into table

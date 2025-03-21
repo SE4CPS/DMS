@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flower Watering Status</title>
+    <title>Flower Watering System</title>
     <style>
         /* Body styling */
         body {
@@ -150,6 +150,7 @@
                     <th>Last Watered</th>
                     <th>Water Level</th>
                     <th>Min Water Required</th>
+                    <th>Needs Water</th>
                 </tr>
             </thead>
             <tbody id="flowersList">
@@ -205,12 +206,17 @@
 
                     flowers.forEach(flower => {
                         const row = document.createElement('tr');
+                        
+                        //Determine if the flower needs water or not
+                        const needsWater = flower.water_level < flower.min_water_required ? "Yes" : "No";
+
                         row.innerHTML = `
                             <td class="id-column">${flower.id}</td>
                             <td>${flower.name}</td>
                             <td>${flower.last_watered}</td>
                             <td>${flower.water_level}</td>
                             <td>${flower.min_water_required}</td>
+                            <td>${needsWater}</td>
                         `;
                         flowerTable.appendChild(row);
                     });
