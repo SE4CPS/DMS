@@ -167,18 +167,30 @@ def update_flower(id):
     return jsonify({"message": f"Flower {id} updated successfully!"})
 
 # **Delete a flower by ID**
-@app.route('/flowers/<int:id>', methods=['DELETE'])
-def delete_flower(id):
+@app.route('/flowers/delete', methods=['DELETE'])
+def delete_multiple_flowers():
+    data = request.get_json()
+    ids = data.get("ids", [])
+    
+    if not ids:
+        return jsonify({"error": "No IDs provided"}), 400
+
     conn = get_db_connection()
     cur = conn.cursor()
     
-    cur.execute("DELETE FROM team7_flowers WHERE id = %s;", (id,))
+ 
+    placeholders = ', '.join(['%s'] * len(ids))
+    query = f"DELETE FROM team7_flowers WHERE id IN ({placeholders});"
     
+    cur.execute(query, ids)
     conn.commit()
+    
+    deleted_count = cur.rowcount
+    
     cur.close()
     conn.close()
-    
-    return jsonify({"message": f"Flower {id} deleted successfully!"})
+
+    return jsonify({"message": f"{deleted_count} flowers deleted successfully."}), 200
 
 
 # Run the application

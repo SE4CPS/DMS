@@ -20,6 +20,7 @@
                     <td>
                         <button class="water-btn" onclick="waterFlower(${flowerKey})">Water</button>
                     </td>
+                    <td><input type="checkbox" name="flowerCheckbox" value="${flowerKey}"></td>
                 </tr>`;
             }
             document.getElementById("flower-data").innerHTML = rows;
@@ -71,6 +72,34 @@
         })
         .catch(error => console.error("Error watering flower:", error));
     }
+
+    function deleteFlowers() {
+        const checkboxes = document.querySelectorAll('input[name="flowerCheckbox"]:checked');
+        const ids = Array.from(checkboxes).map(cb => parseInt(cb.value));
+    
+        if (ids.length === 0) {
+            alert("Please select at least one flower to delete.");
+            return;
+        }
+    
+        fetch('/flowers/delete', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ ids: ids })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            fetchFlowers();
+        })
+        .catch(error => {
+            console.error("Error deleting flowers:", error);
+            alert("An error occurred while deleting flowers.");
+        });
+    }
+
       // s
     // Fetch data on page load
     fetchFlowers();
