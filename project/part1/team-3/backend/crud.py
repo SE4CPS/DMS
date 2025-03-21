@@ -29,6 +29,13 @@ def insert_flowers():
         finally:
             conn.close()
 
+# 
+
+
+
+
+
+
 # TEST 3 flowers:
 # insert_flowers()
 
