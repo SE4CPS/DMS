@@ -36,6 +36,14 @@ app.py                      # Routing command to interact with database & will b
     
 ## How to Run
 
+0. Make sure that PostgreSQL is installed. To install PostgreSQL on MacOS using Brew, use: `brew install postgresql` on MacOS. 
 1. Create a virtual environment using `python3 -m venv venv`.
 2. Activate the virtual environment using `source venv/bin/activate` if you are on Mac.
-3. 
+3. Once the virtual environment is running, install the requirements needed for the project: `pip install -r requirements.txt`.
+4. Run the app using: `python3 app.py`.
+5. Navigate to the local host link to see the webapp in the browser: `http://127.0.0.1:5000`. 
+6. Add endpoints to the URL as needed for testing e.g (`http://127.0.0.1:5000/flowers`).
+
+## Note for Developers
+
+1. To add additional requirements to the requirements.txt file, do `python3 -m pip freeze > requirements.txt`.
