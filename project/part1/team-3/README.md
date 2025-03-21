@@ -29,3 +29,5 @@ Backend: Python - Flask framework <br>
 /frontend:
 
 /backend: 
+    crud.py                 # In progress <br>
+    # Insert data into table
