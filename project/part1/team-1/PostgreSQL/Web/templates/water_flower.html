@@ -41,8 +41,14 @@
         <h4> Format: (flower ID number, name, current water level, minimum water needed)</h2>
         {% if flowers %}
             <form id = "select_flowers_watering" method = "post" onsubmit="return confirmWaterFlower()">
+                <label>
+                    <input type="checkbox" id="selectAll" onclick="toggleCheckboxes(this)"> 
+                    <strong>Select All</strong>
+                </label>
+                <br>
+                
                 {% for flower in flowers %}
-                <label> <input type = "checkbox" name = "selected_flowers" value = "{{flower}}">
+                <label> <input type = "checkbox" name = "selected_flowers" value = "{{flower}}" class="flowerCheckbox">
                     {{flower}} 
                 </label><br>
                 {% endfor %}

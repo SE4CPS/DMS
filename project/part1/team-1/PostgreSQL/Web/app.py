@@ -103,14 +103,17 @@ def water_outdoor_flowers():
 # Remove specific flower(s)
 @app.route('/remove_flower', methods=['GET', 'POST'])
 def remove_flower():
+    delete_flowers = []
+
     if request.method == 'POST':
         selected_flower_ids = request.form.getlist('selected_flowers')
 
         if selected_flower_ids:
-            db.remove_selected_flower(selected_flower_ids)
+            delete_flowers = db.remove_selected_flower(selected_flower_ids)
 
     flowers = db.manage_flowers()
-    return render_template('delete_flower.html', flowers=flowers)
+    
+    return render_template('delete_flower.html', flowers=flowers, delete_flowers=delete_flowers)
 
 if __name__ == '__main__':
     app.run(debug=True)

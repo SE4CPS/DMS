@@ -3,7 +3,7 @@ import psycopg2
 import os
 
 # Input the absolute path to the .env file
-load_dotenv()
+load_dotenv(r"C:\Users\david\OneDrive\Desktop\UoP\Spring 2025\COMP 163\Water_Run_Env\water_run.env")
 
 # AWS PostgreSQL connection
 DATABASE_URL = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_URI')}:5432/{os.getenv('DB_NAME')}"
@@ -80,9 +80,14 @@ def water_outdoor_flowers():
 # Removes selected flowers from the database
 def remove_selected_flower(flower_ids):
     if not flower_ids:
-        return
+        return []
     conn = get_db_connection()
     cur = conn.cursor()
+    
+    # Fetch all flowers in database
+    all_flowers = manage_flowers()
+
+    flowers_to_remove = [flower for flower in all_flowers if str(flower[0]) in flower_ids]
 
     format_strings = ','.join(['%s'] * len(flower_ids))
     query = f"DELETE FROM flower WHERE flower_id IN ({format_strings})"
@@ -91,3 +96,4 @@ def remove_selected_flower(flower_ids):
     conn.commit()
     cur.close()
     conn.close()
+    return flowers_to_remove
