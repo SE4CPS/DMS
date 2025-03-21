@@ -34,3 +34,8 @@ app.py                      # Routing command to interact with database & will b
     crud.py                 # In progress <br>
     # Insert data into table
     
+## How to Run
+
+1. Create a virtual environment using `python3 -m venv venv`.
+2. Activate the virtual environment using `source venv/bin/activate` if you are on Mac.
+3. 
