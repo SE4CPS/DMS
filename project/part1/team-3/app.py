@@ -69,15 +69,15 @@ def add_flower():
     conn.close()
     return jsonify({"message": "Flower added successfully!"})
 
-# Update a flower by ID
+# Update a flower informtation
 @app.route('/updated_flowers_level/', methods=['GET'])
 def update_flower():
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute(
         """
-        UPDATE team3_flowers
-        SET water_level = water_level - (5 * (CURRENT_DATE - last_watered)); 
+        UPDATE team3_flowersCURRENT_DATE
+        SET water_level = water_level - (5 * ( - last_watered)); 
        
         """, 
         # WHERE flower_id = %s
@@ -102,5 +102,11 @@ def delete_flower(id):
     conn.close()
     return jsonify({"message": "Flower deleted successfully!"})  
 
+
+# NEED: Alter table: Update column for new constraint (TABLE level query)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
+    
+
