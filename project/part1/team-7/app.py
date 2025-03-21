@@ -11,6 +11,19 @@ def get_db_connection():
     """Creates and returns a new database connection."""
     return psycopg2.connect(DATABASE_URL)
 
+def update_water_levels():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        UPDATE team7_flowers
+        SET water_level = water_level - (5 * (CURRENT_DATE - last_watered));
+    """)
+    conn.commit()
+    cur.close()
+    conn.close()
+    print("Water levels updated")
+
+
 # Route to serve HTML page
 @app.route('/', methods=['GET'])
 def get_index():
@@ -19,6 +32,7 @@ def get_index():
 # Get all flowers
 @app.route('/flowers', methods=['GET'])
 def get_flowers():
+    update_water_levels()
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("SELECT * FROM team7_flowers;")
