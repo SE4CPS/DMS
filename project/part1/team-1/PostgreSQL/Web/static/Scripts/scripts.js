@@ -71,3 +71,20 @@ function confirmDeleteFlower(){
 
     return confirm(`Are you sure you want to delete the following flowers?\n\n${selectedFlowerNames.join("\n")}`);
 }
+
+// Confirmation before watering a selected flower
+function confirmWaterFlower(){
+    const checkbox = document.querySelectorAll("input[name='selected_flowers']:checked");
+
+    if (checkbox.length === 0){
+        alert("Please select at least one flower to water.");
+        return false;
+    }
+
+    let selectedFlowerNames = [];
+    checkbox.forEach((cb) => {
+        selectedFlowerNames.push(cb.nextSibling.textContent.trim());
+    });
+
+    return confirm(`Are you sure you want to water the following flowers?\n\n${selectedFlowerNames.join("\n")}`);
+}
