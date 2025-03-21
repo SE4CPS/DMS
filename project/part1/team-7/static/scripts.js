@@ -71,6 +71,6 @@
         })
         .catch(error => console.error("Error watering flower:", error));
     }
-
+      // s
     // Fetch data on page load
     fetchFlowers();
