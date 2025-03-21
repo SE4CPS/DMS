@@ -3,7 +3,7 @@ import psycopg2
 import os
 
 # Input the absolute path to the .env file
-load_dotenv("/Users/parneet.kheira/Desktop/comp163/water_run_env/water_run.env")
+load_dotenv()
 
 # AWS PostgreSQL connection
 DATABASE_URL = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_URI')}:5432/{os.getenv('DB_NAME')}"
@@ -31,7 +31,7 @@ def need_to_be_watered_flowers():
 def outdoor_flowers():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM flower WHERE environment = 'outdoor'")
+    cur.execute("SELECT * FROM flower WHERE environment = 'outdoor' ORDER BY flower_id")
     flowers = cur.fetchall()
     cur.close()
     conn.close()
@@ -41,7 +41,7 @@ def outdoor_flowers():
 def indoor_flowers():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM flower WHERE environment = 'indoor'")
+    cur.execute("SELECT * FROM flower WHERE environment = 'indoor' ORDER BY flower_id")
     flowers = cur.fetchall()
     cur.close()
     conn.close()
