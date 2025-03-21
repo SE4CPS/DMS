@@ -24,16 +24,6 @@ def manage_flowers():
     conn.close()
     return render_template('flowers.html', flowers=flowers)
 
-# TO DO: Add a function to update the current water level in inches for each flower in the database based on the time since the last watering
-def update_flowers():
-    conn = db.get_db_connection()
-    cur = conn.cursor()
-    currDate = datetime.datetime.now()
-    cur.execute("UPDATE flower SET current_water_level_in_inches = current_water_level_in_inches - (5 * (%s - last_watered)) WHERE flower_id IS NOT NULL", (currDate,))
-    # cur.execute("UPDATE FROM flower SET current_water_level_in_inches = current_water_level_in_inches - (5 * (%s - last_watered))", (currDate))
-    cur.close()
-    conn.close()
-
 # Adding Flower Function
 @app.route('/add_flower', methods=['POST'])
 def add_flower():
@@ -112,7 +102,7 @@ def remove_flower():
             delete_flowers = db.remove_selected_flower(selected_flower_ids)
 
     flowers = db.manage_flowers()
-    
+
     return render_template('delete_flower.html', flowers=flowers, delete_flowers=delete_flowers)
 
 if __name__ == '__main__':
