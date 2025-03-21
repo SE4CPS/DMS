@@ -64,9 +64,9 @@ function confirmDeleteFlower(){
         return false;
     }
 
-    let selectedFlowerNames = [];
-    checkbox.forEach((cb) => {
-        selectedFlowerNames.push(cb.nextSibling.textContent.trim());
+    let selectedFlowerNames = Array.from(checkbox).map(flower => {
+        let label = flower.parentElement.textContent.trim();
+        return label;
     });
 
     return confirm(`Are you sure you want to delete the following flowers?\n\n${selectedFlowerNames.join("\n")}`);
@@ -87,4 +87,12 @@ function confirmWaterFlower(){
     });
 
     return confirm(`Are you sure you want to water the following flowers?\n\n${selectedFlowerNames.join("\n")}`);
+}
+
+// Function to toggle all checkboxes when "Select All" is clicked
+function toggleCheckboxes(selectAllCheckbox) {
+    let checkboxes = document.querySelectorAll(".flowerCheckbox");
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+    });
 }

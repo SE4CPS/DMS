@@ -19,9 +19,21 @@ def manage_flowers():
     cur = conn.cursor()
     cur.execute("SELECT * FROM team2_flowers")
     flowers = cur.fetchall()
+
+    flowers_with_status = []
+    for flower in flowers:
+        id, name, last_watered, water_level, min_water_required = flower
+        if water_level < min_water_required:
+            water_status = "Needs Water💧"
+        elif water_level == min_water_required:
+            water_status = "Healthy ✅"
+        else:
+            water_status = "Overwatered 🚨"
+        flowers_with_status.append((id, name, last_watered, water_level, min_water_required, water_status))
+  
     cur.close()
     conn.close()
-    return render_template('team2_flowers.html', flowers=flowers)
+    return render_template('team2_flowers.html', flowers=flowers_with_status)
 
 @app.route('/add_flower', methods=['POST'])
 def add_flower():
@@ -30,6 +42,9 @@ def add_flower():
     water_level = int(request.form['water_level'])
     min_water_required = int(request.form['min_water_required'])
 
+    if water_level < 0 or min_water_required < 0:
+        raise ValueError("Water level and minimum water required must be positive integers")
+    
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("INSERT INTO team2_flowers (name, last_watered, water_level, min_water_required) VALUES (%s, %s, %s, %s)",
@@ -57,9 +72,10 @@ def water_flower():
     new_water_level = int(request.form['water_level'])
     # gets current date
     current_date = datetime.now().strftime('%Y-%m-%d')
-
+    
     conn = get_db_connection()
     cur = conn.cursor()
+
     cur.execute("UPDATE team2_flowers SET water_level = %s, last_watered = %s WHERE id = %s", (new_water_level, current_date, flower_id,))
     conn.commit()
     cur.close()
