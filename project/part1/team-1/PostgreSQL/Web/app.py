@@ -44,7 +44,7 @@ def add_flower():
     minimum_water_level_in_inches = request.form['minimum_water_level_in_inches']
     conn = db.get_db_connection()
     cur = conn.cursor()
-    cur.execute("INSERT INTO flower (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches) VALUES (%s, %s, %s, %s, %s)", (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches))
+    cur.execute("INSERT INTO flower (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches,last_watered) VALUES (%s, %s, %s, %s, %s, %s)", (name, environment, initial_water_level_in_inches,  current_water_level_in_inches, minimum_water_level_in_inches,datetime.datetime.now()))
     conn.commit()
     cur.close()
     conn.close()
@@ -53,7 +53,7 @@ def add_flower():
 # Watering Flower Function
 @app.route('/water_flower')
 def water_flowers():
-    flowers = db.manage_flowers()
+    flowers = db.watering_flowers_helper()
     return render_template('water_flower.html', flowers=flowers)
     
 @app.route('/water_flower', methods=['POST'])
@@ -62,7 +62,9 @@ def water_selected_flowers():
     cur = conn.cursor()
     selected_flowers = request.form.getlist('selected_flowers')
     for f in selected_flowers:
-        flower_id = int(f[1])
+        flower_id = f.split(",")[0]
+        flower_id = flower_id[1:]
+        flower_id = int(flower_id)
         currDate = datetime.datetime.now()
         cur.execute("UPDATE flower SET current_water_level_in_inches = current_water_level_in_inches + 10 WHERE flower_id = %s", (flower_id,))
         cur.execute("UPDATE flower SET last_watered = %s WHERE flower_id = %s", (currDate,flower_id))
@@ -95,7 +97,7 @@ def indoor_flower_query():
 # Simulate Rainfall
 @app.route('/simulate_rainfall')
 def water_outdoor_flowers():
-    flowers = db.water_outdoor_flowers()
+    flowers = db.manage_flowers()
     return redirect('/flowers')
 
 # Remove specific flower(s)
