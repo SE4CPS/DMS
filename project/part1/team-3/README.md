@@ -19,7 +19,9 @@ Backend: Python - Flask framework <br>
 
 ## Project stucture:
 .gitignore  
-.env                        # Store db_url, remember to delete pooler for it to work.
+.env                        # Store db_url, remember to delete pooler for it to work. <br>
+
+app.py                      # Routing command to interact with database & will be connected with frontend. <br>
 
 /database:<br>
     db_connection.py        # Connect to database <br>
@@ -27,7 +29,8 @@ Backend: Python - Flask framework <br>
     
 
 /frontend:
-
+    index.html              # Sample Interfaces for backend testing -- Not the main interfaces.  <br>  
 /backend: 
     crud.py                 # In progress <br>
     # Insert data into table
+    
