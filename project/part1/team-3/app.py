@@ -76,10 +76,14 @@ def update_flower():
     cur = conn.cursor()
     cur.execute(
         """
-        UPDATE team3_flowersCURRENT_DATE
-        SET water_level = water_level - (5 * ( - last_watered)); 
-       
-        """, 
+        UPDATE team3_flowers
+        SET water_level = 
+            CASE
+                WHEN water_level = 0 THEN 0
+                ELSE GREATEST(0, water_level - (5 * (CURRENT_DATE - last_watered)))
+            END;
+        """
+        , 
         # WHERE flower_id = %s
                 # (data['last_watered'], data['water_level'], id)
         ) 
@@ -106,7 +110,13 @@ def delete_flower(id):
 # NEED: Alter table: Update column for new constraint (TABLE level query)
 
 
+        
+
 if __name__ == '__main__':
     app.run(debug=True)
+ 
     
-
+# """
+#         UPDATE team3_flowers
+#         SET water_level = water_level - (5 * (CURRENT_DATE - last_watered)); 
+# """
