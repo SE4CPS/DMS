@@ -19,6 +19,7 @@
         <input type="number" id="min-water-required" placeholder="Min Water Required (inches)" required>
         <button class="submit-btn" onclick="addFlower()">Add Flower</button>
         <button class="refresh-btn" onclick="fetchFlowers()">Refresh Data</button>
+        <button class="delete-btn" onclick="deleteFlowers()">Delete selected</button>
     </div>
 
     <table>
@@ -31,6 +32,7 @@
                 <th>Min Water Required</th>
                 <th>Needs Watering</th>
                 <th>Action</th>
+                <th>Delete</th>
             </tr>
         </thead>
         <tbody id="flower-data"></tbody>
