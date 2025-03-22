@@ -42,7 +42,7 @@
                             <td class="last-watered">${flower.last_watered}</td>
                             <td class="water-level">${flower.water_level}</td>
                             <td class="min-water-required">${flower.min_water_required}</td>
-                            <td class="needs-watering">${flower.needs_watering ? "Yes" : "No"}</td>
+                            <td class="needs-watering" style="background-color: ${flower.needs_watering ? '#ffebee' : 'transparent'}">${flower.needs_watering ? "Yes" : "No"}</td>
                             <td class="action-buttons">
                                 <button onclick="waterFlower(this)">Water</button>
                                 <button onclick="editFlower(this)">Edit</button>
