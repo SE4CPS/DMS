@@ -156,3 +156,9 @@ button{
     border-radius: 5px;
     cursor: pointer;
 }
+
+td{
+    padding: 10px;
+    text-align: center;
+    border: 2px solid #fff;
+}
