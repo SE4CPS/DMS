@@ -105,10 +105,10 @@ def update_specific_flower(id):
     cur.execute(
         """
         UPDATE team3_flowers 
-        SET flower_name = %s, water_level = %s, min_water_required = %s
+        SET flower_name = %s, min_water_required = %s
         WHERE flower_id = %s
         """, 
-        (data['flower_name'], data['water_level'], data['min_water_required'], id)
+        (data['flower_name'], data['min_water_required'], id)
     ) 
     conn.commit()
     cur.close()

@@ -156,7 +156,7 @@
             
             row.classList.add('edit-mode');
             row.querySelector('.flower-name').innerHTML = `<input type="text" value="${name}">`;
-            row.querySelector('.water-level').innerHTML = `<input type="number" class="water-level-input" value="${waterLevel}">`;
+            // row.querySelector('.water-level').innerHTML = `<input type="number" class="water-level-input" value="${waterLevel}">`;
             row.querySelector('.min-water-required').innerHTML = `<input type="number" class="min-water-required-input" value="${minWaterRequired}">`;
             row.querySelector('.action-buttons').innerHTML = `
                 <button onclick="saveEdit(this)">Save</button>
@@ -171,7 +171,6 @@
             const newName = row.querySelector('input[type="text"]').value;
             const data = {
                 flower_name: newName,
-                water_level: parseInt(row.querySelector('.water-level-input').value),
                 min_water_required: parseInt(row.querySelector('.min-water-required-input').value)
             };
 
