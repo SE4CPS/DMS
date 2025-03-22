@@ -11,7 +11,7 @@ h2 {
     width: 80%;
     margin: auto;
 }
-.refresh-btn, .submit-btn, .water-btn {
+.refresh-btn, .submit-btn, .water-btn{
     padding: 10px 20px;
     margin: 10px 0;
     background: #007bff;
@@ -21,8 +21,21 @@ h2 {
     font-size: 16px;
     border-radius: 5px;
 }
+.delete-btn {
+    padding: 10px 20px;
+    margin: 10px 0;
+    background: #ff0000;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+}
 .refresh-btn:hover, .submit-btn:hover, .water-btn:hover {
     background: #0056b3;
+}
+.delete-btn:hover {
+    background: #b30000a4;
 }
 .form-container {
     background: #fff;

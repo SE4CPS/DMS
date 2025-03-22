@@ -2,7 +2,7 @@ CREATE TABLE team7_flowers (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     last_watered DATE NOT NULL,
-    water_level INT NOT NULL,
+   water_level INT NOT NULL DEFAULT 0 check (water_level >= 0),
     min_water_required INT NOT NULL
 );
 

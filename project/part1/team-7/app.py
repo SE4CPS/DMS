@@ -16,23 +16,39 @@ def update_water_levels():
     cur = conn.cursor()
     cur.execute("""
         UPDATE team7_flowers
-        SET water_level = water_level - (5 * (CURRENT_DATE - last_watered));
+        SET water_level = GREATEST(0, water_level - (5 * (CURRENT_DATE - last_watered)));
     """)
     conn.commit()
     cur.close()
     conn.close()
     print("Water levels updated")
 
+'''
+def set_test_last_watered():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        UPDATE team7_flowers 
+        SET last_watered = '2025-03-18'
+        WHERE id = 10;
+    """)  # You can change ID or apply it to all flowers if needed.
+    conn.commit()
+    cur.close()
+    conn.close()
+    print("set_test_last_watered")
+'''
 
 # Route to serve HTML page
 @app.route('/', methods=['GET'])
 def get_index():
+    #set_test_last_watered()
+    update_water_levels()
+    print("set_test_last_watered")
     return render_template('flowers.html')
 
 # Get all flowers
 @app.route('/flowers', methods=['GET'])
 def get_flowers():
-    update_water_levels()
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("SELECT * FROM team7_flowers;")
@@ -52,6 +68,7 @@ def get_flowers():
     }
     return jsonify(flower_json)
 
+
 # Add a new flower
 @app.route('/flower', methods=['POST'])
 def add_flower():
@@ -59,20 +76,24 @@ def add_flower():
     if not all(key in data for key in ['name', 'last_watered', 'water_level', 'min_water_required']):
         return jsonify({"error": "Missing required fields"}), 400
 
+    # Ensure water_level and min_water_required are not negative
+    water_level = max(data['water_level'], 0)
+    min_water_required = max(data['min_water_required'], 0)
+
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute(
         "INSERT INTO team7_flowers (name, last_watered, water_level, min_water_required) VALUES (%s, %s, %s, %s) RETURNING id;",
-        (data['name'], data['last_watered'], data['water_level'], data['min_water_required'])
+        (data['name'], data['last_watered'], water_level, min_water_required)
     )
     new_id = cur.fetchone()[0]  # Get the newly inserted ID
     conn.commit()
     cur.close()
     conn.close()
 
-    #Hi3
-    
     return jsonify({"message": "Flower added successfully!", "id": new_id})
+
+'''
 
 # Update water levels based on last watered date
 @app.route('/needswater', methods=['GET'])
@@ -82,9 +103,8 @@ def get_flower_water():
     
     # Reduce water level based on days since last watered
     cur.execute("""
-        UPDATE team7_flowers 
-        SET water_level = water_level - (5 * EXTRACT(DAY FROM (CURRENT_DATE - last_watered))) 
-        WHERE water_level > 0;
+        UPDATE team7_flowers
+        SET water_level = water_level - (5 * (CURRENT_DATE - last_watered));
     """)
     
     # Fetch flowers that need watering
@@ -102,6 +122,7 @@ def get_flower_water():
         "water_level": flower[3],
         "min_water_required": flower[4]
     } for flower in flowers])
+'''
 
 # Water a specific flower
 @app.route('/water/<int:flower_id>', methods=['POST'])
@@ -112,7 +133,7 @@ def water_flower(flower_id):
     # Update last_watered to today and increase water level
     cur.execute("""
         UPDATE team7_flowers 
-        SET last_watered = CURRENT_DATE, water_level = water_level + 10 
+        SET last_watered = CURRENT_DATE, water_level = water_level + 10
         WHERE id = %s;
     """, (flower_id,))
     
@@ -146,18 +167,30 @@ def update_flower(id):
     return jsonify({"message": f"Flower {id} updated successfully!"})
 
 # **Delete a flower by ID**
-@app.route('/flowers/<int:id>', methods=['DELETE'])
-def delete_flower(id):
+@app.route('/flowers/delete', methods=['DELETE'])
+def delete_multiple_flowers():
+    data = request.get_json()
+    ids = data.get("ids", [])
+    
+    if not ids:
+        return jsonify({"error": "No IDs provided"}), 400
+
     conn = get_db_connection()
     cur = conn.cursor()
     
-    cur.execute("DELETE FROM team7_flowers WHERE id = %s;", (id,))
+ 
+    placeholders = ', '.join(['%s'] * len(ids))
+    query = f"DELETE FROM team7_flowers WHERE id IN ({placeholders});"
     
+    cur.execute(query, ids)
     conn.commit()
+    
+    deleted_count = cur.rowcount
+    
     cur.close()
     conn.close()
-    
-    return jsonify({"message": f"Flower {id} deleted successfully!"})
+
+    return jsonify({"message": f"{deleted_count} flowers deleted successfully."}), 200
 
 
 # Run the application
