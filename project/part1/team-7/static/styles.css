@@ -1,0 +1,80 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
+    padding: 20px;
+}
+h2 {
+    color: #333;
+}
+.container {
+    width: 80%;
+    margin: auto;
+}
+.refresh-btn, .submit-btn, .water-btn{
+    padding: 10px 20px;
+    margin: 10px 0;
+    background: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+}
+.delete-btn {
+    padding: 10px 20px;
+    margin: 10px 0;
+    background: #ff0000;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+}
+.refresh-btn:hover, .submit-btn:hover, .water-btn:hover {
+    background: #0056b3;
+}
+.delete-btn:hover {
+    background: #b30000a4;
+}
+.form-container {
+    background: #fff;
+    padding: 20px;
+    margin: 20px auto;
+    width: 50%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+.form-container input {
+    width: 80%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+th {
+    background-color: #4CAF50;
+    color: white;
+}
+.needs-water {
+    background-color: #ffdddd;
+}
+.watered {
+    background-color: #ccffcc;
+}
