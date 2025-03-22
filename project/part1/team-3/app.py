@@ -16,6 +16,13 @@ def get_index():
 @app.route('/flowers', methods=['GET'])
 def get_flowers():
     try:
+        try:
+            update_flower()
+            print("Update successfully! YAY!")
+        except Exception as e:
+            print(f"Update information failed: {e}")
+            
+    
         conn = get_db_connection()
         print(f"Database connection success!") # TEST
 
@@ -149,18 +156,7 @@ def delete_flower(id):
     cur.close()
     conn.close()
     return jsonify({"message": "Flower deleted successfully!"})  
-
-
-# NEED: Alter table: Update column for new constraint (TABLE level query)
-
-
-        
+  
 
 if __name__ == '__main__':
     app.run(debug=True)
- 
-    
-# """
-#         UPDATE team3_flowers
-#         SET water_level = water_level - (5 * (CURRENT_DATE - last_watered)); 
-# """
