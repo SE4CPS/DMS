@@ -27,7 +27,7 @@ def get_flowers():
         
         return jsonify([{
             "id": f[0], "name": f[1], "last_watered": f[2].strftime("%Y-%m-%d"),
-            "water_level": f[3], "needs_watering": f[3] < f[4]
+            "water_level": f[3], "min_water_required": f[4],"needs_watering": f[3] < f[4]
         } for f in flowers])
     except Exception as e:
         print(f"Database connection failed: {e}")
