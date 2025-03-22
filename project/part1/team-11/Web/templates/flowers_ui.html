@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Team 11 Flowers UI</title>
+    <style>
+        /* Optional: minimal styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 8px 12px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        .needs-water {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>Manage Flowers (Team 11)</h2>
+
+    <!-- A form to add a new flower to the database -->
+    <form action="/add_flower_form" method="post">
+        <label for="name">Name:</label>
+        <input type="text" name="name" placeholder="Rose" required>
+
+        <label for="last_watered">Last Watered (YYYY-MM-DD):</label>
+        <input type="text" name="last_watered" placeholder="2024-02-10" required>
+
+        <label for="water_level">Water Level:</label>
+        <input type="number" name="water_level" placeholder="20" required>
+
+        <label for="min_water_required">Min Water Required:</label>
+        <input type="number" name="min_water_required" placeholder="5" required>
+
+        <button type="submit">Add Flower</button>
+    </form>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Last Watered</th>
+            <th>Water Level</th>
+            <th>Min Water Required</th>
+            <th>Needs Watering?</th>
+            <th>Action</th>
+        </tr>
+        {% for f in flowers %}
+        <tr>
+            <td>{{ f["id"] }}</td>
+            <td>{{ f["name"] }}</td>
+            <td>{{ f["last_watered"] }}</td>
+            <td>{{ f["water_level"] }}</td>
+            <td>{{ f["min_water_required"] }}</td>
+            <!-- Inline check for water need -->
+            <td>
+                {% if f["water_level"] < f["min_water_required"] %}
+                    <span class="needs-water">Yes</span>
+                {% else %}
+                    No
+                {% endif %}
+            </td>
+            <!-- Delete link calls /delete_flower_ui -->
+            <td>
+                <a href="/delete_flower_ui/{{ f['id'] }}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
