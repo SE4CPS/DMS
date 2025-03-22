@@ -2,28 +2,11 @@
 <html lang="en">
 <head>
     <title>Flower Watering Status</title>
-    <style>
-        .edit-mode input {
-            width: 90%;
-            padding: 5px;
-        }
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-        }
-        .hidden {
-            display: none;
-        }
-        form {
-            margin-bottom: 20px;
-        }
-        input {
-            margin-right: 10px;
-            padding: 5px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <!-- Add notification div -->
+    <div id="notification" class="notification"></div>
     <h2>Add New Flower</h2>
     <form id="add-flower-form">
         <input type="text" id="flower-name" placeholder="Flower Name" required>
@@ -95,10 +78,26 @@
             });
         });
 
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.5s ease-out';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                    notification.style.animation = 'slideIn 0.5s ease-out';
+                }, 500);
+            }, 3000);
+        }
+
         function waterFlower(button) {
             // Locate the ID of the flower that the user pressed the water button for
             const row = button.closest('tr');
             const id = row.dataset.id;
+            const flowerName = row.querySelector('.flower-name').textContent;
 
             // Prompt for water amount
             let waterAmount = prompt("Enter the amount of water to add (must be greater than 0):");
@@ -123,6 +122,7 @@
             })
             .then(response => response.json())
             .then(() => {
+                showNotification(`${waterAmount} units of water added to ${flowerName}`);
                 fetchFlowers();
             });
         }
