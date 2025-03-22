@@ -10,7 +10,7 @@ def db_init():
                 flower_id SERIAL PRIMARY KEY,
                 flower_name TEXT NOT NULL,
                 last_watered DATE NOT NULL,
-                water_level INT NOT NULL,
+                water_level INT NOT NULL CHECK(water_level >= 0),
                 min_water_required INT NOT NULL  
             );
             """
