@@ -16,12 +16,11 @@ def get_index():
 @app.route('/flowers', methods=['GET'])
 def get_flowers():
     try:
-        try:
-            update_flower()
-            print("Update successfully! YAY!")
-        except Exception as e:
-            print(f"Update information failed: {e}")
-            
+        # try:
+        #     update_flower()
+        #     print("Update successfully! YAY!")
+        # except Exception as e:
+        #     print(f"Update information failed: {e}")
     
         conn = get_db_connection()
         print(f"Database connection success!") # TEST
