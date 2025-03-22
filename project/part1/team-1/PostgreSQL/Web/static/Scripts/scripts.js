@@ -65,8 +65,9 @@ function confirmDeleteFlower(){
     }
 
     let selectedFlowerNames = Array.from(checkbox).map(flower => {
-        let label = flower.parentElement.textContent.trim();
-        return label;
+        const row = flower.closest("tr");
+        const nameCell = row.cells[2];
+        return nameCell.textContent.trim();
     });
 
     return confirm(`Are you sure you want to delete the following flowers?\n\n${selectedFlowerNames.join("\n")}`);
