@@ -1,7 +1,7 @@
 import sqlite3
 import psycopg2
 from datetime import datetime, timedelta
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, redirect, url_for 
 
 app = Flask(__name__)
 
@@ -57,29 +57,36 @@ def add_flower():
     conn.commit()
     cur.close()
     conn.close()
-    return jsonify({"message": "Flower added successfully!"})
+    return redirect(url_for('index'))
 
-# Update a flower by ID
-@app.route('/flowers/<int:id>', methods=['PUT'])
-def update_flower(id):
-    data = request.json
+
+@app.route('/update_flower', methods=['POST'])
+def update_flower():
+    name = request.form['name']
+    update_field = request.form['update_field']
+    update_value = request.form['update_value']
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("UPDATE team10_flowers SET last_watered = {}, water_level = {} WHERE id = {};".format(data['last_watered'], data['water_level'], id))  # Placeholder
+    cur.execute("UPDATE team10_flowers SET {} = ? WHERE name = ?".format(update_field), ( update_value, name))
     conn.commit()
     cur.close()
     conn.close()
-    return jsonify({"message": "Flower updated successfully!"})
+    
+    return redirect(url_for('index'))
 
-# Delete a flower by ID
-@app.route('/flowers/<int:id>', methods=['DELETE'])
-def delete_flower(id):
+
+
+@app.route('/remove_flower', methods=['POST'])
+def delete_flower():
+    name = request.form['name']
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("DELETE FROM team10_flowers WHERE id={};".format(id))  # Placeholder
+    cur.execute("DELETE FROM team10_flowers WHERE name = ?", (name,))
     conn.commit()
     cur.close()
     conn.close()
+    return redirect(url_for('index'))
+
 
 print(sqlite3.connect(DB_FILE).cursor().execute('SELECT * FROM team10_flowers;').fetchall())
 
