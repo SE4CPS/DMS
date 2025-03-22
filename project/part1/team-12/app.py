@@ -31,15 +31,17 @@ def manage_flowers():
         since_watered = (c_date - last_date).days
         
         new_level = water_level - (5 * since_watered)
-        print(new_level)
-        print(name)
+        if new_level < 0:
+            new_level = 0
+        
         cur.execute(f"""
             UPDATE team12_flowers
             SET water_level = ?
             WHERE name = ?
         """, (new_level, name))
     
-    conn.commit()
+        conn.commit()
+        
     cur.close()
     conn.close()
 
