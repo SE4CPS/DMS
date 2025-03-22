@@ -61,6 +61,7 @@
                             <td class="min-water-required">${flower.min_water_required}</td>
                             <td class="needs-watering">${flower.needs_watering ? "Yes" : "No"}</td>
                             <td class="action-buttons">
+                                <button onclick="waterFlower(this)">Water</button>
                                 <button onclick="editFlower(this)">Edit</button>
                                 <button onclick="deleteFlower(this)">Delete</button>
                             </td>
@@ -93,6 +94,24 @@
                 e.target.reset();
             });
         });
+
+        function waterFlower(button) {
+            // Locate the ID of the flower that the user pressed the water button for
+            const row = button.closest('tr');
+            const id = row.dataset.id;
+
+            // Signal the backend to update the flower based on its ID
+            fetch(`http://127.0.0.1:5000/flowers/water/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(() => {
+                fetchFlowers();
+            });
+        }
 
         // Edit Flower: When the 'edit' button is pressed. This function will modify the table so that the user can edit the values of flower attribute.
         // The function will also add a 'save' and 'cancel' button which will trigger their respective functions as well.

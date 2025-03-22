@@ -51,6 +51,25 @@ def get_flowers_needing_water():
         "water_level": f[3], "needs_watering": f[3] < f[4]
     } for f in flowers])
 
+# Water a flower.
+@app.route('/flowers/water/<int:id>', methods=['PUT'])
+def water_flower(id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        UPDATE team3_flowers 
+        SET water_level = water_level + %s
+        WHERE flower_id = %s
+        """,(5,id) 
+    )  # increase the existing water level by 5 given the flower ID
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return jsonify({"message": "Flower watered successfully!"})
+
+
 # Add a flower  
 # curl http://127.0.0.1:5000/flowers -X POST -H "Content-Type: application/json" -d '{"id":null, "flower_name":"ABC", "last_watered":"2025-03-21", "water_level":0, "min_water_required":5}'
 @app.route('/flowers', methods=['POST'])
