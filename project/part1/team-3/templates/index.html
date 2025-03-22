@@ -57,11 +57,26 @@
         // Creates a listener that will listen for the submission of a new flower using the form submit. 
         document.getElementById('add-flower-form').addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            // Get and validate water level
+            const waterLevel = parseInt(document.getElementById('water-level').value);
+            if (isNaN(waterLevel) || waterLevel < 0) {
+                confirm("Water level must be 0 or greater!");
+                return;
+            }
+
+            // Get and validate minimum water required
+            const minWaterRequired = parseInt(document.getElementById('min-water-required').value);
+            if (isNaN(minWaterRequired) || minWaterRequired <= 0) {
+                confirm("Minimum water required must be greater than 0!");
+                return;
+            }
+
             const data = {
                 flower_name: document.getElementById('flower-name').value,
                 last_watered: document.getElementById('last-watered').value,
-                water_level: parseInt(document.getElementById('water-level').value),
-                min_water_required: parseInt(document.getElementById('min-water-required').value)
+                water_level: waterLevel,
+                min_water_required: minWaterRequired
             };
             
             fetch('http://127.0.0.1:5000/flowers', {
@@ -73,7 +88,7 @@
             })
             .then(response => response.json())
             .then(() => {
-                showNotification(`Added new a flower: ${data.flower_name}`);
+                showNotification(`Added new flower: ${data.flower_name}`);
                 fetchFlowers();
                 e.target.reset();
             });
