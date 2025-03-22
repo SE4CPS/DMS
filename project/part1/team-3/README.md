@@ -28,8 +28,10 @@ app.py                      # Routing command to interact with database & will b
     db_init.py              # Initialize database schema <br>
     
 
-/frontend:
-    index.html              # Sample Interfaces for backend testing -- Not the main interfaces.  <br>  
+/static:
+    style.css              # Sample Interfaces for backend testing -- Not the main interfaces.  <br>  
+/templates:
+    index.html  <br>
 /backend: 
     crud.py                 # In progress <br>
     # Insert data into table
