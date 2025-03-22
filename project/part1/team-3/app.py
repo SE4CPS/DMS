@@ -59,15 +59,17 @@ def update_flower_water_level(id):
     cur = conn.cursor()
 
     current_date = date.today()
+    data = request.json
+    water_amount = data.get('water_amount', 5)  # Default to 5 if not specified
 
-    # increase the existing water level by 5 given the flower ID
+    # increase the existing water level by the specified amount
     # also change the last_watered_date to the current date
     cur.execute(
         """
         UPDATE team3_flowers 
         SET water_level = water_level + %s, last_watered = %s
         WHERE flower_id = %s
-        """,(5,current_date,id) 
+        """,(water_amount, current_date, id) 
     )  
     conn.commit()
     cur.close()
