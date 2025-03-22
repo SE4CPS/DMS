@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify, render_template, redirect
 app = Flask(__name__)
 
 def get_db_connection():
-    conn = sqlite3.connect("team11_flowers.db")
+    conn = sqlite3.connect("../team_11/team11_flowers.db")
     conn.row_factory = sqlite3.Row
     return conn
 
