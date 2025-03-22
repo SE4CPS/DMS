@@ -184,11 +184,11 @@
 
         // Delete flower
         function deleteFlower(button) {
-            if (confirm('Are you sure you want to delete this flower?')) {
-                const row = button.closest('tr');
-                const id = row.dataset.id;
-                const flowerName = row.querySelector('.flower-name').textContent;
+            const row = button.closest('tr');
+            const id = row.dataset.id;
+            const flowerName = row.querySelector('.flower-name').textContent;
 
+            if (confirm('Are you sure you want to delete this flower?')) {
                 fetch(`http://127.0.0.1:5000/flowers/${id}`, {
                     method: 'DELETE'
                 })
