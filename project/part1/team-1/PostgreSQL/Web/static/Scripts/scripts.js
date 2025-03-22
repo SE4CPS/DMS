@@ -83,8 +83,10 @@ function confirmWaterFlower(){
     }
 
     let selectedFlowerNames = [];
-    checkbox.forEach((cb) => {
-        selectedFlowerNames.push(cb.nextSibling.textContent.trim());
+    checkbox.forEach(cb => {
+        const row = cb.closest("tr");
+        const nameCell = row.cells[2];
+        selectedFlowerNames.push(nameCell.textContent.trim());
     });
 
     return confirm(`Are you sure you want to water the following flowers?\n\n${selectedFlowerNames.join("\n")}`);

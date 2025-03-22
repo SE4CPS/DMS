@@ -76,7 +76,7 @@ def watering_flowers_helper():
 
     update_water_levels() # Update water levels before fetching all flowers
 
-    cur.execute("SELECT flower_id, name,current_water_level_in_inches,minimum_water_level_in_inches FROM flower ORDER BY flower_id") # Specifying the order of ALL the flowers
+    cur.execute("SELECT * FROM flower ORDER BY flower_id") # Specifying the order of ALL the flowers
     flowers = cur.fetchall()
     cur.close()
     conn.close()
