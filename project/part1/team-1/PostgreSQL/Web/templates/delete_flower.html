@@ -38,35 +38,52 @@
         <h3> Select Flower(s) To Remove</h3>
         
         {% if flowers %}
-            <form id = "select_flowers_delete" action="/remove_flower" method = "post" onsubmit="return confirmDeleteFlower()">
-                <label>
-                    <input type="checkbox" id="selectAll" onclick="toggleCheckboxes(this)"> 
-                    <strong>Select All</strong>
-                </label>
-                <br>
-                
-                {% for flower in flowers %}
-                <label>
-                    <input type = "checkbox" name = "selected_flowers" value = "{{flower[0]}}" class="flowerCheckbox">
-                    ({{ flower[0] }}, {{ flower[1] }}, {{ flower[2] }}, {{ flower[3] }} in, min: {{ flower[4] }} in) 
-                </label><br>
-                {% endfor %}
-                <button type="submit"> Submit </button>
-            </form>
-        {% else %}
+        <form id="select_flowers_delete" action="/remove_flower" method="post" onsubmit="return confirmDeleteFlower()">           
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            Select All
+                            <input type="checkbox" id="selectAll" onclick="toggleCheckboxes(this)">
+                        </th>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Initial Water Level (inches)</th>
+                        <th>Current Water Level (inches)</th>
+                        <th>Minimum Water Level (inches)</th>
+                        <th>Last Watered (YYYY-MM-DD)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for flower in flowers %}
+                    <tr>
+                        <td><input type="checkbox" name="selected_flowers" value="{{ flower[0] }}" class="flowerCheckbox"></td>
+                        <td>{{ flower[0] }}</td>
+                        <td>{{ flower[1] }}</td>
+                        <td>{{ flower[3] }}</td>
+                        <td>{{ flower[4] }}</td>
+                        <td>{{ flower[5] }}</td>
+                        <td>{{ flower[6].strftime('%Y-%m-%d') if flower[6] else 'N/A' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit">Submit</button>
+        </form>
+        {% endif %}
 
         {% if deleted_flowers %}
-            <h3>The following flowers were removed:</h3>
-            <ul>
-                {% for flower in deleted_flowers %}
-                    <li>{{flower}}</li>
-                {% endfor %}
-            </ul>
+        <h3>The following flowers were removed:</h3>
+        <ul>
+            {% for flower in deleted_flowers %}
+            <li>{{ flower }}</li>
+            {% endfor %}
+        </ul>
         {% endif %}
 
-        <h3> No Flowers Available To Remove</h3>
+        {% if not flowers and not deleted_flowers %}
+            <p>No flowers available to remove.</p>
         {% endif %}
-        
         <button id="muteButton"></button>
     </body>
 
