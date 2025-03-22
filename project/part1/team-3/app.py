@@ -1,6 +1,7 @@
 import psycopg2
 from flask import Flask, request, jsonify, render_template
 from database.db_connection import get_db_connection
+from datetime import date  # Used to get the current date in order to update last_watered
 
 app = Flask(__name__)
 
@@ -53,16 +54,21 @@ def get_flowers_needing_water():
 
 # Water a flower.
 @app.route('/flowers/water/<int:id>', methods=['PUT'])
-def water_flower(id):
+def update_flower_water_level(id):
     conn = get_db_connection()
     cur = conn.cursor()
+
+    current_date = date.today()
+
+    # increase the existing water level by 5 given the flower ID
+    # also change the last_watered_date to the current date
     cur.execute(
         """
         UPDATE team3_flowers 
-        SET water_level = water_level + %s
+        SET water_level = water_level + %s, last_watered = %s
         WHERE flower_id = %s
-        """,(5,id) 
-    )  # increase the existing water level by 5 given the flower ID
+        """,(5,current_date,id) 
+    )  
     conn.commit()
     cur.close()
     conn.close()
