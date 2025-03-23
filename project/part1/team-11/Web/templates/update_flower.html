@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Flower</title>
+</head>
+<body>
+    <h2>Update Flower (ID: {{ flower["id"] }})</h2>
+    <p>(Leave any field blank if you do not want to change it)</p>
+
+    <form action="/update_flower_form/{{ flower['id'] }}" method="post">
+        <label for="name">Name (Old: {{ flower['name'] }}):</label>
+        <input type="text" name="name" placeholder="{{ flower['name'] }}">
+        <br><br>
+
+        <label for="last_watered">Last Watered (Old: {{ flower['last_watered'] }}):</label>
+        <input type="text" name="last_watered" placeholder="{{ flower['last_watered'] }}">
+        <br><br>
+
+        <label for="water_level">Water Level (Old: {{ flower['water_level'] }}):</label>
+        <input type="number" name="water_level" placeholder="{{ flower['water_level'] }}">
+        <br><br>
+
+        <label for="min_water_required">Min Water Required (Old: {{ flower['min_water_required'] }}):</label>
+        <input type="number" name="min_water_required" placeholder="{{ flower['min_water_required'] }}">
+        <br><br>
+
+        <button type="submit">Update Flower</button>
+    </form>
+
+    <p><a href="/flowers_ui">Back to Flowers List</a></p>
+</body>
+</html>
