@@ -162,6 +162,7 @@ def get_flowers():
         "name": f["name"],
         "last_watered": f["last_watered"],
         "water_level": f["water_level"],
+        "min_water_required": f["min_water_required"],
         "needs_watering": f["water_level"] < f["min_water_required"]
     } for f in flowers])
 
@@ -179,6 +180,7 @@ def get_flowers_needing_water():
         "name": f["name"],
         "last_watered": f["last_watered"],
         "water_level": f["water_level"],
+        "min_water_required": f["min_water_required"],
         "needs_watering": f["water_level"] < f["min_water_required"]
     } for f in flowers])
 
