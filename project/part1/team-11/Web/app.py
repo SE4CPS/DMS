@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify, render_template, redirect
 app = Flask(__name__)
 
 def get_db_connection():
-    conn = sqlite3.connect("../team-11/team11_flowers.db")
+    conn = sqlite3.connect("../team11_flowers.db")
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -145,7 +145,7 @@ def update_flower_form(flower_id):
     return redirect('/flowers_ui')
 
 # ---------------------------------
-# 3) EXISTING JSON ENDPOINTS (API)
+# 3) JSON ENDPOINTS (API)
 # ---------------------------------
 
 # GET all flowers as JSON
