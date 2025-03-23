@@ -3,7 +3,7 @@
 <head>
     <title>Team 11 Flowers (UI)</title>
     <style>
-        /* Optional: Some basic styling */
+        /* Basic styling */
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -84,10 +84,14 @@
                     No
                 {% endif %}
             </td>
-            <!-- Delete link calls /delete_flower_ui/<id> -->
             <td>
+                 <!-- Delete link calls /delete_flower_ui/<id> -->
                 <a href="/delete_flower_ui/{{ f['id'] }}">Delete</a>
+                |
+                 <!-- Update link calls /update_flower_ui/<id> -->
+                <a href="/update_flower_ui/{{ f['id'] }}">Update</a>
             </td>
+            
         </tr>
         {% endfor %}
     </table>
