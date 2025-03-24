@@ -19,7 +19,7 @@
     </form>
 
     <h3>Available Flowers</h3>
-    <ul>
+    <!-- <ul>
         {% if flowers %}
         {% for flower in flowers %}
         <li>
@@ -29,7 +29,23 @@
         {% else %}
         <li>No flowers available.</li>
         {% endif %}
-    </ul>
+    </ul> -->
+    <script>
+        fetch('/flowers')
+            .then(response => response.json())
+            .then(data => {
+                let rows = "";
+                data.forEach(flower => {
+                    rows += `<tr>
+                        <td>${flower.name}</td>
+                        <td>${flower.last_watered}</td>
+                        <td>${flower.water_level} inches</td>
+                        <td>${flower.needs_watering ? "Yes" : "No"}</td>
+                    </tr>`;
+                });
+                document.getElementById("flower-data").innerHTML = rows;
+            });
+    </script>
 </body>
 
 </html>

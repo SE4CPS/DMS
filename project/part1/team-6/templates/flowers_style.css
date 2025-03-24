@@ -1,0 +1,84 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+#form-container {
+    width: 900px;
+    height: 450px;
+    background-color: white;
+    display: flex;
+    box-shadow: 0px 0px 25px 1px rgb(0, 0, 0, 0.5);
+}
+
+#form-bg {
+    background: url("/project/part1/team-6/images/flower-shop-image.jpg") no-repeat;
+    background-size: cover;
+    background-position-y: 80%;
+    background-position-x: 50%;
+    width: 100%;
+    height: 100%;
+}
+
+#form-section {
+    width: 80%;
+    height: 100%;
+    background-color: white;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.form-field {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: 200ms box-shadow ease-in-out;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 5px 0px;
+}
+
+/* .btn {
+    width: 10vh;
+    border: none;
+    outline: none;
+    border-radius: 1rem;
+    background-color: #bfdbdb;
+    transition: 0.3s ease-out;
+    font-weight: bold;
+    font-size: 0.7rem;
+    margin: 5px 0px;
+    justify-content: center;
+} */
+
+.form-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+input {
+    outline: none;
+    padding: 5px;
+    border: none;
+    border-radius: 5px;
+}
+
+#flower-stock-table{
+    justify-content: space-evenly;
+}

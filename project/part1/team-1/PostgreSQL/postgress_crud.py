@@ -3,7 +3,7 @@ import psycopg2
 import os
 
 # Input the absolute path to the .env file
-load_dotenv()
+load_dotenv(r"C:\Users\david\OneDrive\Desktop\UoP\Spring 2025\COMP 163\Water_Run_Env\water_run.env")
 
 # AWS PostgreSQL connection
 DATABASE_URL = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_URI')}:5432/{os.getenv('DB_NAME')}"
@@ -76,7 +76,7 @@ def watering_flowers_helper():
 
     update_water_levels() # Update water levels before fetching all flowers
 
-    cur.execute("SELECT flower_id, name,current_water_level_in_inches,minimum_water_level_in_inches FROM flower ORDER BY flower_id") # Specifying the order of ALL the flowers
+    cur.execute("SELECT * FROM flower ORDER BY flower_id") # Specifying the order of ALL the flowers
     flowers = cur.fetchall()
     cur.close()
     conn.close()

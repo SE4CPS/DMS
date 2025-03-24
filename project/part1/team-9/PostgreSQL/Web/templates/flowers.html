@@ -204,10 +204,13 @@
                     const flowerTable = document.getElementById('flowersList');
                     flowerTable.innerHTML = ''; // Clear existing rows
 
+                    // Sort flowers by ID in ascending order to display the newest ID last
+                    flowers.sort((a, b) => a.id - b.id);
+
                     flowers.forEach(flower => {
                         const row = document.createElement('tr');
                         
-                        //Determine if the flower needs water or not
+                        // Calculate if the flower needs water or not based on water level
                         const needsWater = flower.water_level < flower.min_water_required ? "Yes" : "No";
 
                         row.innerHTML = `
@@ -238,19 +241,22 @@
                 .catch(error => console.error('Error fetching flowers:', error));
         }
 
+
+
+
         function updateFlower() {
             const flowerId = prompt('Enter the ID of the flower you want to update:');
-
+            
             if (flowerId) {
                 const newLastWatered = prompt('Enter the new Last Watered date (YYYY-MM-DD):');
                 const newWaterLevel = prompt('Enter the new Water Level (e.g., 50):');
-
+                
                 if (newLastWatered && newWaterLevel) {
                     const data = {
                         last_watered: newLastWatered,
                         water_level: newWaterLevel
                     };
-
+                    
                     fetch(`/team9_flowers/${flowerId}`, {
                         method: 'PUT',
                         headers: {
@@ -274,6 +280,7 @@
                 alert('Please enter a valid flower ID.');
             }
         }
+
 
         // Delete flower by ID
         function deleteFlower() {
@@ -316,6 +323,8 @@
             const idColumnInputs = document.querySelectorAll('.id-column');
             idColumnInputs.forEach(col => col.style.display = 'none');
         }
+
+
 
         // Check the saved view state on page load
         window.onload = function() {
