@@ -17,23 +17,26 @@ def create_table():
     except Exception as e:
         print("Error creating table:", e)
 
+# Vulnerable to SQL injection
 def insert_flower_unsafe(flower_name):
     try:
         conn = sqlite3.connect(DATABASE_FILE)
         cur = conn.cursor()
-        print("Inserting (unsafe):", flower_name)
-        cur.execute(f"INSERT INTO flowers (name) VALUES ('{flower_name}');")
+        query = f"INSERT INTO flowers (name) VALUES ('{flower_name}');"
+        print("Executing (unsafe):", query)
+        cur.execute(query)
         conn.commit()
         cur.close()
         conn.close()
     except Exception as e:
         print("Error (unsafe):", e)
 
+# Safe from SQL injection
 def insert_flower_safe(flower_name):
     try:
         conn = sqlite3.connect(DATABASE_FILE)
         cur = conn.cursor()
-        print("Inserting (safe):", flower_name)
+        print("Executing (safe): INSERT INTO flowers (name) VALUES (?);", flower_name)
         cur.execute("INSERT INTO flowers (name) VALUES (?);", (flower_name,))
         conn.commit()
         cur.close()
@@ -59,11 +62,20 @@ if __name__ == "__main__":
     create_table()
     show_flowers()
 
-    # Simulate normal and malicious input
+    # Normal input
     insert_flower_unsafe("Rose")
+
+    # Injection that tries to drop the table
     insert_flower_unsafe("'); DROP TABLE flowers; --")
-    
+
+    # Injection that tries to delete all rows
+    insert_flower_unsafe("'); DELETE FROM flowers; --")
+
+    # Injection that tries to update a row
+    insert_flower_unsafe("'); UPDATE flowers SET name = 'Hacked' WHERE id = 1; --")
+
+    # Safe inputs (malicious strings are inserted as text)
     insert_flower_safe("Tulip")
     insert_flower_safe("'); DROP TABLE flowers; --")
-    
+
     show_flowers()
