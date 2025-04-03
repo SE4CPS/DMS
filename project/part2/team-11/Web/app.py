@@ -26,7 +26,7 @@ def index():
     <button onclick="location.href='/flowers_ui'">Manage Flowers (UI)</button>
     <br><br>
     <!-- If you have other sections, link them here as well -->
-    <button onclick="location.href='/flowers'">List Flowers (JSON)</button>
+    <button onclick="location.href='/JSON'">List Tables (JSON)</button>
     '''
 
 # -----------------------
@@ -173,8 +173,30 @@ def update_flower_form(flower_id):
 
     return redirect('/flowers_ui')
 
+# -----------------------
+# 3) JSON TABLES ROUTE (UI)
+# -----------------------
+
+
+@app.route('/JSON', methods=['GET'])
+def json_homepage():
+    """
+    A simple Table Page with buttons to navigate.
+    """
+    return '''
+    <h2>Team 11 Flower Management System</h2>
+    <p>Welcome! Choose a section below:</p>
+    <button onclick="location.href='/flowers'"> Flowers Table (JSON)</button>
+    <br><br>
+        <!-- If you have other sections, link them here as well -->
+    <button onclick="location.href='/customers'"> Customers Tables (JSON)</button>
+    <br><br>
+    <button onclick="location.href='/orders'"> Orders Tables (JSON)</button>
+    '''
+
+
 # ---------------------------------
-# 3) JSON ENDPOINTS (API)
+# 4) JSON ENDPOINTS (API)
 # ---------------------------------
 
 # GET all flowers as JSON
@@ -203,14 +225,14 @@ def get_customers():
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("SELECT * FROM team11_customers;")
-    flowers = cur.fetchall()
+    customers = cur.fetchall()
     cur.close()
     conn.close()
     return jsonify([{
         "id": f["id"],
         "name": f["name"],
         "email": f["email"],
-    } for f in flowers])
+    } for f in customers])
 
 
 @app.route('/orders', methods=['GET'])
@@ -218,7 +240,7 @@ def get_orders():
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("SELECT * FROM team11_orders;")
-    flowers = cur.fetchall()
+    orders = cur.fetchall()
     cur.close()
     conn.close()
     return jsonify([{
@@ -226,7 +248,7 @@ def get_orders():
         "customer_id": f["customer_id"],
         "flower_id": f["flower_id"],
         "order_date": f["order_date"],
-    } for f in flowers])
+    } for f in orders])
 
 # GET flowers that need watering (JSON)
 
