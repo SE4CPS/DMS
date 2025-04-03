@@ -1,3 +1,4 @@
+import random
 from flask import Flask, render_template, request, redirect
 import psycopg2
 import datetime
@@ -20,7 +21,7 @@ try:
         ADD COLUMN IF NOT EXISTS water_added INT DEFAULT 0;
     """)
 
-# --- CREATE TABLES ---
+    # --- CREATE TABLES ---
     cur.execute("""
         CREATE TABLE IF NOT EXISTS team4_flowers (
             id SERIAL PRIMARY KEY,
@@ -31,6 +32,47 @@ try:
             water_added INT NOT NULL DEFAULT 0
         );
     """)
+
+    # Creates the customers table
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS team4_customers (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(100),
+            email VARCHAR(100)
+        );
+    """)
+
+    # Creates the orders table
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS team4_orders (
+            id SERIAL PRIMARY KEY,
+            customer_id INT REFERENCES team4_customers(id),
+            flower_id INT REFERENCES team4_flowers(id),
+            order_ate DATE
+        );
+    """)
+
+    # Insert 100,000 customers if not already inserted
+    cur.execute("SELECT COUNT(*) FROM team4_customers;")
+    customer_count = cur.fetchone()[0]
+    if customer_count == 0:
+        print("Inserting 100,000 customers...")
+        for i in range(100000):
+            cur.execute("INSERT INTO team4_customers (name, email) VALUES (%s, %s)",
+                        (f'Customer_{i}', f'customer{i}@email.com'))
+        print("Customer data inserted.")
+
+    # Insert 500,000 orders if not already inserted
+    cur.execute("SELECT COUNT(*) FROM team4_orders;")
+    order_count = cur.fetchone()[0]
+    if order_count == 0:
+        print("Inserting 500,000 orders...")
+        for i in range(500000):
+            cur.execute("""
+                INSERT INTO team4_orders (customer_id, flower_id, order_date)
+                VALUES (%s, %s, CURRENT_DATE - INTERVAL '%s days')
+            """, (random.randint(1, 100000), random.randint(1, 3), random.randint(0, 365)))
+        print("Order data inserted.")
 
     # Creates the table with sample data if empty
     cur.execute("SELECT COUNT(*) FROM team4_flowers;")
@@ -226,6 +268,26 @@ def water_flower(flower_id):
     conn.close()
 
     return redirect('/flowers')
+
+# Slow Query
+@app.route('/slow_query')
+def slow_query():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT c.name, o.order_date, f.name AS flower_name
+        FROM team4_orders o
+        JOIN team4_customers c ON o.customer_id = c.id
+        JOIN team4_flowers f ON o.flower_id = f.id
+        ORDER BY o.order_date DESC
+    """)
+
+    results = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    return f"Query returned {len(results)} rows."
 
 # -- Reset the Database ID to 1 (Testing purpose ONLY)
 @app.route('/reset_flower_ids')
