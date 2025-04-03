@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify, render_template, redirect
 
 app = Flask(__name__)
 
+
 def get_db_connection():
     DATABASE = "team11_flowers.db"
     conn = sqlite3.connect(DATABASE)
@@ -12,6 +13,8 @@ def get_db_connection():
 # -----------------------
 # 1) HOMEPAGE ROUTE (UI)
 # -----------------------
+
+
 @app.route('/')
 def index():
     """
@@ -29,6 +32,8 @@ def index():
 # -----------------------
 # 2) UI ROUTES (HTML)
 # -----------------------
+
+
 @app.route('/flowers_ui', methods=['GET'])
 def flowers_ui():
     """
@@ -37,11 +42,31 @@ def flowers_ui():
     """
     conn = get_db_connection()
     cur = conn.cursor()
+
     cur.execute("SELECT * FROM team11_flowers;")
-    flowers = cur.fetchall()
+    flowers = [
+        {"id": row[0], "name": row[1], "last_watered": row[2],
+            "water_level": row[3], "min_water_required": row[4]}
+        for row in cur.fetchall()
+    ]
+
+    cur.execute("SELECT * FROM team11_customers;")
+    customers = [
+        {"id": row[0], "name": row[1], "email": row[2]}
+        for row in cur.fetchall()
+    ]
+
+    cur.execute("SELECT * FROM team11_orders;")
+    orders = [
+        {"id": row[0], "customer_id": row[1],
+            "flower_id": row[2], "order_date": row[3]}
+        for row in cur.fetchall()
+    ]
+
     cur.close()
     conn.close()
-    return render_template('flowers11.html', flowers=flowers)
+    return render_template("flowers11.html", flowers=flowers, customers=customers, orders=orders)
+
 
 @app.route('/add_flower_form', methods=['POST'])
 def add_flower_form():
@@ -67,6 +92,7 @@ def add_flower_form():
     # Redirect back to /flowers_ui so we see the new flower listed
     return redirect('/flowers_ui')
 
+
 @app.route('/delete_flower_ui/<int:flower_id>')
 def delete_flower_ui(flower_id):
     """
@@ -79,6 +105,7 @@ def delete_flower_ui(flower_id):
     cur.close()
     conn.close()
     return redirect('/flowers_ui')
+
 
 @app.route('/update_flower_ui/<int:flower_id>', methods=['GET'])
 def update_flower_ui(flower_id):
@@ -98,6 +125,7 @@ def update_flower_ui(flower_id):
 
     # The form includes placeholders showing old data, but user can clear fields if desired
     return render_template('update_flower.html', flower=flower)
+
 
 @app.route('/update_flower_form/<int:flower_id>', methods=['POST'])
 def update_flower_form(flower_id):
@@ -150,6 +178,8 @@ def update_flower_form(flower_id):
 # ---------------------------------
 
 # GET all flowers as JSON
+
+
 @app.route('/flowers', methods=['GET'])
 def get_flowers():
     conn = get_db_connection()
@@ -167,12 +197,46 @@ def get_flowers():
         "needs_watering": f["water_level"] < f["min_water_required"]
     } for f in flowers])
 
+
+@app.route('/customers', methods=['GET'])
+def get_customers():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM team11_customers;")
+    flowers = cur.fetchall()
+    cur.close()
+    conn.close()
+    return jsonify([{
+        "id": f["id"],
+        "name": f["name"],
+        "email": f["email"],
+    } for f in flowers])
+
+
+@app.route('/orders', methods=['GET'])
+def get_orders():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM team11_orders;")
+    flowers = cur.fetchall()
+    cur.close()
+    conn.close()
+    return jsonify([{
+        "id": f["id"],
+        "customer_id": f["customer_id"],
+        "flower_id": f["flower_id"],
+        "order_date": f["order_date"],
+    } for f in flowers])
+
 # GET flowers that need watering (JSON)
+
+
 @app.route('/flowers/needs_watering', methods=['GET'])
 def get_flowers_needing_water():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM team11_flowers WHERE water_level < min_water_required;")
+    cur.execute(
+        "SELECT * FROM team11_flowers WHERE water_level < min_water_required;")
     flowers = cur.fetchall()
     cur.close()
     conn.close()
@@ -186,6 +250,8 @@ def get_flowers_needing_water():
     } for f in flowers])
 
 # POST (Add a new flower) via JSON
+
+
 @app.route('/flowers', methods=['POST'])
 def add_flower():
     data = request.json
@@ -193,7 +259,8 @@ def add_flower():
     cur = conn.cursor()
     cur.execute(
         "INSERT INTO team11_flowers (name, last_watered, water_level, min_water_required) VALUES (?, ?, ?, ?)",
-        (data['name'], data['last_watered'], data['water_level'], data['min_water_required'])
+        (data['name'], data['last_watered'],
+         data['water_level'], data['min_water_required'])
     )
     conn.commit()
     cur.close()
@@ -201,6 +268,8 @@ def add_flower():
     return jsonify({"message": "Flower added successfully!"})
 
 # PUT (Update a flower's watering status) via JSON
+
+
 @app.route('/flowers/<int:id>', methods=['PUT'])
 def update_flower(id):
     data = request.json
@@ -216,6 +285,8 @@ def update_flower(id):
     return jsonify({"message": "Flower updated successfully!"})
 
 # DELETE (Delete a flower) via JSON
+
+
 @app.route('/flowers/<int:id>', methods=['DELETE'])
 def delete_flower(id):
     conn = get_db_connection()
@@ -225,6 +296,7 @@ def delete_flower(id):
     cur.close()
     conn.close()
     return jsonify({"message": "Flower deleted successfully!"})
+
 
 # ---------------------------------
 # Entry Point

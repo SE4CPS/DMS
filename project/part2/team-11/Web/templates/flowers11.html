@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Team 11 Flowers (UI)</title>
     <style>
@@ -8,34 +9,47 @@
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-        h2, h3 {
+
+        h2,
+        h3 {
             margin-top: 0;
         }
+
         table {
             border-collapse: collapse;
             margin-top: 10px;
         }
-        table, th, td {
+
+        table,
+        th,
+        td {
             border: 1px solid #ccc;
         }
-        th, td {
+
+        th,
+        td {
             padding: 8px 12px;
         }
+
         form {
             margin-bottom: 20px;
         }
+
         label {
             margin-right: 10px;
         }
+
         input {
             margin-right: 15px;
         }
+
         .needs-water {
             color: red;
             font-weight: bold;
         }
     </style>
 </head>
+
 <body>
     <h2>Manage Flowers (Team 11)</h2>
 
@@ -80,22 +94,62 @@
             <td>{{ f["min_water_required"] }}</td>
             <!-- Check if this flower needs watering -->
             <td>
-                {% if f["water_level"] < f["min_water_required"] %}
-                    <span class="needs-water">Yes</span>
-                {% else %}
+                {% if f["water_level"] < f["min_water_required"] %} <span class="needs-water">Yes</span>
+                    {% else %}
                     No
-                {% endif %}
+                    {% endif %}
             </td>
             <td>
-                 <!-- Delete link calls /delete_flower_ui/<id> -->
+                <!-- Delete link calls /delete_flower_ui/<id> -->
                 <a href="/delete_flower_ui/{{ f['id'] }}">Delete</a>
                 |
-                 <!-- Update link calls /update_flower_ui/<id> -->
+                <!-- Update link calls /update_flower_ui/<id> -->
                 <a href="/update_flower_ui/{{ f['id'] }}">Update</a>
             </td>
-            
+
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h3>All Customers</h3>
+    <!-- Table -->
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+        </tr>
+
+        <!-- Loop over 'customers' passed in from Flask (flowers_ui route) -->
+        {% for f in customers[:102000] %}
+        <tr>
+            <td>{{ f["id"] }}</td>
+            <td>{{ f["name"] }}</td>
+            <td>{{ f["email"] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h3>All Orders</h3>
+    <!-- Table -->
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Customer ID</th>
+            <th>Flower ID</th>
+            <th>Order Date</th>
+        </tr>
+
+        <!-- Loop over 'orders' passed in from Flask (flowers_ui route) -->
+        {% for f in orders[:501005] %}
+        <tr>
+            <td>{{ f["id"] }}</td>
+            <td>{{ f["customer_id"] }}</td>
+            <td>{{ f["flower_id"] }}</td>
+            <td>{{ f["order_date"] }}</td>
         </tr>
         {% endfor %}
     </table>
 </body>
+
 </html>
