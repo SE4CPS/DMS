@@ -17,14 +17,6 @@ CREATE TABLE IF NOT EXISTS Bikes (
   
 -- CREATE INDEX brandIdx on Bikes(brand);
  CREATE EXTENSION IF NOT EXISTS pgcrypto;
-  
-    CREATE TABLE IF NOT EXISTS Sales (
-      sale_id SERIAL PRIMARY KEY,
-      bike_id INT,
-      sale_date DATE,
-      sale_price DECIMAL(10, 2),
-      FOREIGN KEY (bike_id) REFERENCES Bikes(bike_id)
-  );  
     
 -- INSERT INTO Sales (bike_id, sale_date, sale_price) VALUES (934, '2025-04-04', 999.99);
   
