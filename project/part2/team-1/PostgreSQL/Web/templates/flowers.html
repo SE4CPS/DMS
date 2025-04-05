@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Run</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
+    <script src="{{ url_for('static', filename='Scripts/scripts.js') }}"></script>
+</head>
+
+<body>
+    <audio id="introMusic" loop autoplay muted>
+        <source src="{{url_for('static', filename='Audio/longnight.mp3') }}" type="audio/mpeg">
+    </audio>
+
+    <!--Container for the menu, form, and form inputs-->
+    <div id="menuContainer">
+        <h2>Water Run Management</h2>
+
+        <div id="buttonContainer">
+            <a href="/flowers"><button>Add Flower</button></a>
+            <a href ="/remove_flower"><button>Remove Flower</button></a>
+            
+            <!--Start of the clickable dropdown-->
+            <div id="dropDownContainer">
+                <button id="dropDownButton" onclick="dropDown()">Display</button>
+                <div id="dropDownOptions">
+                    <a href = "/all_flower" ><button>See All Flowers</button></a>
+                    <a href = "/needs_water"> <button>See All Flowers That Need Water</button></a>
+                    <a href="/outdoor_flower"><button>See Outdoor Flowers</button></a>
+                    <a href="/indoor_flower"><button>See Indoor Flowers</button></a>
+                </div>
+            </div>
+            <a href = "/water_flower"><button>Water Flower</button></a>
+            <a href="/simulate_rainfall"><button>Simulate Rain</button></a>
+        </div>
+
+        <!--TO DO: Form ONLY populates when "Add Flower" button is clicked-->
+        <form action="/add_flower" method="post" onsubmit="return confirmAddFlower();">
+            <div class="label-input-grouped">
+                <label for="name">Flower:</label>
+                <input type="text" name="name" placeholder="Flower Name">
+            </div>
+
+            <div class="label-input-grouped">
+                <label for="environment">Enviornment:</label>
+                <select name="environment">
+                    <option value="indoor">Indoor</option>
+                    <option value="outdoor">Outdoor</option>
+                </select>
+            </div>
+            
+            <div class="label-input-grouped">
+                <label>Initial Water Level (inches):</label>
+                <input type="number" name="initial_water_level_in_inches" placeholder="Initial Water Level in Inches" min="0">
+            </div>
+            
+            <div class="label-input-grouped">
+                <label>Minimum Water Level Required (inches):</label>
+                <input type="number" name="minimum_water_level_in_inches" placeholder="Minimum Water Level Required (Inches)" min="0">
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+        
+        <!--
+        <h3>Available Flowers</h3>
+        <ul>
+            {% if flowers %}
+            {% for flower in flowers %}
+            <li>
+                {{ flower }}
+            </li>
+            {% endfor %}
+            {% else %}
+            <li>No flowers available.</li>
+            {% endif %}
+        </ul>
+        -->
+
+        <button id="muteButton"></button>
+    </div>
+    
+</body>
+
+</html>
