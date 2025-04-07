@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Flower Watering Well</title>
+    <script>
+        function showUpdateForm(flowerId) {
+            document.getElementById("update-form-" + flowerId).style.display = "block";
+        }
+    </script>
+</head>
+
+<body>
+    
+    <section class="header">
+        <div class="container">
+            <h1>Flower Watering Status</h1>
+    
+            <!-- Input Form Top of Table-->
+            <form action="/add_flower" method="post">
+                <input type="text" name="name" placeholder="Flower Name">
+                <input type="text" name="last_watered" placeholder="Last Water Date">
+                <input type="number" name="water_level" placeholder="Water Level" >
+                <input type="number" name="min_water_required" placeholder="Min Water Required" >
+                <button type="submit">Add Flower</button>
+            </form>
+            
+            <!-- Scrollable Table -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Flower ID</th>
+                            <th>Flower Name</th>
+                            <th>Last Watered Date</th>
+                            <th>Water Level</th>
+                            <th>Min Water Required</th>
+                            <th>Watering Status</th>
+                            <th>Watered Amount</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if flowers %}
+                        {% for flower in flowers %}
+                        <tr>
+                            <td>{{ flower.id }}</td>
+                            <td>{{ flower.name }}</td>
+                            <td>{{ flower.last_watered }}</td>
+                            <td>{{ flower.water_level }}</td>
+                            <td>{{ flower.min_water_required }}</td>
+                            <td>{{ flower.watering_status }}</td>
+                            <td>
+                                <form action="/water_flower/{{ flower.id }}" method="POST">
+                                    <input type="number" name="water_added" value="0" min="0">
+                                    <button type="submit">Water</button>
+                                </form>
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <!-- Edit Button -->
+                                    <button class="edit-btn" button onclick="showUpdateForm({{ flower.id }})">Edit</button>
+    
+                                    <!-- DELETE Button (Sends DELETE request) -->
+                                    <form action="{{ url_for('delete_flower', flower_id=flower.id) }}" method="post" onsubmit="return confirm('Are you sure you want to delete this flower?');">
+                                        <button class="delete-btn" button type="submit" style="color: red;">Delete</button>
+                                    </form>
+                                </div>
+    
+                                <!-- Update Form (Initially Hidden) -->
+                                <form id="update-form-{{ flower.id }}" action="/update_flower/{{ flower.id }}" method="post" style="display: none;">
+                                    <input type="text" name="name" value="{{ flower.name }}" required>
+                                    <input type="date" name="last_watered" value="{{ flower.last_watered }}" required>
+                                    <input type="number" name="water_level" value="{{ flower.water_level }}" required>
+                                    <input type="number" name="min_water_required" value="{{ flower.min_water_required }}" required>
+                                    <button type="submit">Update Flower</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="10">No Flowers Available</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="main">
+        <h1> ~ Flowers ~</h1>
+        
+        <!-- First Row-->
+        <div class="row">
+            <div class="card">
+                <div class="image-box">
+                    <img src="/static/rose.png"/>
+                </div>
+                <div class="content">
+                    <h2>Rose</h2>
+                    <p>Colors: Red, White, Pink, Yellow, Purple</p>
+                    <p>Watering: 5 </p>
+                    <p>Time: 1-2 years to fully bloom</p>
+                    <p>Best Seasons: Spring or Fall</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="image-box">
+                    <img src="/static/tulip.png"/> 
+                </div>
+                <div class="content">
+                    <h2>Tulip</h2>
+                    <p>Color: Red, White, Pink, Yellow, Purple</p>
+                    <p>Watering: 7 </p>
+                    <P>Time: 1-2 Years to bloom</P>
+                    <p>Best Seasons: Fall </p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="image-box">
+                    <img src="/static/lily.jpeg"/>
+                </div>
+                <div class="content">
+                    <h2>Lily</h2>
+                    <p>Color: White, Pink, Red, Orange, Red</p>
+                    <p>Watering: 5 </p>
+                    <P>Time: 18 months to bloom</P>
+                    <p>Best Seasons: Spring or Fall</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Second Row-->
+        <div class="row">
+            <div class="card">
+                <div class="image-box">
+                    <img src="/static/sunflower.jpg"/>
+                </div>
+                <div class="content">
+                    <h2>Sunflower</h2>
+                    <p>Color: Yellow, Orange, Red, Brown</p>
+                    <p>Watering: 7 </p>
+                    <P>Time: 2.5-3.5 months to bloom</P>
+                    <p>Best Seasons: Late Spring to Early Summer</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="image-box">
+                    <img src="/static/orchid.jpg"/> 
+                </div>
+                <div class="content">
+                    <h2>Orchid</h2>
+                    <p>Color: White, Pink, Purple, Yellow, Blue</p>
+                    <p>Watering: 5 </p>
+                    <P>Time: 3-8 years to bloom</P>
+                    <p>Best Seasons: Year-round (varies)</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="image-box">
+                    <img src="/static/daisy.jpg"/>
+                </div>
+                <div class="content">
+                    <h2>Daisy</h2>
+                    <p>Color: White, Yellow, Pink, Red, Purple</p>
+                    <p>Watering: 5 </p>
+                    <P>Time: 3-4 months to bloom</P>
+                    <p>Best Seasons: Spring or Fall</p>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+</body>
+</html>
