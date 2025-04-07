@@ -54,7 +54,7 @@ try:
         );
     """)
 
-    # Check if the typo 'order_ate' column exists, and rename it if needed
+    # Check if the typo 'order_ate' column exists, and rename it if needed --> to fix the column_name error since it effects the other table 
     #cur.execute("""
     #    SELECT column_name 
     #    FROM information_schema.columns 
@@ -74,6 +74,8 @@ try:
             cur.execute("INSERT INTO team4_customers (name, email) VALUES (%s, %s)",
                         (f'Customer_{i}', f'customer{i}@email.com'))
         print("Customer data inserted.")
+    else:
+        print(f"Already {customer_count} customers in the database.")
 
     # Insert 500,000 orders if not already inserted
     cur.execute("SELECT COUNT(*) FROM team4_orders;")
@@ -86,6 +88,20 @@ try:
                 VALUES (%s, %s, CURRENT_DATE - INTERVAL '%s days')
             """, (random.randint(1, 100000), random.randint(1, 3), random.randint(0, 365)))
         print("Order data inserted.")
+    else:
+        print(f"Already {order_count} orders in the database.")
+    
+    # Delete orders with id > 5000 -> to shorten the number of rows when multiplying the tables together
+    #cur.execute("SELECT COUNT(*) FROM team4_orders;")
+    #order_count = cur.fetchone()[0]
+    #if order_count > 5000:
+    #    print("Deleting orders with id > 5000...")
+    #    cur.execute("DELETE FROM team4_orders WHERE id > 5000;")
+    #    print("Orders with id > 5000 have been deleted.")
+    #else:
+    #    print("No need to delete; 5000 or fewer orders in the database.")
+    #    print(f"Already {order_count} orders in the database.")
+
 
     # Creates the table with sample data if empty
     cur.execute("SELECT COUNT(*) FROM team4_flowers;")
@@ -100,6 +116,7 @@ try:
         """)
         print("Sample data inserted.")
     else:
+        print(f"Number of rows in team4_flowers table: {count}")
         print("Sample data already exists.")
 
 except Exception as e:
@@ -291,17 +308,35 @@ def slow_query():
     cur = conn.cursor()
 
     cur.execute("""
-        SELECT c.name, o.order_date, f.name AS flower_name
+        SELECT c.name, o.order_date AS flower_name
         FROM team4_orders o
-        JOIN team4_customers c ON o.customer_id = c.id
-        JOIN team4_flowers f ON o.flower_id = f.id
-        ORDER BY o.order_date DESC
-    """)
+        CROSS JOIN team4_customers c 
+        ORDER BY o.order_date DESC LIMIT 500000 
+    """) #with the cartesian join and limit of 500,000 the query time is 10 sec
 
     results = cur.fetchall()
     cur.close()
     conn.close()
 
+    end_time = time.time()
+    query_time = end_time - start_time
+    return f"Query returned {len(results)} rows. Query time: {query_time:.4f} seconds"
+
+# Fast Query 
+@app.route('/fast_query')
+def fast_query():
+    start_time = time.time()
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        
+    """)
+
+    results = cur.fetchall()
+    cur.close()
+    conn.close()
+    
     end_time = time.time()
     query_time = end_time - start_time
     return f"Query returned {len(results)} rows. Query time: {query_time:.4f}"
