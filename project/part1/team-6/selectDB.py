@@ -1,30 +1,34 @@
 from flask import Flask, render_template, request, redirect
 import psycopg2
+import json
+from flask_cors import CORS
 
 app = Flask(__name__)
 DATABASE_URL = "postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
+CORS(app)
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
 
 @app.route('/')
-def index():
-    return '''
-    <h2>Flower Shop Management</h2>
-    <button onclick="location.href='/flowers'">Manage Flowers</button>
-    <button onclick="location.href='/customers'">Manage Customers</button>
-    <button onclick="location.href='/orders'">Manage Orders</button>
-    '''
+def index_flowers():
+    return render_template('flowers.html')
 
-@app.route('/flowers')
+@app.route('/flowers', methods=['GET'])
 def manage_flowers():
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("SELECT * FROM team6_flowers")
-    flowers = cur.fetchall()
+    flowersArray = cur.fetchall()
+    flowerDict = {}
+    key = 0
+    for flower in flowersArray:
+        key = key + 1
+        flowerDict[key] = flower
+
     cur.close()
     conn.close()
-    return render_template('flowers.html', flowers=flowers)
+    return flowerDict
 
 #(name, last_watered, water_level, min_water_required) VALUES ('Rose', '2025-02-27', 10, 100)
 @app.route('/add_flower', methods=['POST'])
@@ -39,7 +43,7 @@ def add_flower():
     conn.commit()
     cur.close()
     conn.close()
-    return redirect('/flowers')
+    return redirect('http://127.0.0.1:5500/project/part1/team-6/templates/flowers.html')
 
 @app.route('/flowers/needs_watering', methods=['GET'])
 def get_flowers_needing_water():
@@ -63,7 +67,7 @@ def update_flower():
     except:
         print("Check Failed")
     
-    return redirect('/flowers')
+    return redirect('/')
 
 
 # Delete a flower by ID
@@ -76,7 +80,7 @@ def delete_flower():
     conn.commit()
     cur.close()
     conn.close()
-    return redirect('/flowers')
+    return redirect('/')
 
 if __name__ == '__main__':
     app.run(debug=True)
