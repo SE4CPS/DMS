@@ -33,7 +33,7 @@ try:
         );
     """)
 
-    # Creates the customers table
+    # Creates the customers table - Project 2
     cur.execute("""
         CREATE TABLE IF NOT EXISTS team4_customers (
             id SERIAL PRIMARY KEY,
@@ -42,17 +42,17 @@ try:
         );
     """)
 
-    # Creates the orders table
+    # Creates the orders table - Project 2
     cur.execute("""
         CREATE TABLE IF NOT EXISTS team4_orders (
             id SERIAL PRIMARY KEY,
             customer_id INT REFERENCES team4_customers(id),
             flower_id INT REFERENCES team4_flowers(id),
-            order_ate DATE
+            order_date DATE
         );
     """)
 
-    # Insert 100,000 customers if not already inserted
+    # Insert 100,000 customers if not already inserted - Project 2
     cur.execute("SELECT COUNT(*) FROM team4_customers;")
     customer_count = cur.fetchone()[0]
     if customer_count == 0:
@@ -62,7 +62,7 @@ try:
                         (f'Customer_{i}', f'customer{i}@email.com'))
         print("Customer data inserted.")
 
-    # Insert 500,000 orders if not already inserted
+    # Insert 500,000 orders if not already inserted - Project 2
     cur.execute("SELECT COUNT(*) FROM team4_orders;")
     order_count = cur.fetchone()[0]
     if order_count == 0:
