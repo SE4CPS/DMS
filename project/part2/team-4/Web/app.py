@@ -1,7 +1,7 @@
 import random
 from flask import Flask, render_template, request, redirect
 import psycopg2
-import datetime
+from datetime import timedelta, date
 
 app = Flask(__name__)
 DATABASE_URL = "postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
@@ -52,6 +52,17 @@ try:
         );
     """)
 
+    # Check if the typo 'order_ate' column exists, and rename it if needed
+    cur.execute("""
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name = 'team4_orders' AND column_name = 'order_ate';
+    """)
+    if cur.fetchone():
+        print("Fixing column name: renaming 'order_ate' to 'order_date'...")
+        cur.execute("ALTER TABLE team4_orders RENAME COLUMN order_ate TO order_date;")
+    
+
     # Insert 100,000 customers if not already inserted - Project 2
     cur.execute("SELECT COUNT(*) FROM team4_customers;")
     customer_count = cur.fetchone()[0]
@@ -62,16 +73,28 @@ try:
                         (f'Customer_{i}', f'customer{i}@email.com'))
         print("Customer data inserted.")
 
+    cur.execute("SELECT MIN(id), MAX(id) FROM team4_customers")
+    min_cust_id, max_cust_id = cur.fetchone()
+
+    cur.execute("SELECT MIN(id), MAX(id) FROM team4_flowers")
+    min_flower_id, max_flower_id = cur.fetchone()
+
     # Insert 500,000 orders if not already inserted - Project 2
     cur.execute("SELECT COUNT(*) FROM team4_orders;")
     order_count = cur.fetchone()[0]
-    if order_count == 0:
+    if order_count < 500000:
         print("Inserting 500,000 orders...")
-        for i in range(500000):
+        for i in range(order_count, 500000):
+            cust_id = random.randint(min_cust_id, max_cust_id)
+            flower_id = random.randint(min_flower_id, max_flower_id)
+            days_ago = random.randint(0, 365)
+            order_date = date.today() - timedelta(days=days_ago)
+
             cur.execute("""
                 INSERT INTO team4_orders (customer_id, flower_id, order_date)
-                VALUES (%s, %s, CURRENT_DATE - INTERVAL '%s days')
-            """, (random.randint(1, 100000), random.randint(1, 3), random.randint(0, 365)))
+                VALUES (%s, %s, %s)
+            """, (cust_id, flower_id, order_date))
+            #print(f"cust_id: {cust_id}, flower_id: {flower_id}, order_date: {order_date}")
         print("Order data inserted.")
 
     # Creates the table with sample data if empty
