@@ -295,11 +295,12 @@ def slow_query():
 
     end_time = time.time()
     query_time = end_time - start_time
+    formatted_time = f"{query_time:.4f}" # Format query_time to 4 decimal places
     return render_template("flowers.html",
                            flowers = [], # Empty list to not conflict with flower table
                            query_type = "Slow Query",
                            query = slow_sql.strip(),
-                           time = query_time,
+                           time = formatted_time,
                            row_count = len(results))
 
 # Fast Query 
@@ -324,11 +325,12 @@ def fast_query():
     
     end_time = time.time()
     query_time = end_time - start_time
+    formatted_time = f"{query_time:.4f}" # Format query_time to 4 decimal places
     return render_template("flowers.html",
                            flowers = [], # Prevents template errors during query-only view
                            query_type = "Fast Query",
                            query = fast_sql.strip(),
-                           time = query_time,
+                           time = formatted_time,
                            row_count = len(results))
 
 # -- Reset the Database ID to 1 (Testing purpose ONLY)
