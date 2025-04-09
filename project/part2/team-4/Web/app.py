@@ -4,6 +4,9 @@ import psycopg2
 from datetime import timedelta, date
 import datetime
 import time
+from faker import Faker
+
+fake = Faker()  # Initialize Faker - Project 2
 
 app = Flask(__name__)
 DATABASE_URL = "postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
@@ -71,8 +74,10 @@ try:
     if customer_count == 0:
         print("Inserting 100,000 customers...")
         for i in range(100000):
-            cur.execute("INSERT INTO team4_customers (name, email) VALUES (%s, %s)",
-                        (f'Customer_{i}', f'customer{i}@email.com'))
+            # Using the Faker library to create realisitc data
+            name = fake.name()
+            email = fake.unique.email()
+            cur.execute("INSERT INTO team4_customers (name, email) VALUES (%s, %s)", (name, email))
         print("Customer data inserted.")
     else:
         print(f"Already {customer_count} customers in the database.")
@@ -299,47 +304,62 @@ def water_flower(flower_id):
 
     return redirect('/flowers')
 
-# Slow Query
+# Slow Query - Project 2
 @app.route('/slow_query')
 def slow_query():
+    slow_sql = """
+        SELECT c.name, o.order_date AS flower_name
+        FROM team4_orders o
+        CROSS JOIN team4_customers c 
+        ORDER BY o.order_date DESC LIMIT 500000 
+    """ # with the cartesian join and limit of 500,000 the query time is 10 sec
 
     start_time = time.time()
     conn = get_db_connection()
     cur = conn.cursor()
 
-    cur.execute("""
-        SELECT c.name, o.order_date AS flower_name
-        FROM team4_orders o
-        CROSS JOIN team4_customers c 
-        ORDER BY o.order_date DESC LIMIT 500000 
-    """) #with the cartesian join and limit of 500,000 the query time is 10 sec
-
+    cur.execute(slow_sql)
     results = cur.fetchall()
     cur.close()
     conn.close()
 
     end_time = time.time()
     query_time = end_time - start_time
-    return f"Query returned {len(results)} rows. Query time: {query_time:.4f} seconds"
+    return render_template("flowers.html",
+                           flowers = [], # Empty list to not conflict with flower table
+                           query_type = "Slow Query",
+                           query = slow_sql.strip(),
+                           time = query_time,
+                           row_count = len(results))
 
 # Fast Query 
 @app.route('/fast_query')
 def fast_query():
+    fast_sql = """
+        SELECT o.id, c.name AS customer_name, f.name AS flower_name, o.order_date
+        FROM team4_orders o
+        JOIN team4_customers c ON o.customer_id = c.id
+        JOIN team4_flowers f ON o.flower_id = f.id
+        LIMIT 10;
+    """
+
     start_time = time.time()
     conn = get_db_connection()
     cur = conn.cursor()
 
-    cur.execute("""
-        
-    """)
-
+    cur.execute(fast_sql)
     results = cur.fetchall()
     cur.close()
     conn.close()
     
     end_time = time.time()
     query_time = end_time - start_time
-    return f"Query returned {len(results)} rows. Query time: {query_time:.4f}"
+    return render_template("flowers.html",
+                           flowers = [], # Prevents template errors during query-only view
+                           query_type = "Fast Query",
+                           query = fast_sql.strip(),
+                           time = query_time,
+                           row_count = len(results))
 
 # -- Reset the Database ID to 1 (Testing purpose ONLY)
 @app.route('/reset_flower_ids')
