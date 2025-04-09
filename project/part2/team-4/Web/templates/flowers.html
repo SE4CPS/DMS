@@ -18,6 +18,11 @@
     <section class="header">
         <div class="container">
             <h1>Flower Watering Status</h1>
+
+            <div class="buttons-container">
+                <a href="{{ url_for('slow_query') }}"><button>Slow Query</button></a>
+                <a href="{{ url_for('fast_query') }}"><button>Fast Query</button></a>
+            </div>
     
             <!-- Input Form Top of Table-->
             <form action="/add_flower" method="post">

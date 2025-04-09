@@ -54,17 +54,6 @@ try:
         );
     """)
 
-    # Check if the typo 'order_ate' column exists, and rename it if needed --> to fix the column_name error since it effects the other table 
-    #cur.execute("""
-    #    SELECT column_name 
-    #    FROM information_schema.columns 
-    #    WHERE table_name = 'team4_orders' AND column_name = 'order_ate';
-    #""")
-    #if cur.fetchone():
-    #    print("Fixing column name: renaming 'order_ate' to 'order_date'...")
-    #    cur.execute("ALTER TABLE team4_orders RENAME COLUMN order_ate TO order_date;")
-
-
     # Insert 100,000 customers if not already inserted - Project 2
     cur.execute("SELECT COUNT(*) FROM team4_customers;")
     customer_count = cur.fetchone()[0]
@@ -83,26 +72,18 @@ try:
     if order_count == 0:
         print("Inserting 500,000 orders...")
         for i in range(500000):
+            customer_id = random.randint(1, 100000)
+            flower_id = random.randint(1, 3)
+            days_ago = random.randint(0, 365)
             cur.execute("""
                 INSERT INTO team4_orders (customer_id, flower_id, order_date)
                 VALUES (%s, %s, CURRENT_DATE - INTERVAL '%s days')
-            """, (random.randint(1, 100000), random.randint(1, 3), random.randint(0, 365)))
+            """, (customer_id, flower_id, days_ago))
+        print(f"Inserted {i} orders so far... (customer_id={customer_id}, flower_id={flower_id}, days_ago={days_ago})")
         print("Order data inserted.")
     else:
         print(f"Already {order_count} orders in the database.")
     
-    # Delete orders with id > 5000 -> to shorten the number of rows when multiplying the tables together
-    #cur.execute("SELECT COUNT(*) FROM team4_orders;")
-    #order_count = cur.fetchone()[0]
-    #if order_count > 5000:
-    #    print("Deleting orders with id > 5000...")
-    #    cur.execute("DELETE FROM team4_orders WHERE id > 5000;")
-    #    print("Orders with id > 5000 have been deleted.")
-    #else:
-    #    print("No need to delete; 5000 or fewer orders in the database.")
-    #    print(f"Already {order_count} orders in the database.")
-
-
     # Creates the table with sample data if empty
     cur.execute("SELECT COUNT(*) FROM team4_flowers;")
     count = cur.fetchone()[0]
@@ -180,17 +161,6 @@ def flowers():
     conn.close()
     
     return render_template('flowers.html', flowers=formatted_flowers)
-
-# Get all Flowers
-@app.route('/flowers')
-def manage_flowers():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM team4_flowers")
-    flowers = cur.fetchall()
-    cur.close()
-    conn.close()
-    return render_template('flowers.html', flowers=flowers)
 
 # Add Flower
 @app.route('/add_flower', methods=['POST'])
@@ -303,24 +273,28 @@ def water_flower(flower_id):
 @app.route('/slow_query')
 def slow_query():
 
-    start_time = time.time()
+    start_time = time.time() #Query start time
     conn = get_db_connection()
     cur = conn.cursor()
 
     cur.execute("""
-        SELECT c.name, o.order_date AS flower_name
+        SELECT 
+            pgp_sym_encrypt(c.name, 'secret_key') AS encrypted_name, 
+            o.order_date AS flower_name    
         FROM team4_orders o
         CROSS JOIN team4_customers c 
-        ORDER BY o.order_date DESC LIMIT 500000 
+        CROSS JOIN team4_flowers f
+        ORDER BY o.order_date DESC 
+        LIMIT 50000; 
     """) #with the cartesian join and limit of 500,000 the query time is 10 sec
 
     results = cur.fetchall()
     cur.close()
     conn.close()
 
-    end_time = time.time()
-    query_time = end_time - start_time
-    return f"Query returned {len(results)} rows. Query time: {query_time:.4f} seconds"
+    end_time = time.time() #Query end time
+    query_time = end_time - start_time #calculate the query time to execute this query
+    return f"Query returned {len(results)} rows. Slow Query time: {query_time:.4f} seconds"
 
 # Fast Query 
 @app.route('/fast_query')
@@ -330,7 +304,11 @@ def fast_query():
     cur = conn.cursor()
 
     cur.execute("""
-        
+        SELECT c.name, o.order_date AS flower_name    
+        FROM team4_orders o
+        JOIN team4_customers c ON o.customer_id = c.id
+        JOIN team4_flowers f ON o.flower_id = f.id 
+        WHERE o.order_date > '2025-01-01'
     """)
 
     results = cur.fetchall()
@@ -339,7 +317,7 @@ def fast_query():
     
     end_time = time.time()
     query_time = end_time - start_time
-    return f"Query returned {len(results)} rows. Query time: {query_time:.4f}"
+    return f"Query returned {len(results)} rows. Fast Query time: {query_time:.4f}"
 
 # -- Reset the Database ID to 1 (Testing purpose ONLY)
 @app.route('/reset_flower_ids')
