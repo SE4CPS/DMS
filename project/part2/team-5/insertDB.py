@@ -29,18 +29,25 @@ try:
     # ('Peony', '2024-02-01', 0, 5);
     # """)
 
-    for i in range(42191,100000):
-        customer = i %42190 + 1
-        flower = i % 10 + 1
-        date =f"2025-03-{i % 31 + 1:02d}"
-        cur.execute("""
-        INSERT INTO team5_orders (customer_id,flower_id, order_date)
-        VALUES (%s, %s, %s)
-        """,(customer,flower,date))
-        print(f"Inserted order {i}")
+    # for i in range(305476,500000):
+    #     customer = i %100000 + 1
+    #     flower = i % 10 + 1
+    #     date =f"2025-03-{i % 31 + 1:02d}"
+    #     cur.execute("""
+    #     INSERT INTO team5_orders (customer_id,flower_id, order_date)
+    #     VALUES (%s, %s, %s)
+    #     """,(customer,flower,date))
+    #     print(f"Inserted order {i}")
+    # for i in range(42190,100000):
+    #     name = f"customer_{i+1}"
+    #     email = f"customer_{i+1}@example.com"
+    #     cur.execute("""
+    #     INSERT INTO team5_customers(name, email)
+    #     VALUES (%s, %s)
+    #     """, (name, email))
+    #     print(f"Inserted customer {i}")
 
-    print("Inserted data to successfully!")
-
+    print("Inserted data successfully!")
 
     # Close cursor and connection
     cur.close()
