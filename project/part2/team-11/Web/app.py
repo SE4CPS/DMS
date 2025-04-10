@@ -1,11 +1,12 @@
 import sqlite3
 from flask import Flask, request, jsonify, render_template, redirect
+import gen_insert_data 
 
 app = Flask(__name__)
 
 
 def get_db_connection():
-    DATABASE = "team11_flowers.db"
+    DATABASE = "../team11_flowers.db"
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     return conn
@@ -13,8 +14,6 @@ def get_db_connection():
 # -----------------------
 # 1) HOMEPAGE ROUTE (UI)
 # -----------------------
-
-
 @app.route('/')
 def index():
     """
@@ -32,8 +31,6 @@ def index():
 # -----------------------
 # 2) UI ROUTES (HTML)
 # -----------------------
-
-
 @app.route('/flowers_ui', methods=['GET'])
 def flowers_ui():
     """
@@ -44,24 +41,13 @@ def flowers_ui():
     cur = conn.cursor()
 
     cur.execute("SELECT * FROM team11_flowers;")
-    flowers = [
-        {"id": row[0], "name": row[1], "last_watered": row[2],
-            "water_level": row[3], "min_water_required": row[4]}
-        for row in cur.fetchall()
-    ]
+    flowers = cur.fetchall()
 
     cur.execute("SELECT * FROM team11_customers;")
-    customers = [
-        {"id": row[0], "name": row[1], "email": row[2]}
-        for row in cur.fetchall()
-    ]
-
+    customers = cur.fetchall()
+    
     cur.execute("SELECT * FROM team11_orders;")
-    orders = [
-        {"id": row[0], "customer_id": row[1],
-            "flower_id": row[2], "order_date": row[3]}
-        for row in cur.fetchall()
-    ]
+    orders =  cur.fetchall()
 
     cur.close()
     conn.close()
@@ -176,8 +162,6 @@ def update_flower_form(flower_id):
 # -----------------------
 # 3) JSON TABLES ROUTE (UI)
 # -----------------------
-
-
 @app.route('/JSON', methods=['GET'])
 def json_homepage():
     """
@@ -199,9 +183,7 @@ def json_homepage():
 # 4) JSON ENDPOINTS (API)
 # ---------------------------------
 
-# GET all flowers as JSON
-
-
+# GET flowers table (JSON)
 @app.route('/flowers', methods=['GET'])
 def get_flowers():
     conn = get_db_connection()
@@ -219,7 +201,7 @@ def get_flowers():
         "needs_watering": f["water_level"] < f["min_water_required"]
     } for f in flowers])
 
-
+# GET customers table (JSON)
 @app.route('/customers', methods=['GET'])
 def get_customers():
     conn = get_db_connection()
@@ -234,7 +216,7 @@ def get_customers():
         "email": f["email"],
     } for f in customers])
 
-
+# GET orders table (JSON)
 @app.route('/orders', methods=['GET'])
 def get_orders():
     conn = get_db_connection()
@@ -251,8 +233,6 @@ def get_orders():
     } for f in orders])
 
 # GET flowers that need watering (JSON)
-
-
 @app.route('/flowers/needs_watering', methods=['GET'])
 def get_flowers_needing_water():
     conn = get_db_connection()
@@ -272,8 +252,6 @@ def get_flowers_needing_water():
     } for f in flowers])
 
 # POST (Add a new flower) via JSON
-
-
 @app.route('/flowers', methods=['POST'])
 def add_flower():
     data = request.json
@@ -290,8 +268,6 @@ def add_flower():
     return jsonify({"message": "Flower added successfully!"})
 
 # PUT (Update a flower's watering status) via JSON
-
-
 @app.route('/flowers/<int:id>', methods=['PUT'])
 def update_flower(id):
     data = request.json
@@ -307,8 +283,6 @@ def update_flower(id):
     return jsonify({"message": "Flower updated successfully!"})
 
 # DELETE (Delete a flower) via JSON
-
-
 @app.route('/flowers/<int:id>', methods=['DELETE'])
 def delete_flower(id):
     conn = get_db_connection()
@@ -319,6 +293,57 @@ def delete_flower(id):
     conn.close()
     return jsonify({"message": "Flower deleted successfully!"})
 
+# Slow query
+@app.route('/slow_query', methods=['GET'])
+def slow_query():
+    import time
+    start = time.time()
+
+    # Insert new data
+    gen_insert_data.generate_data()
+
+    conn = sqlite3.connect("../team11_flowers.db")
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+
+    # Sort, Join, etc.
+    cur.execute('''
+        SELECT 
+            o.id AS order_id,
+            c.name AS customer_name,
+            c.email,
+            f.name AS flower_name,
+            o.order_date,
+            LENGTH(c.email) * LENGTH(f.name) * ABS(RANDOM() % 100000) AS fake_load,
+            HEX(RANDOMBLOB(64)) AS fake_encryption_hash
+        
+        FROM team11_orders o
+        JOIN team11_customers c ON o.customer_id = c.id
+        JOIN team11_flowers f ON o.flower_id = f.id
+
+        ORDER BY fake_load DESC, o.order_date ASC
+    ''')
+
+    rows = cur.fetchall()
+    conn.close()
+
+    # Show only the first 5 and last 5 data (for UI)
+    limited_rows = rows[:5] + rows[-5:] if len(rows) > 10 else rows
+
+    results = [{
+        "order_id": r["order_id"],
+        "customer_name": r["customer_name"],
+        "email": r["email"],
+        "flower_name": r["flower_name"],
+        "order_date": r["order_date"],
+        "fake_load": r["fake_load"],
+        "fake_encryption_hash": r["fake_encryption_hash"]
+    } for r in limited_rows]
+
+    return jsonify({
+        "elapsed_seconds": round(time.time() - start, 2),
+        "results": results
+    })
 
 # ---------------------------------
 # Entry Point

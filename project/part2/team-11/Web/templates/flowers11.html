@@ -70,7 +70,7 @@
         <br>
         <button type="submit">Add Flower</button>
     </form>
-
+    <br>
     <h3>All Flowers</h3>
     <!-- Table -->
     <table>
@@ -110,7 +110,7 @@
         </tr>
         {% endfor %}
     </table>
-
+    <br>
     <h3>All Customers</h3>
     <!-- Table -->
     <table>
@@ -120,8 +120,20 @@
             <th>Email</th>
         </tr>
 
-        <!-- Loop over 'customers' passed in from Flask (flowers_ui route) -->
-        {% for f in customers[:102000] %}
+        <!-- First 5 Customers -->
+        {% for f in customers[:5] %}
+        <tr>
+            <td>{{ f["id"] }}</td>
+            <td>{{ f["name"] }}</td>
+            <td>{{ f["email"] }}</td>
+        </tr>
+        {% endfor %}
+
+        <!-- ... Separator Row ... -->
+        <tr><td colspan="3" style="text-align:center;">...</td></tr>
+
+        <!-- Last 5 Customers -->
+        {% for f in customers[-5:] %}
         <tr>
             <td>{{ f["id"] }}</td>
             <td>{{ f["name"] }}</td>
@@ -129,7 +141,7 @@
         </tr>
         {% endfor %}
     </table>
-
+    <br>
     <h3>All Orders</h3>
     <!-- Table -->
     <table>
@@ -140,8 +152,21 @@
             <th>Order Date</th>
         </tr>
 
-        <!-- Loop over 'orders' passed in from Flask (flowers_ui route) -->
-        {% for f in orders[:501005] %}
+        <!-- First 5 Orders -->
+        {% for f in orders[:5] %}
+        <tr>
+            <td>{{ f["id"] }}</td>
+            <td>{{ f["customer_id"] }}</td>
+            <td>{{ f["flower_id"] }}</td>
+            <td>{{ f["order_date"] }}</td>
+        </tr>
+        {% endfor %}
+
+        <!-- ... Separator Row ... -->
+        <tr><td colspan="4" style="text-align:center;">...</td></tr>
+
+        <!-- Last 5 Orders -->
+        {% for f in orders[-5:] %}
         <tr>
             <td>{{ f["id"] }}</td>
             <td>{{ f["customer_id"] }}</td>
@@ -150,6 +175,76 @@
         </tr>
         {% endfor %}
     </table>
+    <br>
+    <h3>Slow Query</h3>
+    <!-- Slow Query -->
+    <button onclick="runSlowQuery()">Simulate Slow Query</button>
+    <p id="query-time"></p>
+    <div id="query-results"></div>
+
+    <script>
+        function runSlowQuery() {
+            document.getElementById("query-time").textContent = "Running slow query... please wait ⏳";
+            document.getElementById("query-results").innerHTML = "";
+        
+            fetch('/slow_query')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("query-time").textContent = `⏱ Query took ${data.elapsed_seconds} seconds`;
+
+                    const results = data.results;
+                    const table = document.createElement("table");
+                    table.border = "1";
+                    const header = table.insertRow();
+                    ["Order ID", "Customer Name", "Email", "Flower Name", "Order Date", "Fake Load", "Fake Hash"].forEach(col => {
+                        const th = document.createElement("th");
+                        th.textContent = col;
+                        header.appendChild(th);
+                    });
+
+        
+                    const firstFive = results.slice(0, 5);
+                    const lastFive = results.slice(-5);
+        
+                    // Insert first 5 rows
+                    firstFive.forEach(row => {
+                        const tr = table.insertRow();
+                        tr.insertCell().textContent = row.order_id;
+                        tr.insertCell().textContent = row.customer_name;
+                        tr.insertCell().textContent = row.email;
+                        tr.insertCell().textContent = row.flower_name;
+                        tr.insertCell().textContent = row.order_date;
+                        tr.insertCell().textContent = row.fake_load;
+                        tr.insertCell().textContent = row.fake_encryption_hash.slice(0, 10) + '...';
+                    });
+        
+                    // Insert a separator row
+                    const separator = table.insertRow();
+                    const sepCell = separator.insertCell();
+                    sepCell.colSpan = 7;
+                    sepCell.style.textAlign = "center";
+                    sepCell.textContent = "...";
+        
+                    // Insert last 5 rows
+                    lastFive.forEach(row => {
+                        const tr = table.insertRow();
+                        tr.insertCell().textContent = row.order_id;
+                        tr.insertCell().textContent = row.customer_name;
+                        tr.insertCell().textContent = row.email;
+                        tr.insertCell().textContent = row.flower_name;
+                        tr.insertCell().textContent = row.order_date;
+                        tr.insertCell().textContent = row.fake_load;
+                        tr.insertCell().textContent = row.fake_encryption_hash.slice(0, 10) + '...';
+                    });
+        
+                    document.getElementById("query-results").appendChild(table);
+                })
+                .catch(error => {
+                    document.getElementById("query-time").textContent = "❌ Error running query.";
+                    console.error(error);
+                });
+        }
+    </script>           
 </body>
 
 </html>

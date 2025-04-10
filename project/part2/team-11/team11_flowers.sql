@@ -19,8 +19,10 @@ CREATE TABLE team11_orders (
     order_date DATE NOT NULL
 );
 
+/*
 INSERT INTO team11_flowers (name, last_watered, water_level, min_water_required) 
 VALUES 
 ('Rose', '2024-02-10', 20, 5),
 ('Tulip', '2024-02-08', 10, 7),
 ('Lily', '2024-02-05', 3, 5);
+*/
