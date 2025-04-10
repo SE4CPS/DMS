@@ -306,7 +306,7 @@ def slow_query():
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
 
-    # Sort, Join, etc.
+    # Select, Encryption, Join, Sort
     cur.execute('''
         SELECT 
             o.id AS order_id,
