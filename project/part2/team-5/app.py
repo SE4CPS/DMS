@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect,jsonify
 import psycopg2
+import time
 
 app = Flask(__name__)
 
@@ -95,6 +96,57 @@ def delete_flower(flower_id):
     cur.close()
     conn.close()
     return jsonify({"message": "Flower deleted successfully!"})
+
+# Slow query functionality
+@app.route('/orders/slow_query')
+def slow_query():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    start_time = time.time()
+
+    cur.execute(""" 
+        SELECT c.name, c.email, f.name AS flower_name, o.order_date
+        FROM team5_orders o
+        JOIN team5_customers c ON o.customer_id = c.id
+        JOIN team5_flowers f ON o.flower_id = f.id
+        ORDER BY o.order_date DESC, c.name
+        LIMIT 1000;         
+                """)  
+    
+    rows = cur.fetchall()
+    duration = time.time() - start_time
+    cur.close()
+    conn.close()
+    return jsonify({
+        "duration_seconds": round(duration, 2),
+        "sample_records": rows[:10]
+    })
+
+ # Fast query functionality
+@app.route('/fast_query', methods=['GET'])
+def fast_query():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    start_time = time.time()
+
+    cur.execute("""
+        SELECT c.name, c.email, f.name AS flower_name, o.order_date
+        FROM team5_orders o
+        JOIN team5_customers c ON o.customer_id = c.id
+        JOIN team5_flowers f ON o.flower_id = f.id
+        LIMIT 1000;
+                    """)
+    
+    rows = cur.fetchall()
+
+    duration = time.time() - start_time
+    cur.close()
+    conn.close()
+    
+    return jsonify({
+        "query": "SELECT c.name, c.email, f.name AS flower_name, o.order_date FROM team5_orders o JOIN team5_customers c ON o.customer_id = c.id JOIN team5_flowers f ON o.flower_id = f.id LIMIT 1000;",
+        "duration_seconds": round(duration, 2)
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
