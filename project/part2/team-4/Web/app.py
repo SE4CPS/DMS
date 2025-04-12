@@ -278,9 +278,10 @@ def water_flower(flower_id):
 @app.route('/slow_query')
 def slow_query():
     slow_sql = """
-        SELECT c.name, o.order_date AS flower_name
+        SELECT c.name, o.order_date, f.name AS flower_name
         FROM team4_orders o
         CROSS JOIN team4_customers c 
+        CROSS JOIN team4_flowers f
         ORDER BY o.order_date DESC LIMIT 500000 
     """ # with the cartesian join and limit of 500,000 the query time is 10 sec
 
