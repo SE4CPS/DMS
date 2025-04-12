@@ -244,7 +244,71 @@
                     console.error(error);
                 });
         }
-    </script>           
+    </script>
+    <br>
+    <h3>Fast Query</h3>
+    <!-- Fast Query -->
+    <button onclick="runFastQuery()">Simulate Fast Query</button>
+    <p id="query-time-fast"></p>
+    <div id="query-results-fast"></div>
+    <script>
+        function runFastQuery() {
+            document.getElementById("query-time-fast").textContent = "Running Fast query... please wait ⏳";
+            document.getElementById("query-results-fast").innerHTML = "";
+
+            fetch('/fast_query')
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById("query-time-fast").textContent = `⏱ Query took ${data.elapsed_seconds} seconds`;
+
+                        const results = data.results;
+                        const table = document.createElement("table");
+                        table.border = "1";
+                        const header = table.insertRow();
+                        ["Order ID", "Customer Name", "Email", "Flower Name", "Order Date"].forEach(col => {
+                            const th = document.createElement("th");
+                            th.textContent = col;
+                            header.appendChild(th);
+                        });
+
+                        const firstFive = results.slice(0, 5);
+                        const lastFive = results.slice(-5);
+
+                        // Insert first 5 rows
+                        firstFive.forEach(row => {
+                            const tr = table.insertRow();
+                            tr.insertCell().textContent = row.order_id;
+                            tr.insertCell().textContent = row.customer_name;
+                            tr.insertCell().textContent = row.email;
+                            tr.insertCell().textContent = row.flower_name;
+                            tr.insertCell().textContent = row.order_date;
+                        });
+
+                        // Insert a separator row
+                        const separator = table.insertRow();
+                        const sepCell = separator.insertCell();
+                        sepCell.colSpan = 7;
+                        sepCell.style.textAlign = "center";
+                        sepCell.textContent = "...";
+
+                        // Insert last 5 rows
+                        lastFive.forEach(row => {
+                            const tr = table.insertRow();
+                            tr.insertCell().textContent = row.order_id;
+                            tr.insertCell().textContent = row.customer_name;
+                            tr.insertCell().textContent = row.email;
+                            tr.insertCell().textContent = row.flower_name;
+                            tr.insertCell().textContent = row.order_date;
+                        });
+
+                        document.getElementById("query-results-fast").appendChild(table);
+                    })
+                    .catch(error => {
+                        document.getElementById("query-time-fast").textContent = "❌ Error running query.";
+                        console.error(error);
+                    });
+        }
+    </script>
 </body>
 
 </html>
