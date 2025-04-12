@@ -1,6 +1,7 @@
 import sqlite3
 from flask import Flask, request, jsonify, render_template, redirect
-import gen_insert_data 
+import gen_insert_data
+import time
 
 app = Flask(__name__)
 
@@ -296,7 +297,6 @@ def delete_flower(id):
 # Slow query
 @app.route('/slow_query', methods=['GET'])
 def slow_query():
-    import time
     start = time.time()
 
     # Insert new data
@@ -338,6 +338,49 @@ def slow_query():
         "order_date": r["order_date"],
         "fake_load": r["fake_load"],
         "fake_encryption_hash": r["fake_encryption_hash"]
+    } for r in limited_rows]
+
+    return jsonify({
+        "elapsed_seconds": round(time.time() - start, 2),
+        "results": results
+    })
+
+# Fast query
+@app.route('/fast_query', methods=['GET'])
+def fast_query():
+    start = time.time()
+    conn = sqlite3.connect("../team11_flowers.db")
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+
+    # Select Data
+    cur.execute('''
+        SELECT 
+            o.id AS order_id,
+            c.name AS customer_name,
+            c.email,
+            f.name AS flower_name,
+            o.order_date,
+            LENGTH(c.email) * LENGTH(f.name) * ABS(RANDOM() % 100000) AS fake_load
+
+        FROM team11_orders o
+        JOIN team11_customers c ON o.customer_id = c.id
+        JOIN team11_flowers f ON o.flower_id = f.id
+        ORDER BY fake_load DESC, o.order_date ASC
+    ''')
+
+    rows = cur.fetchall()
+    conn.close()
+
+    # Show only the first 5 and last 5 data (for UI)
+    limited_rows = rows[:5] + rows[-5:] if len(rows) > 10 else rows
+
+    results = [{
+        "order_id": r["order_id"],
+        "customer_name": r["customer_name"],
+        "email": r["email"],
+        "flower_name": r["flower_name"],
+        "order_date": r["order_date"],
     } for r in limited_rows]
 
     return jsonify({
