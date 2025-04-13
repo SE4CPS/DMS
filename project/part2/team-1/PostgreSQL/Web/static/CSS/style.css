@@ -54,6 +54,10 @@ body {
     width: 130px;
 }
 
+#queryButtonContainter{
+    display: flex;
+}
+
 #buttonContainer button:hover{
     background-color: #3498DB;
 }

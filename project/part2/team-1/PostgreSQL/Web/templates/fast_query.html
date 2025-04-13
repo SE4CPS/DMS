@@ -41,40 +41,8 @@
             <a href="/fast_query"><button>Fast Query</button></a>
         </div>
 
-        <h3> All Flowers</h3>
-        {% if flowers %}
-        <table>
-            <!--Column Names-->
-            <thread>
-                <tr>
-                    <th>Id</th>
-                    <th>Name</th>
-                    <th>Environment</th>
-                    <th>Initial Water Level (inches)</th>
-                    <th>Current Water Level (inches)</th>
-                    <th>Minimum Water Level (inches)</th>
-                    <th>Last Watered (YYYY-MM-DD)</th>
-                </tr>
-            </thread>
-
-            <!--Rows for each flower in the database-->
-            <tbody>
-                {% for flower in flowers %}
-                    <tr>
-                        <td>{{ flower[0] }}</td>
-                        <td>{{ flower[1] }}</td>
-                        <td>{{ flower[2] }}</td>
-                        <td>{{ flower[3] }}</td>
-                        <td>{{ flower[4] }}</td>
-                        <td>{{ flower[5] }}</td>
-                        <td>{{ flower[6].strftime('%Y-%m-%d') if flower[6] else 'N/A' }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-            <p>No flowers found.</p>
-        {% endif %}
+        <h3> Fast Query Results </h3>
+        
         
         <button id="muteButton"></button>
     </body>
