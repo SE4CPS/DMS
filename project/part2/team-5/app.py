@@ -15,6 +15,8 @@ def index():
     <h2>Flower Shop Management</h2>
     <button onclick="location.href='/flowers'">Manage Flowers</button>
     <button onclick="location.href='/flowers/needs_watering'">Manage Water Levels</button>
+    <button onclick="location.href='/fast_query'">Fast Query</button>
+    <button onclick="location.href='/orders/slow_query'">Slow Query</button>
     '''
 
 # Get all flowers
@@ -27,6 +29,10 @@ def manage_flowers():
     cur.close()
     conn.close()
     return render_template('flowers.html', flowers=flowers)
+
+@app.route('/queries')
+def queries():
+    return render_template('queries.html')
 
 @app.route('/flowers/daily_loss', methods=['GET'])
 def daily_water_loss():
@@ -104,15 +110,15 @@ def slow_query():
     cur = conn.cursor()
     start_time = time.time()
 
-    cur.execute(""" 
-        SELECT c.name, c.email, f.name AS flower_name, o.order_date
+    cur.execute("""
+        SELECT
+        *
         FROM team5_orders o
-        JOIN team5_customers c ON o.customer_id = c.id
-        JOIN team5_flowers f ON o.flower_id = f.id
+        FULL JOIN team5_customers c ON o.customer_id = c.id
+        FULL JOIN team5_flowers f ON o.flower_id = f.id
         ORDER BY o.order_date DESC, c.name
-        LIMIT 1000;         
-                """)  
-    
+                """)
+
     rows = cur.fetchall()
     duration = time.time() - start_time
     cur.close()
@@ -136,13 +142,13 @@ def fast_query():
         JOIN team5_flowers f ON o.flower_id = f.id
         LIMIT 1000;
                     """)
-    
+
     rows = cur.fetchall()
 
     duration = time.time() - start_time
     cur.close()
     conn.close()
-    
+
     return jsonify({
         "query": "SELECT c.name, c.email, f.name AS flower_name, o.order_date FROM team5_orders o JOIN team5_customers c ON o.customer_id = c.id JOIN team5_flowers f ON o.flower_id = f.id LIMIT 1000;",
         "duration_seconds": round(duration, 2)
