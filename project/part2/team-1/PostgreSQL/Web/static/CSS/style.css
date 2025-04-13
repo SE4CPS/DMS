@@ -56,6 +56,16 @@ body {
 
 #queryButtonContainter{
     display: flex;
+    margin-bottom: 20px;
+}
+
+#queryButtonContainter button{
+    padding: 5px;
+    margin: 5px;
+    width: 130px;
+}
+#queryButtonContainter button:hover{
+    background-color: #3498DB;
 }
 
 #buttonContainer button:hover{
