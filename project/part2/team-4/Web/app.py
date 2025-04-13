@@ -57,6 +57,13 @@ try:
         );
     """)
 
+     # --- INDEXES FOR PERFORMANCE OPTIMIZATION ---
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_customer_id ON team4_orders(customer_id);")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_flower_id ON team4_orders(flower_id);")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_customers_id ON team4_customers(id);")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_flowers_id ON team4_flowers(id);")
+    
+
     # Insert 100,000 customers if not already inserted - Project 2
     cur.execute("SELECT COUNT(*) FROM team4_customers;")
     customer_count = cur.fetchone()[0]
