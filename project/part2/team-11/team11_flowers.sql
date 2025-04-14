@@ -19,8 +19,15 @@ CREATE TABLE team11_orders (
     order_date DATE NOT NULL
 );
 
+CREATE INDEX IF NOT EXISTS index_orders_customer_id ON team11_orders(customer_id);
+CREATE INDEX IF NOT EXISTS index_orders_flower_id ON team11_orders(flower_id);
+CREATE INDEX IF NOT EXISTS index_customer_id ON team11_customers(id);
+CREATE INDEX IF NOT EXISTS index_flowers_id ON team11_flowers(id);
+
+/*
 INSERT INTO team11_flowers (name, last_watered, water_level, min_water_required) 
 VALUES 
 ('Rose', '2024-02-10', 20, 5),
 ('Tulip', '2024-02-08', 10, 7),
 ('Lily', '2024-02-05', 3, 5);
+*/

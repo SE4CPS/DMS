@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect
-import psycopg2, os, sys, datetime
+import psycopg2,os, sys, datetime
 import random
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -102,6 +102,17 @@ def remove_flower():
     flowers = db.manage_flowers()
 
     return render_template('delete_flower.html', flowers=flowers, delete_flowers=delete_flowers)
+
+# Query functions 
+@app.route('/slow_query')
+def slow_query():
+    results, query_time = db.slow_query()
+    return render_template('slow_query.html', flowers = results, query_time = query_time)
+
+@app.route('/fast_query')
+def fast_query():
+    return render_template('fast_query.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)

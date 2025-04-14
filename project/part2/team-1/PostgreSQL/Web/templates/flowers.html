@@ -35,8 +35,12 @@
             <a href = "/water_flower"><button>Water Flower</button></a>
             <a href="/simulate_rainfall"><button>Simulate Rain</button></a>
         </div>
+        <!-- Query Buttons-->
+        <div id = "queryButtonContainter">
+            <a href="/slow_query"><button>Slow Query</button></a>
+            <a href="/fast_query"><button>Fast Query</button></a>
+        </div>
 
-        <!--TO DO: Form ONLY populates when "Add Flower" button is clicked-->
         <form action="/add_flower" method="post" onsubmit="return confirmAddFlower();">
             <div class="label-input-grouped">
                 <label for="name">Flower:</label>
@@ -62,21 +66,6 @@
             </div>
             <button type="submit">Submit</button>
         </form>
-        
-        <!--
-        <h3>Available Flowers</h3>
-        <ul>
-            {% if flowers %}
-            {% for flower in flowers %}
-            <li>
-                {{ flower }}
-            </li>
-            {% endfor %}
-            {% else %}
-            <li>No flowers available.</li>
-            {% endif %}
-        </ul>
-        -->
 
         <button id="muteButton"></button>
     </div>

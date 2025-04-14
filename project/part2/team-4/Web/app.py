@@ -1,7 +1,12 @@
 import random
 from flask import Flask, render_template, request, redirect
 import psycopg2
+from datetime import timedelta, date
 import datetime
+import time
+from faker import Faker
+
+fake = Faker()  # Initialize Faker - Project 2
 
 app = Flask(__name__)
 DATABASE_URL = "postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
@@ -33,7 +38,7 @@ try:
         );
     """)
 
-    # Creates the customers table
+    # Creates the customers table - Project 2
     cur.execute("""
         CREATE TABLE IF NOT EXISTS team4_customers (
             id SERIAL PRIMARY KEY,
@@ -42,25 +47,36 @@ try:
         );
     """)
 
-    # Creates the orders table
+    # Creates the orders table - Project 2
     cur.execute("""
         CREATE TABLE IF NOT EXISTS team4_orders (
             id SERIAL PRIMARY KEY,
             customer_id INT REFERENCES team4_customers(id),
             flower_id INT REFERENCES team4_flowers(id),
-            order_ate DATE
+            order_date DATE
         );
     """)
 
-    # Insert 100,000 customers if not already inserted
+     # --- INDEXES FOR PERFORMANCE OPTIMIZATION ---
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_customer_id ON team4_orders(customer_id);")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_flower_id ON team4_orders(flower_id);")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_customers_id ON team4_customers(id);")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_flowers_id ON team4_flowers(id);")
+    
+
+    # Insert 100,000 customers if not already inserted - Project 2
     cur.execute("SELECT COUNT(*) FROM team4_customers;")
     customer_count = cur.fetchone()[0]
     if customer_count == 0:
         print("Inserting 100,000 customers...")
         for i in range(100000):
-            cur.execute("INSERT INTO team4_customers (name, email) VALUES (%s, %s)",
-                        (f'Customer_{i}', f'customer{i}@email.com'))
+            # Using the Faker library to create realisitc data
+            name = fake.name()
+            email = fake.unique.email()
+            cur.execute("INSERT INTO team4_customers (name, email) VALUES (%s, %s)", (name, email))
         print("Customer data inserted.")
+    else:
+        print(f"Already {customer_count} customers in the database.")
 
     # Insert 500,000 orders if not already inserted
     cur.execute("SELECT COUNT(*) FROM team4_orders;")
@@ -68,12 +84,18 @@ try:
     if order_count == 0:
         print("Inserting 500,000 orders...")
         for i in range(500000):
+            customer_id = random.randint(1, 100000)
+            flower_id = random.randint(1, 3)
+            days_ago = random.randint(0, 365)
             cur.execute("""
                 INSERT INTO team4_orders (customer_id, flower_id, order_date)
                 VALUES (%s, %s, CURRENT_DATE - INTERVAL '%s days')
-            """, (random.randint(1, 100000), random.randint(1, 3), random.randint(0, 365)))
+            """, (customer_id, flower_id, days_ago))
+        print(f"Inserted {i} orders so far... (customer_id={customer_id}, flower_id={flower_id}, days_ago={days_ago})")
         print("Order data inserted.")
-
+    else:
+        print(f"Already {order_count} orders in the database.")
+    
     # Creates the table with sample data if empty
     cur.execute("SELECT COUNT(*) FROM team4_flowers;")
     count = cur.fetchone()[0]
@@ -87,6 +109,7 @@ try:
         """)
         print("Sample data inserted.")
     else:
+        print(f"Number of rows in team4_flowers table: {count}")
         print("Sample data already exists.")
 
 except Exception as e:
@@ -150,17 +173,6 @@ def flowers():
     conn.close()
     
     return render_template('flowers.html', flowers=formatted_flowers)
-
-# Get all Flowers
-@app.route('/flowers')
-def manage_flowers():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM team4_flowers")
-    flowers = cur.fetchall()
-    cur.close()
-    conn.close()
-    return render_template('flowers.html', flowers=flowers)
 
 # Add Flower
 @app.route('/add_flower', methods=['POST'])
@@ -269,25 +281,65 @@ def water_flower(flower_id):
 
     return redirect('/flowers')
 
-# Slow Query
+# Slow Query - Project 2
 @app.route('/slow_query')
 def slow_query():
+    slow_sql = """
+        SELECT c.name, o.order_date, f.name AS flower_name
+        FROM team4_orders o
+        CROSS JOIN team4_customers c 
+        CROSS JOIN team4_flowers f
+        ORDER BY o.order_date DESC LIMIT 500000 
+    """ # with the cartesian join and limit of 500,000 the query time is 10 sec
+
+    start_time = time.time()
     conn = get_db_connection()
     cur = conn.cursor()
 
-    cur.execute("""
-        SELECT c.name, o.order_date, f.name AS flower_name
-        FROM team4_orders o
-        JOIN team4_customers c ON o.customer_id = c.id
-        JOIN team4_flowers f ON o.flower_id = f.id
-        ORDER BY o.order_date DESC
-    """)
-
+    cur.execute(slow_sql)
     results = cur.fetchall()
     cur.close()
     conn.close()
 
-    return f"Query returned {len(results)} rows."
+    end_time = time.time()
+    query_time = end_time - start_time
+    formatted_time = f"{query_time:.4f}" # Format query_time to 4 decimal places
+    return render_template("flowers.html",
+                           flowers = [], # Empty list to not conflict with flower table
+                           query_type = "Slow Query",
+                           query = slow_sql.strip(),
+                           time = formatted_time,
+                           row_count = len(results))
+
+# Fast Query 
+@app.route('/fast_query')
+def fast_query():
+    fast_sql = """
+        SELECT o.id, c.name AS customer_name, f.name AS flower_name, o.order_date
+        FROM team4_orders o
+        JOIN team4_customers c ON o.customer_id = c.id
+        JOIN team4_flowers f ON o.flower_id = f.id
+        LIMIT 10;
+    """
+
+    start_time = time.time()
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute(fast_sql)
+    results = cur.fetchall()
+    cur.close()
+    conn.close()
+    
+    end_time = time.time()
+    query_time = end_time - start_time
+    formatted_time = f"{query_time:.4f}" # Format query_time to 4 decimal places
+    return render_template("flowers.html",
+                           flowers = [], # Prevents template errors during query-only view
+                           query_type = "Fast Query",
+                           query = fast_sql.strip(),
+                           time = formatted_time,
+                           row_count = len(results))
 
 # -- Reset the Database ID to 1 (Testing purpose ONLY)
 @app.route('/reset_flower_ids')
