@@ -9,7 +9,7 @@ DATABASE_URL = "postgresql://neondb_owner:npg_QuIm1wktTiV0@ep-nameless-base-aab6
 conn = psycopg2.connect(DATABASE_URL)
 print("Connected to PostgreSQL successfully!")
 
-@app.route('/table', methods=['POST'])
+@app.route('/table', methods=['GET'])
 def get_flowers():
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()

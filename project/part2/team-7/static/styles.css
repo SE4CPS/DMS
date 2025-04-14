@@ -78,3 +78,37 @@ th {
 .watered {
     background-color: #ccffcc;
 }
+
+.Slow_fast {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* space between the buttons */
+    margin-bottom: 20px;
+}
+
+.slow, .fast {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.slow_btn {
+    padding: 10px 20px;
+    margin: 10px 0;
+    background: #ff0000;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+.fast-btn {
+    padding: 10px 20px;
+    margin: 10px 0;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+}

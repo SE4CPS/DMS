@@ -1,6 +1,7 @@
 import psycopg2
 import json
 from flask import Flask, render_template, request, jsonify
+import time
 
 app = Flask(__name__)
 
@@ -192,6 +193,50 @@ def delete_multiple_flowers():
 
     return jsonify({"message": f"{deleted_count} flowers deleted successfully."}), 200
 
+
+@app.route('/slow', methods=['GET'])
+def slow_query():
+    start_time = time.time()
+    conn = psycopg2.connect(DATABASE_URL)
+    cur = conn.cursor()
+    
+    # Example of a slow query (e.g., missing index or large dataset scan)
+    cur.execute("SELECT * FROM team7_flowers ORDER BY name;")  # Replace with your actual slow query if needed
+    
+    flowers = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    end_time = time.time()
+    duration = end_time - start_time
+    
+    return jsonify({
+        "query_type": "slow",
+        "duration_seconds": round(duration, 4),
+        "results": flowers
+    })
+
+@app.route('/fast', methods=['GET'])
+def fast_query():
+    start_time = time.time()
+    conn = psycopg2.connect(DATABASE_URL)
+    cur = conn.cursor()
+    
+    # Example of a fast query (e.g., uses index or LIMIT)
+    cur.execute("SELECT * FROM team7_flowers LIMIT 10;")  # Replace with your actual fast query
+    
+    flowers = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    end_time = time.time()
+    duration = end_time - start_time
+    
+    return jsonify({
+        "query_type": "slow",
+        "duration_seconds": round(duration, 4),
+        "results": flowers
+    })
 
 # Run the application
 if __name__ == '__main__':
