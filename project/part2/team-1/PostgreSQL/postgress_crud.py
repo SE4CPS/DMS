@@ -2,7 +2,7 @@ from dotenv import load_dotenv, dotenv_values
 import psycopg2, time, os
 
 # Input the absolute path to the .env file
-load_dotenv()
+load_dotenv(r"C:\Users\david\OneDrive\Desktop\UoP\Spring 2025\COMP 163\Water_Run_Env\water_run.env")
 
 # AWS PostgreSQL connection
 DATABASE_URL = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_URI')}:5432/{os.getenv('DB_NAME')}"
@@ -169,7 +169,34 @@ def fast_query():
     conn = get_db_connection()
     cur = conn.cursor()
     
-    
+    start_time = time.time()
+
+    # Create indexes to speed up the query
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_date ON orders(order_date DESC);")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_customer_id ON orders(customer_id);")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_flower_id ON orders(flower_id);")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_customer_id ON customer(customer_id);")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_flower_id ON flower(flower_id);")
+
+    # Fetch 1000 of the most recent orders to include: order_id, customer_name, decrypted phone number, flower_name, and order_date
+    cur.execute(
+        """
+        SELECT
+            o.order_id,
+            c.customer_name,
+            pgp_sym_decrypt(c.encrypted_phone, 'SecretKey')::text AS decrypted_phone,
+            f.name AS flower_name,
+            o.order_date
+        FROM orders o
+        JOIN customer c ON o.customer_id = c.customer_id
+        JOIN flower f ON o.flower_id = f.flower_id
+        ORDER BY o.order_date DESC
+        LIMIT 1000;
+        """)
+    end_time = time.time()
+    flowers = cur.fetchall()
+    query_time = round(end_time - start_time, 3)
+
     cur.close()
     conn.close()
-    return flowers
+    return flowers, query_time

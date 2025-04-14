@@ -111,7 +111,8 @@ def slow_query():
 
 @app.route('/fast_query')
 def fast_query():
-    return render_template('fast_query.html')
+    results, query_time = db.fast_query()
+    return render_template('fast_query.html', flowers = results, query_time = query_time)
 
 
 if __name__ == '__main__':

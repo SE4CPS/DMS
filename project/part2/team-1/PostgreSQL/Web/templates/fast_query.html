@@ -10,9 +10,6 @@
 </head>
 
 <body>
-    <audio id="introMusic" loop autoplay muted>
-        <source src="{{url_for('static', filename='Audio/longnight.mp3') }}" type="audio/mpeg">
-    </audio>
 
     <!--Container for the menu, form, and form inputs-->
     <div id="menuContainer">
@@ -42,9 +39,26 @@
         </div>
 
         <h3> Fast Query Results </h3>
+        <h4> Query took {{ query_time }} seconds</h4>
+        <table>
+            <tr>
+                <th>Order ID</th>
+                <th>Customer Name</th>
+                <th>Phone Number</th>
+                <th>Flower Name</th>
+                <th>Order Date</th>
+            </tr>
+            {% for row in flowers[:100] %} <!--Rending only 100 to PREVENT browser crashes-->
+            <tr>
+                <td>{{ flowers[0][0] }}</td>
+                <td>{{ flowers[0][1] }}</td>
+                <td>{{ flowers[0][2] }}</td>
+                <td>{{ flowers[0][3] }}</td>
+                <td>{{ flowers[0][4] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
         
-        
-        <button id="muteButton"></button>
     </body>
 
 </html>
