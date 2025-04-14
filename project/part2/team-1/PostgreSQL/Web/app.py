@@ -106,7 +106,8 @@ def remove_flower():
 # Query functions 
 @app.route('/slow_query')
 def slow_query():
-    return render_template('slow_query.html')
+    results, query_time = db.slow_query()
+    return render_template('slow_query.html', flowers = results, query_time = query_time)
 
 @app.route('/fast_query')
 def fast_query():

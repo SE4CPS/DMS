@@ -42,7 +42,25 @@
         </div>
 
         <h3> Slow Query Results </h3>
-        
+        <h4> Query took {{ query_time }} seconds</h4>
+        <table>
+            <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Phone</th>
+                <th>Flower</th>
+                <th>Date</th>
+            </tr>
+            {% for row in flowers[:200] %} <!--Rending only 200 to PREVENT broswer crashes-->
+            <tr>
+                <td>{{ row[0] }}</td>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+                <td>{{ row[3] }}</td>
+                <td>{{ row[4] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
         
         <button id="muteButton"></button>
     </body>
