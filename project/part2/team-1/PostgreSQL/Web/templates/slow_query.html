@@ -43,6 +43,10 @@
 
         <h3> Slow Query Results </h3>
         <h4> Query took {{ query_time }} seconds</h4>
+
+        <h4>What's the Slow Query Do:</h4>
+        <p>Slow Query Retrieves 50000 of the most recent orders, by joining the Customer and Flower tables, then presents them by descending order date.</p>
+
         <table>
             <tr>
                 <th>Order ID</th>

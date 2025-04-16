@@ -40,6 +40,18 @@
 
         <h3> Fast Query Results </h3>
         <h4> Query took {{ query_time }} seconds</h4>
+
+        <h4>What's the Fast Query Do:</h4>
+        <p>Fast Query Retrieves 1000 of the most recent orders by joining the Customer and Flower tables and presents them by descending order date.</p>
+        <p>Fast Query: Indexed the following:</p>
+        <ol>
+            <li>Order table's: order_date</li>
+            <li>Order table's: customer_id</li>
+            <li>Order table's: flower_id</li>
+            <li>Customer table's: customer_id</li>
+            <li>Flower table's: flower_id</li>
+        </ol>
+
         <table>
             <tr>
                 <th>Order ID</th>
