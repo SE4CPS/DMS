@@ -85,5 +85,5 @@
 - Displays the time taken to execute the fast query along with the result of said query
 - Fast Query: This query retrieves 1,000 of the most recent orders with the order ID, customer name, decrypted phone number, flower ordered, and date ordered 
 - The query also uses decryption and join statements
-Improvements from Slow Query: Indexes are created for order_id, customer_name, encrypted_phone, flower_name, order_date.
+- Improvements from Slow Query: Indexes are created for order_id, customer_name, encrypted_phone, flower_name, order_date.
 <img src="PostgreSQL/Web/static/Images/Fast_Query_Page.png"  width="500" height="500">
