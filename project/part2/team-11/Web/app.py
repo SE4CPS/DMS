@@ -1,4 +1,5 @@
 import sqlite3
+import time
 from flask import Flask, request, jsonify, render_template, redirect
 import gen_insert_data
 import time
@@ -44,15 +45,40 @@ def flowers_ui():
     cur.execute("SELECT * FROM team11_flowers;")
     flowers = cur.fetchall()
 
+<<<<<<< HEAD
+
+    # Start timer
+    start_time = time.time()
+
+# testing for timer, set id to less then 10 to show less data
+    cur.execute("SELECT * FROM team11_customers where id < 70000;")
+    customers = [
+        {"id": row[0], "name": row[1], "email": row[2]}
+        for row in cur.fetchall()
+    ]
+
+# testing for timer, set id to less then 10 to show less data
+    cur.execute("SELECT * FROM team11_orders where id < 70000;")
+    orders = [
+        {"id": row[0], "customer_id": row[1],
+            "flower_id": row[2], "order_date": row[3]}
+        for row in cur.fetchall()
+    ]
+=======
     cur.execute("SELECT * FROM team11_customers;")
     customers = cur.fetchall()
     
     cur.execute("SELECT * FROM team11_orders;")
     orders =  cur.fetchall()
+>>>>>>> ee98b3d7025599ee181670f277aa84a205f3f360
 
+    end_time = time.time()
+    query_duration = round(end_time - start_time, 4)
+
+    # End timer
     cur.close()
     conn.close()
-    return render_template("flowers11.html", flowers=flowers, customers=customers, orders=orders)
+    return render_template("flowers11.html", flowers=flowers, customers=customers, orders=orders, query_duration=query_duration)
 
 
 @app.route('/add_flower_form', methods=['POST'])
