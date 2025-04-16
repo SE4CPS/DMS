@@ -18,7 +18,7 @@
 ### **How To Run:**
 1. If Python isn't installed on your local machine, download it [here](https://www.python.org/downloads/)
 2. Once Python is installed, and our project is downloaded on your local machine, open the project with Visual Studio Code (if you don't have VSCode, download it [here](https://code.visualstudio.com/))
-3. Once DMS is opened in VSCode, navigate to `project\part1\team-1\PostgreSQL\Web`
+3. Once DMS is opened in VSCode, navigate to `project\part2\team-1\PostgreSQL\Web`
 4. Install the following Python libraries:
 - `pip install flask`
 - `pip install psycopg2`
@@ -29,6 +29,8 @@
 8. Navigate to the local host link or in your browser, type in: `127.0.0.1:5000` to access the web app
 
 ### Web Pages
+
+#### Part 1 : Pages and Features 
 1. flowers.html
 - Add a new flower
 - Set the new flower's environment between indoor or outdoor
@@ -70,3 +72,18 @@
 - Automatically adds 10 inches of water to the current water level of all flowers whose environment is `Outdoor`
 - After simulating rain, the `Last Watered` of all flowers whose environment is `Outdoor` will update to the current date
 <img src="PostgreSQL/Web/static/Images/Simulate_Rain_Button.png">
+
+#### Part 2 : Pages and Features 
+
+1. slow_query.html
+- Displays the time taken to execute the slow query along with the result of said query
+- Slow Query: This query retrieves 50,000 of the most recent orders with the order ID, customer name, decrypted phone number, flower ordered, and date ordered 
+- The query uses decryption and join statements
+<img src="PostgreSQL/Web/static/Images/Slow_Query_Page.png"  width="500" height="500">
+
+2. fast_query.html
+- Displays the time taken to execute the fast query along with the result of said query
+- Fast Query: This query retrieves 1,000 of the most recent orders with the order ID, customer name, decrypted phone number, flower ordered, and date ordered 
+- The query also uses decryption and join statements
+Improvements from Slow Query: Indexes are created for order_id, customer_name, encrypted_phone, flower_name, order_date.
+<img src="PostgreSQL/Web/static/Images/Fast_Query_Page.png"  width="500" height="500">
