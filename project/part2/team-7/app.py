@@ -195,7 +195,6 @@ def delete_multiple_flowers():
 
     return jsonify({"message": f"{deleted_count} flowers deleted successfully."}), 200
 
-
 @app.route('/slow', methods=['GET'])
 def slow_query():
     start_time = time.time()
@@ -211,7 +210,7 @@ def slow_query():
             o.order_date
         FROM team7_orders o
         JOIN team7_customers c ON o.customer_id = c.id
-        ORDER BY c.name;  -- Could be slow without an index on decrypted name
+        ORDER BY c.name DESC;
     """)
     
     rows = cur.fetchall()
@@ -229,7 +228,7 @@ def slow_query():
     return jsonify({
         "query_type": "slow",
         "duration_seconds": round(end_time - start_time, 4),
-        "results": results
+        "results": results[:10]
     })
 
 
@@ -250,6 +249,7 @@ def fast_query():
         FROM team7_orders o
         JOIN team7_customers c ON o.customer_id = c.id
         ORDER BY o.order_date DESC
+        WHERE o.
         LIMIT 10;
     """)
     rows = cur.fetchall()
