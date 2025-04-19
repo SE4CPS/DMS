@@ -6,10 +6,14 @@ from flask import Flask, request, jsonify, render_template, redirect, url_for
 app = Flask(__name__)
 
 # Database connection details
-DB_FILE = 'team-10.db'
+# DB_FILE = 'team-10.db'
+DB_URL = "postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
 
 def get_db_connection():
-    return sqlite3.connect(DB_FILE)
+    conn = psycopg2.connect(DB_URL)
+    conn.autocommit = True
+    return conn
+    # return sqlite3.connect(DB_FILE)
 
 @app.route('/')
 def index():
