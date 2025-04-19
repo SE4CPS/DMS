@@ -145,7 +145,7 @@ def slow_query():
                 cur.execute("DROP INDEX IF EXISTS idx_customers_email;")
 
                 # Simulate expensive operations: joins, sorting, filtering, and fake "encryption"
-                #You can change limit to 1000000000 to make it slower, or remove limit all together and it will run for days.
+                # You can change limit to 1000000000 to make it slower, or remove limit all together and it will run for days.
                 cur.execute("""
                     SELECT 
                         pgp_sym_encrypt(c.name, 'encryptionkey') AS encrypted_name,
@@ -177,18 +177,23 @@ def fast_query():
         with get_db_connection() as conn:
             with conn.cursor() as cur:
                 #added Joins
-                # Re-create indexes for performance
-                cur.execute("CREATE INDEX IF NOT EXISTS idx_customers_email ON team9_customers(email);")
-                cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_customer_id ON team9_orders(customer_id);")
-                cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_flower_id ON team9_orders(flower_id);")
-                cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_order_date ON team9_orders(order_date);")
+                # Re-create indexes for performance ONLY DO IT ONCE
+                # cur.execute("CREATE INDEX IF NOT EXISTS idx_customers_email ON team9_customers(email);")
+                # cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_customer_id ON team9_orders(customer_id);")
+                # cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_flower_id ON team9_orders(flower_id);")
+                # cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_order_date ON team9_orders(order_date);")
                 
                 cur.execute("""
-                    SELECT c.name, f.name
-                    FROM team9_orders o 
+                    SELECT
+                    c.name,
+                    c.email,
+                    f.name,
+                    o.order_date
+                    FROM team9_orders o
                     JOIN team9_customers c ON o.customer_id = c.id
                     JOIN team9_flowers f ON o.flower_id = f.id
-                    LIMIT 100;
+                    WHERE o.order_date >= CURRENT_DATE - INTERVAL '365 days'
+                    ORDER BY c.email, o.order_date DESC LIMIT 100000;
                 """)
                 _ = cur.fetchall()
         #execution time 
