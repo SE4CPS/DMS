@@ -1,7 +1,40 @@
 import psycopg2
+import psycopg2.extras
+import re
+import random
+import datetime
+
+# names to autogenerate from
+firstnames = []
+with open('first-names.txt', 'r') as file:
+    for line in file:
+        firstnames.append(line.strip())
+
+# names to autogenerate from
+middlenames = []
+with open('middle-names.txt', 'r') as file:
+    for line in file:
+        middlenames.append(line.strip())
+
+# names to autogenerate from
+lastnames = []
+with open('last-names.txt', 'r') as file:
+    for line in file:
+        lastnames.append(line.strip().capitalize())
+
+emailextensions=[
+            '@gmail.com',
+            '@aol.com',
+            '@comcast.net',
+            '@xfinity.com',
+            '@pacific.edu',
+            '@u.pacific.edu',
+            '@yahoo.com',
+            '@fakeemail.com'
+        ]
 
 # get postgresql url
-print("   | Database Url: postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require")
+print("Database Url: postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require")
 DB_URL = "postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
 
 def get_connection():
@@ -21,16 +54,31 @@ def execute(sql):
 
     try:
         cur.execute(sql)
-        print("  | Result:")
-        print(cur)
+        return(cur)
     except Exception as e:
         print("   | SQL EXECUTE ERROR: ", e)
+
+def print_table(number):
+    match number:
+        case 1:
+            table='team10_flowers'
+        case 2:
+            table='team10_customers'
+        case 3:
+            table='team10_orders'
+
+    cur = execute('SELECT * FROM {};'.format(table))
+    rows = cur.fetchall();
+
+    for row in rows:
+        print(row)
 
 def create_tables():
     execute(
     """
+    BEGIN;
     CREATE TABLE team10_flowers (
-        id INTEGER PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
         last_watered DATE NOT NULL,
         water_level INT NOT NULL,
@@ -39,7 +87,7 @@ def create_tables():
     CREATE TABLE team10_customers (
         id SERIAL PRIMARY KEY,
         name VARCHAR(100),
-        email VARCHAR(100),
+        email VARCHAR(100)
     );
     CREATE TABLE team10_orders (
         id SERIAL PRIMARY KEY,
@@ -47,23 +95,93 @@ def create_tables():
         flower_id INT REFERENCES team10_flowers(id),
         order_date DATE
     );
+    COMMIT;
     """
     )
 def rebuild_tables():
     execute(
     """
+    DROP TABLE team10_orders;
+    DROP TABLE team10_flowers;
+    DROP TABLE team10_customers;
     """
     )
+    create_tables()
 def fill_database():
-    execute(
+    random.seed(pow(datetime.datetime.now().microsecond, 80158))
+
+    userstoadd=[]
+    for i in range(100000):
+        firstname=firstnames[random.randint(0, len(firstnames) - 1)]
+        middlename=middlenames[random.randint(0, len(middlenames) - 1)]
+        lastname=lastnames[random.randint(0, len(lastnames) - 1)]
+        username='{}_{}_{}'.format(firstname, middlename, lastname)
+        email=username + emailextensions[random.randint(0, len(emailextensions) - 1)]
+        print('New User:\n|   {}\n|   {}'.format(username, email))
+        userstoadd.append((username, email))
+
+    conn = get_connection()
+
+    print("   | Get DB cursor..")
+    cur = conn.cursor()
+
+    print("   | Executing Batch..")
+    psycopg2.extras.execute_batch(
+    cur,
     """
-    """
+    INSERT INTO team10_customers
+    VALUES (DEFAULT, %s, %s);
+    """,
+    userstoadd
     )
+    
+    # close cursor
+    print("   | Complete!")
+    cur.close()
+
 def print_schema():
-    execute(
+    res = execute(
     """
+    SELECT * FROM pg_tables;
     """
     )
+
+    rows = res.fetchall();
+    for row in rows:
+        if (re.search("team10_.*", row[1])):
+            print(row)
+
+def print_table_prompt():
+    print("|----------------------------------|")
+    print("| Options:                         |")
+    print("|----------------------------------|")
+    print("| f -> Flowers                     |")
+    print("| c -> Customers                   |")
+    print("| o -> Orders                      |")
+    print("| b -> Back                        |")
+    print("|----------------------------------|")
+
+def table_data():
+    print_table_prompt()
+    user_table = input("Your Choice: ")
+
+    while user_table != 'b':
+        match user_table:
+            case 'f':
+                print_table(1)
+                break;
+            case 'c':
+                print_table(2)
+                break;
+            case 'o':
+                print_table(3)
+                break;
+            case _:
+                print('Invalid Choice..')
+                break;
+
+        print_table_prompt()
+        user_table = input("Your Choice: ")
 
 def print_prompt():
     print("|----------------------------------|")
@@ -74,11 +192,14 @@ def print_prompt():
     print("| c -> Create Tables in Postgresql |")
     print("| r -> Rebuild Tables              |")
     print("| f -> Fill Database with Data     |")
-    print("| p -> Print Schema of Table       |")
+    print("| p -> Print Tables                |")
+    print("| t -> Print table data            |")
     print("| h -> Print this prompt           |")
     print("|----------------------------------|")
 
-user_input = 'a'
+print_prompt()
+user_input = input("Your Choice: ")
+
 while user_input != 'q':
     # inform user
     print_prompt()
@@ -93,6 +214,10 @@ while user_input != 'q':
             fill_database()
         case 'p':
             print_schema()
+        case 't':
+            table_data()
+        case 'h':
+            print('\n')
         case _:
             print("=> Invalid Input..")
 
