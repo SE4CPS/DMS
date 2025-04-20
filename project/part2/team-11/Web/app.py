@@ -320,7 +320,6 @@ def slow_query():
         FROM team11_orders o
         JOIN team11_customers c ON o.customer_id = c.id
         JOIN team11_flowers f ON o.flower_id = f.id
-
         ORDER BY fake_load DESC, o.order_date ASC
     ''')
 
@@ -366,7 +365,7 @@ def fast_query():
         FROM team11_orders o
         JOIN team11_customers c ON o.customer_id = c.id
         JOIN team11_flowers f ON o.flower_id = f.id
-        ORDER BY fake_load DESC, o.order_date ASC
+        LIMIT 1000;
     ''')
 
     rows = cur.fetchall()
@@ -384,7 +383,7 @@ def fast_query():
     } for r in limited_rows]
 
     return jsonify({
-        "elapsed_seconds": round(time.time() - start, 2),
+        "elapsed_seconds": time.time() - start,
         "results": results
     })
 
