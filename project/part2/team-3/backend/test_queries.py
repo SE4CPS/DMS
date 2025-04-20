@@ -97,11 +97,21 @@ def select_all_tables(cur):
     for row in cur.fetchall():
         print(row)
                 
+
+    print("\nFlowers Execution Time:")
+    cur.execute("EXPLAIN ANALYZE SELECT * FROM team3_flowers")
+    for row in cur.fetchall():
+        print(row)
+
     print("\nFlowers:")
     cur.execute("SELECT * FROM team3_flowers")
     for row in cur.fetchall():
         print(row)
                 
+    print("\nOrders Execution Time:")
+    cur.execute("EXPLAIN ANALYZE SELECT * FROM team3_orders")
+    for row in cur.fetchall():
+        print(row)
     print("\nOrders:")
     cur.execute("SELECT * FROM team3_orders")
     for row in cur.fetchall():
