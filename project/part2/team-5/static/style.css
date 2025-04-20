@@ -1,0 +1,62 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f6f6fb;
+  font-family: "Pacifico", cursive;
+  font-weight: 400;
+  font-style: normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  text-align: center;
+}
+
+.add_flower {
+  border-radius: 4px;
+  border: 2px solid green;
+  color: #f6f6fb;
+  background-color: rgba(0, 255, 89, 0.627);
+}
+.update_flower {
+  border-radius: 4px;
+  border: 2px solid blue;
+  color: #f6f6fb;
+  background-color: rgba(51, 102, 255, 0.5);
+}
+
+.delete_flower {
+  border-radius: 4px;
+  border: 2px solid red;
+  background-color: rgb(255 0 0 / 50%);
+  color: #f6f6fb;
+}
+
+button {
+  transition-duration: 0.4s;
+}
+
+.add_flower:hover {
+  background-color: green;
+}
+
+.update_flower:hover {
+  background-color: blue;
+}
+
+.delete_flower:hover {
+  background-color: red;
+}
+
+.text_entry_flower {
+  border-radius: 4px;
+  border: groove;
+}
+
+.delete_flower_margin {
+  margin-top: 15px;
+}

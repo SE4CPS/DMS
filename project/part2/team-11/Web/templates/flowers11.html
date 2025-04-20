@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Team 11 Flowers (UI)</title>
+    <style>
+        /* Basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h2,
+        h3 {
+            margin-top: 0;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ccc;
+        }
+
+        th,
+        td {
+            padding: 8px 12px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            margin-right: 10px;
+        }
+
+        input {
+            margin-right: 15px;
+        }
+
+        .needs-water {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Manage Flowers (Team 11)</h2>
+
+    <h3>Add New Flower</h3>
+    <!-- A form to add a new flower to the database (uses /add_flower_form) -->
+    <form action="/add_flower_form" method="post">
+        <label for="name">Name:</label>
+        <input type="text" name="name" placeholder="Rose" required>
+        <br>
+        <label for="last_watered">Last Watered (YYYY-MM-DD):</label>
+        <input type="text" name="last_watered" placeholder="2024-02-10" required>
+        <br>
+        <label for="water_level">Water Level (in inches):</label>
+        <input type="number" name="water_level" placeholder="20" required>
+        <br>
+        <label for="min_water_required">Min Water Required:</label>
+        <input type="number" name="min_water_required" placeholder="5" required>
+        <br>
+        <button type="submit">Add Flower</button>
+    </form>
+    <br>
+    <h3>All Flowers</h3>
+    <!-- Table -->
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Last Watered</th>
+            <th>Water Level</th>
+            <th>Min Water Required</th>
+            <th>Needs Watering?</th>
+            <th>Action</th>
+        </tr>
+
+        <!-- Loop over 'flowers' passed in from Flask (flowers_ui route) -->
+        {% for f in flowers %}
+        <tr>
+            <td>{{ f["id"] }}</td>
+            <td>{{ f["name"] }}</td>
+            <td>{{ f["last_watered"] }}</td>
+            <td>{{ f["water_level"] }}</td>
+            <td>{{ f["min_water_required"] }}</td>
+            <!-- Check if this flower needs watering -->
+            <td>
+                {% if f["water_level"] < f["min_water_required"] %} <span class="needs-water">Yes</span>
+                    {% else %}
+                    No
+                    {% endif %}
+            </td>
+            <td>
+                <!-- Delete link calls /delete_flower_ui/<id> -->
+                <a href="/delete_flower_ui/{{ f['id'] }}">Delete</a>
+                |
+                <!-- Update link calls /update_flower_ui/<id> -->
+                <a href="/update_flower_ui/{{ f['id'] }}">Update</a>
+            </td>
+
+        </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <h3>All Customers</h3>
+    <!-- Table -->
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+        </tr>
+
+        <!-- First 5 Customers -->
+        {% for f in customers[:5] %}
+        <tr>
+            <td>{{ f["id"] }}</td>
+            <td>{{ f["name"] }}</td>
+            <td>{{ f["email"] }}</td>
+        </tr>
+        {% endfor %}
+
+        <!-- ... Separator Row ... -->
+        <tr><td colspan="3" style="text-align:center;">...</td></tr>
+
+        <!-- Last 5 Customers -->
+        {% for f in customers[-5:] %}
+        <tr>
+            <td>{{ f["id"] }}</td>
+            <td>{{ f["name"] }}</td>
+            <td>{{ f["email"] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <h3>All Orders</h3>
+    <!-- Table -->
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Customer ID</th>
+            <th>Flower ID</th>
+            <th>Order Date</th>
+        </tr>
+
+        <!-- First 5 Orders -->
+        {% for f in orders[:5] %}
+        <tr>
+            <td>{{ f["id"] }}</td>
+            <td>{{ f["customer_id"] }}</td>
+            <td>{{ f["flower_id"] }}</td>
+            <td>{{ f["order_date"] }}</td>
+        </tr>
+        {% endfor %}
+
+        <!-- ... Separator Row ... -->
+        <tr><td colspan="4" style="text-align:center;">...</td></tr>
+
+        <!-- Last 5 Orders -->
+        {% for f in orders[-5:] %}
+        <tr>
+            <td>{{ f["id"] }}</td>
+            <td>{{ f["customer_id"] }}</td>
+            <td>{{ f["flower_id"] }}</td>
+            <td>{{ f["order_date"] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <h3>Slow Query</h3>
+    <!-- Slow Query -->
+    <button onclick="runSlowQuery()">Simulate Slow Query</button>
+    <p id="query-time"></p>
+    <div id="query-results"></div>
+
+    <script>
+        function runSlowQuery() {
+            document.getElementById("query-time").textContent = "Running slow query... please wait ⏳";
+            document.getElementById("query-results").innerHTML = "";
+        
+            fetch('/slow_query')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("query-time").textContent = `⏱ Query took ${data.elapsed_seconds} seconds`;
+
+                    const results = data.results;
+                    const table = document.createElement("table");
+                    table.border = "1";
+                    const header = table.insertRow();
+                    ["Order ID", "Customer Name", "Email", "Flower Name", "Order Date", "Fake Load", "Fake Hash"].forEach(col => {
+                        const th = document.createElement("th");
+                        th.textContent = col;
+                        header.appendChild(th);
+                    });
+
+        
+                    const firstFive = results.slice(0, 5);
+                    const lastFive = results.slice(-5);
+        
+                    // Insert first 5 rows
+                    firstFive.forEach(row => {
+                        const tr = table.insertRow();
+                        tr.insertCell().textContent = row.order_id;
+                        tr.insertCell().textContent = row.customer_name;
+                        tr.insertCell().textContent = row.email;
+                        tr.insertCell().textContent = row.flower_name;
+                        tr.insertCell().textContent = row.order_date;
+                        tr.insertCell().textContent = row.fake_load;
+                        tr.insertCell().textContent = row.fake_encryption_hash.slice(0, 10) + '...';
+                    });
+        
+                    // Insert a separator row
+                    const separator = table.insertRow();
+                    const sepCell = separator.insertCell();
+                    sepCell.colSpan = 7;
+                    sepCell.style.textAlign = "center";
+                    sepCell.textContent = "...";
+        
+                    // Insert last 5 rows
+                    lastFive.forEach(row => {
+                        const tr = table.insertRow();
+                        tr.insertCell().textContent = row.order_id;
+                        tr.insertCell().textContent = row.customer_name;
+                        tr.insertCell().textContent = row.email;
+                        tr.insertCell().textContent = row.flower_name;
+                        tr.insertCell().textContent = row.order_date;
+                        tr.insertCell().textContent = row.fake_load;
+                        tr.insertCell().textContent = row.fake_encryption_hash.slice(0, 10) + '...';
+                    });
+        
+                    document.getElementById("query-results").appendChild(table);
+                })
+                .catch(error => {
+                    document.getElementById("query-time").textContent = "❌ Error running query.";
+                    console.error(error);
+                });
+        }
+    </script>
+    <br>
+    <h3>Fast Query</h3>
+    <!-- Fast Query -->
+    <button onclick="runFastQuery()">Simulate Fast Query</button>
+    <p id="query-time-fast"></p>
+    <div id="query-results-fast"></div>
+    <script>
+        function runFastQuery() {
+            document.getElementById("query-time-fast").textContent = "Running Fast query... please wait ⏳";
+            document.getElementById("query-results-fast").innerHTML = "";
+
+            fetch('/fast_query')
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById("query-time-fast").textContent = `⏱ Query took ${data.elapsed_seconds} seconds`;
+
+                        const results = data.results;
+                        const table = document.createElement("table");
+                        table.border = "1";
+                        const header = table.insertRow();
+                        ["Order ID", "Customer Name", "Email", "Flower Name", "Order Date"].forEach(col => {
+                            const th = document.createElement("th");
+                            th.textContent = col;
+                            header.appendChild(th);
+                        });
+
+                        const firstFive = results.slice(0, 5);
+                        const lastFive = results.slice(-5);
+
+                        // Insert first 5 rows
+                        firstFive.forEach(row => {
+                            const tr = table.insertRow();
+                            tr.insertCell().textContent = row.order_id;
+                            tr.insertCell().textContent = row.customer_name;
+                            tr.insertCell().textContent = row.email;
+                            tr.insertCell().textContent = row.flower_name;
+                            tr.insertCell().textContent = row.order_date;
+                        });
+
+                        // Insert a separator row
+                        const separator = table.insertRow();
+                        const sepCell = separator.insertCell();
+                        sepCell.colSpan = 7;
+                        sepCell.style.textAlign = "center";
+                        sepCell.textContent = "...";
+
+                        // Insert last 5 rows
+                        lastFive.forEach(row => {
+                            const tr = table.insertRow();
+                            tr.insertCell().textContent = row.order_id;
+                            tr.insertCell().textContent = row.customer_name;
+                            tr.insertCell().textContent = row.email;
+                            tr.insertCell().textContent = row.flower_name;
+                            tr.insertCell().textContent = row.order_date;
+                        });
+
+                        document.getElementById("query-results-fast").appendChild(table);
+                    })
+                    .catch(error => {
+                        document.getElementById("query-time-fast").textContent = "❌ Error running query.";
+                        console.error(error);
+                    });
+        }
+    </script>
+</body>
+
+</html>

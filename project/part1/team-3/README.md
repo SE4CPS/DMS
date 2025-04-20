@@ -1,7 +1,7 @@
-team3:
-Han Nguyen
-Raymond Lee
-Junah Kim
+**Team3:** <br>
+Han Nguyen <br>
+Raymond Lee <br>
+Junah Kim <br>
 
 # Flower Water Tracking System
 Web application to track flower watering status, indicate when the flower will to be watered again.
@@ -28,13 +28,12 @@ app.py                      # Routing command to interact with database & will b
     db_init.py              # Initialize database schema <br>
     
 
-/static:
-    style.css              # Sample Interfaces for backend testing -- Not the main interfaces.  <br>  
-/templates:
-    index.html  <br>
+/static:<br>
+    style.css              # Styles the index.html, styles the frontend
+/templates:<br>
+    index.html <br>        # The frontend
 /backend: 
-    crud.py                 # In progress <br>
-    # Insert data into table
+    crud.py       
     
 ## How to Run
 
@@ -42,7 +41,7 @@ app.py                      # Routing command to interact with database & will b
 2. Create a virtual environment using `python3 -m venv venv`.
 3. Activate the virtual environment using `source venv/bin/activate` if you are on Mac.
 4. Once the virtual environment is running, install the requirements needed for the project: `pip install -r requirements.txt`.
-5. Add a config file to store the database API key in the root directory using `touch .env`. Then insert the database API key like so `database_url=[insert database api key here]`.
+5. Create a config file to store the database API key in the team3 directory using `touch .env`. Then insert the database API key like so `database_url=[insert database api key here]`.
 6. Run the app using: `python3 app.py`.
 7. Navigate to the local host link to see the webapp in the browser: `http://127.0.0.1:5000`. 
 8. Add endpoints to the URL as needed for testing e.g (`http://127.0.0.1:5000/flowers`).

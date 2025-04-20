@@ -38,7 +38,46 @@
         </div>
 
         <h3> Select Flowers To Water</h3>
-        <h4> Format: (flower ID number, name, current water level, minimum water needed)</h2>
+        <p> <strong>NOTE: Every watering adds 10 inches </strong></p>
+        
+        {% if flowers %}
+        <form id="select_flowers_watering" method="post" onsubmit="return confirmWaterFlower()">           
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            Select All
+                            <input type="checkbox" id="selectAll" onclick="toggleCheckboxes(this)">
+                        </th>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Initial Water Level (inches)</th>
+                        <th>Current Water Level (inches)</th>
+                        <th>Minimum Water Level (inches)</th>
+                        <th>Last Watered (YYYY-MM-DD)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for flower in flowers %}
+                    <tr>
+                        <td><input type="checkbox" name="selected_flowers" value="{{ flower[0] }}" class="flowerCheckbox"></td>
+                        <td>{{ flower[0] }}</td>
+                        <td>{{ flower[1] }}</td>
+                        <td>{{ flower[3] }}</td>
+                        <td>{{ flower[4] }}</td>
+                        <td>{{ flower[5] }}</td>
+                        <td>{{ flower[6].strftime('%Y-%m-%d') if flower[6] else 'N/A' }}</td>
+                    </tr>
+                    {% endfor %}                    
+                </tbody>
+            </table>
+            <button type="submit">Submit</button>
+        </form>
+        {% else %}
+            <h3> No Flowers Available To Water</h3>
+        {% endif %}
+
+        <!--
         {% if flowers %}
             <form id = "select_flowers_watering" method = "post" onsubmit="return confirmWaterFlower()">
                 <label>
@@ -57,7 +96,8 @@
         {% else %}
         <h3> No Flowers Available To Water</h3>
         {% endif %}
-        
+        -->
+
         <button id="muteButton"></button>
     </div>
     

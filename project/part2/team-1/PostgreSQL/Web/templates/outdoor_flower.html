@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Run</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
+    <script src="{{ url_for('static', filename='Scripts/scripts.js') }}"></script>
+</head>
+
+<body>
+    <audio id="introMusic" loop autoplay muted>
+        <source src="{{url_for('static', filename='Audio/longnight.mp3') }}" type="audio/mpeg">
+    </audio>
+
+    <!--Container for the menu, form, and form inputs-->
+    <div id="menuContainer">
+        <h2>Water Run Management</h2>
+
+        <div id="buttonContainer">
+            <a href="/flowers"><button>Add Flower</button></a>
+            <a href ="/remove_flower"><button>Remove Flower</button></a>
+            
+            <!--Start of the clickable dropdown-->
+            <div id="dropDownContainer">
+                <button id="dropDownButton" onclick="dropDown()">Display</button>
+                <div id="dropDownOptions">
+                    <a href = "/all_flower" ><button>See All Flowers</button></a>
+                    <a href = "/needs_water"> <button>See All Flowers That Need Water</button></a>
+                    <a href="/outdoor_flower"><button>See Outdoor Flowers</button></a>
+                    <a href="/indoor_flower"><button>See Indoor Flowers</button></a>
+                </div>
+            </div>
+            <a href = "/water_flower"><button>Water Flower</button></a>
+            <a href="/simulate_rainfall"><button>Simulate Rain</button></a>
+        </div>
+        <!-- Query Buttons-->
+        <div id = "queryButtonContainter">
+            <a href="/slow_query"><button>Slow Query</button></a>
+            <a href="/fast_query"><button>Fast Query</button></a>
+        </div>
+        
+        <h3> Outdoor Flowers</h3>
+
+        {% if flowers %}
+        <table>
+            <!--Column Names-->
+            <thread>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Environment</th>
+                    <th>Initial Water Level (inches)</th>
+                    <th>Current Water Level (inches)</th>
+                    <th>Minimum Water Level (inches)</th>
+                    <th>Last Watered (YYYY-MM-DD)</th>
+                </tr>
+            </thread>
+
+            <!--Rows for each flower in the database-->
+            <tbody>
+                {% for flower in flowers %}
+                    <tr>
+                        <td>{{ flower[0] }}</td>
+                        <td>{{ flower[1] }}</td>
+                        <td>{{ flower[2] }}</td>
+                        <td>{{ flower[3] }}</td>
+                        <td>{{ flower[4] }}</td>
+                        <td>{{ flower[5] }}</td>
+                        <td>{{ flower[6].strftime('%Y-%m-%d') if flower[6] else 'N/A' }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <p>No flowers found.</p>
+        {% endif %}
+        <button id="muteButton"></button>
+    </body>
+
+</html>
