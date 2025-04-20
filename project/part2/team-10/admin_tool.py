@@ -22,6 +22,11 @@ with open('last-names.txt', 'r') as file:
     for line in file:
         lastnames.append(line.strip().capitalize())
 
+flowernames = []
+with open('last-names.txt', 'r') as file:
+    for line in file:
+        flowernames.append(line.strip())
+
 emailextensions=[
             '@gmail.com',
             '@aol.com',
@@ -84,6 +89,8 @@ def create_tables():
         water_level INT NOT NULL,
         min_water_required INT NOT NULL
     );
+    UPDATE team10_flowers
+    SET water_level = water_level - (5 * (CURRENT_DATE - last_watered));
     CREATE TABLE team10_customers (
         id SERIAL PRIMARY KEY,
         name VARCHAR(100),
@@ -108,8 +115,15 @@ def rebuild_tables():
     )
     create_tables()
 def fill_database():
+    conn = get_connection()
+
+    print("   | Get DB cursor..")
+    cur = conn.cursor()
+
+    print("   | Seeding Rand..")
     random.seed(pow(datetime.datetime.now().microsecond, 80158))
 
+    print("   | Generating Random Users..")
     userstoadd=[]
     for i in range(100000):
         firstname=firstnames[random.randint(0, len(firstnames) - 1)]
@@ -117,15 +131,12 @@ def fill_database():
         lastname=lastnames[random.randint(0, len(lastnames) - 1)]
         username='{}_{}_{}'.format(firstname, middlename, lastname)
         email=username + emailextensions[random.randint(0, len(emailextensions) - 1)]
-        print('New User:\n|   {}\n|   {}'.format(username, email))
+        print('New User:\n|   {}\n|   {}\n'.format(username, email))
         userstoadd.append((username, email))
 
-    conn = get_connection()
 
-    print("   | Get DB cursor..")
-    cur = conn.cursor()
-
-    print("   | Executing Batch..")
+    print("   | Executing Batch Fill : Customers..")
+    print("   | NOTE: may take awhile ~100,000 customers to add..")
     psycopg2.extras.execute_batch(
     cur,
     """
@@ -133,6 +144,55 @@ def fill_database():
     VALUES (DEFAULT, %s, %s);
     """,
     userstoadd
+    )
+
+    print("   | Generating Random Flowers..")
+    flowerstoadd = []
+    for i in range(30):
+        flowername = flowernames[random.randint(0, len(flowernames) - 1)]
+        last_watered = datetime.date.today()
+        water_level = random.randint(0, 10)
+        min_water_required = random.randint(0, 5)
+        print("New Flower:\n|   {}\n|   {}\n|   {}\n|   {}\n".format(flowername, last_watered, water_level, min_water_required))
+        flowerstoadd.append((flowername, last_watered, water_level, min_water_required))
+
+    print("   | Executing Batch Fill : Flowers..")
+    psycopg2.extras.execute_batch(
+            cur,
+            """
+            INSERT INTO team10_flowers
+            VALUES (DEFAULT, %s, %s, %s, %s);
+            """,
+            flowerstoadd
+    )
+
+    print('   | Getting Flower Count..')
+    res = execute(
+        """
+        SELECT COUNT(*) FROM team10_flowers;
+        """
+    )
+
+    flowercount = (res.fetchall())[0][0]
+
+    print('   | Generating Some Orders..')
+    orderstoadd = []
+    for i in range(500000):
+        customer = random.randint(1, 100000)
+        flower = random.randint(1, flowercount)
+        date = datetime.date.today()
+        print('New Order:\n|   {}\n|   {}\n|   {}\n'.format(customer, flower, date))
+        orderstoadd.append((customer, flower, date))
+
+    print("   | Executing Batch Fill : Orders..")
+    print("   | NOTE: may take awhile ~500,000 orders to add..")
+    psycopg2.extras.execute_batch(
+            cur,
+            """
+            INSERT INTO team10_orders
+            VALUES (DEFAULT, %s, %s, %s);
+            """,
+            orderstoadd
     )
     
     # close cursor
