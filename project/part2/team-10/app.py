@@ -91,8 +91,29 @@ def delete_flower():
     conn.close()
     return redirect(url_for('index'))
 
+@app.route('/slow_query', methods=['POST'])
+def slow_query():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute(
+            """
+            SELECT
+            id,
+            customer_id,
+            flower_id
+            FROM
+            team10_orders
+            FULL JOIN team10_customers ON team10_orders.customer_id=team10_customers.id
+            FULL JOIN team10_flowers ON team10_orders.flower_id=team10_flowers.id
+            ORDER BY team10_customers.name DESC;
+            """
+        )
+    conn.commit()
+    cur.close()
+    conn.close()
+    return redirect(url_for('index'))
 
-print(sqlite3.connect(DB_FILE).cursor().execute('SELECT * FROM team10_flowers;').fetchall())
+slow_query()
 
 if __name__ == "__main__":
     app.run(debug=True)
