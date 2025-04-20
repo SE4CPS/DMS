@@ -16,6 +16,16 @@ def db_init():
             """
         )
         
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS team3_customers (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(100),
+                email VARCHAR(100)
+            );
+            """
+        )
+        
         conn.commit()
         cur.close()
         conn.close()
