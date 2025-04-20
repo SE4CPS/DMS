@@ -38,7 +38,7 @@ def get_flowers():
             "last_watered": f[2].strftime("%Y-%m-%d"),
             "water_level": f[3],
             "min_water_required": f[4],
-            "needs_water": f[5]  # Including the needs_water status
+            "needs_water": f[3] < f[4]# Including the needs_water status
         } for f in flowers])
     except (OperationalError, DatabaseError) as e:
         return jsonify({"error": str(e)}), 500
