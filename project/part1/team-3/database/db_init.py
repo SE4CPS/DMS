@@ -26,6 +26,17 @@ def db_init():
             """
         )
         
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS team3_orders (
+                id SERIAL PRIMARY KEY,
+                customer_id INT REFERENCES team3_customers(id),
+                flower_id INT REFERENCES team3_flowers(flower_id),
+                order_date DATE
+            );
+            """
+        )
+        
         conn.commit()
         cur.close()
         conn.close()
