@@ -16,6 +16,27 @@ def db_init():
             """
         )
         
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS team3_customers (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(100),
+                email VARCHAR(100)
+            );
+            """
+        )
+        
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS team3_orders (
+                id SERIAL PRIMARY KEY,
+                customer_id INT REFERENCES team3_customers(id),
+                flower_id INT REFERENCES team3_flowers(flower_id),
+                order_date DATE
+            );
+            """
+        )
+        
         conn.commit()
         cur.close()
         conn.close()
@@ -70,3 +91,4 @@ if __name__ == "__main__":
         # db_init()
         # update_col()
         clean_invalid_data()
+    
