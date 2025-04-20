@@ -87,7 +87,12 @@ def test_insert_tables():
 def select_all_tables(cur):
     print("\n=== Viewing all data ===")
             
-    print("\nCustomers:")
+    print("\nCustomers Execution Time:")
+    cur.execute("EXPLAIN ANALYZE SELECT * FROM team3_customers")
+    for row in cur.fetchall():
+        print(row)
+
+    print("\nCustomers Data:")
     cur.execute("SELECT * FROM team3_customers")
     for row in cur.fetchall():
         print(row)
