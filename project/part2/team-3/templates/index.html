@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Flower Watering Status</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Add notification div -->
+    <div id="notification" class="notification"></div>
+    <h2>Add New Flower</h2>
+    <form id="add-flower-form">
+        <input type="text" id="flower-name" placeholder="Flower Name" required>
+        <input type="date" id="last-watered" required>
+        <input type="number" id="water-level" placeholder="Water Level" required>
+        <input type="number" id="min-water-required" placeholder="Minimum Water Required" required>
+        <button type="submit">Add Flower</button>
+    </form>
+
+    <h2>Flower Watering Status</h2>
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Last Watered</th>
+            <th>Water Level</th>
+            <th>Min Water Required</th>
+            <th>Needs Watering</th>
+            <th>Actions</th>
+        </tr>
+        <tbody id="flower-data"></tbody>
+    </table>
+
+    <script>
+        // Fetch flowers from the database API and initialize the table.
+        function fetchFlowers() {
+            fetch('http://127.0.0.1:5000/flowers')
+                .then(response => response.json())
+                .then(data => {
+                    let rows = "";
+                    data.forEach(flower => {
+                        rows += `<tr data-id="${flower.id}">
+                            <td class="flower-name">${flower.name}</td>
+                            <td class="last-watered">${flower.last_watered}</td>
+                            <td class="water-level">${flower.water_level}</td>
+                            <td class="min-water-required">${flower.min_water_required}</td>
+                            <td class="needs-watering" style="background-color: ${flower.needs_watering ? '#ffebee' : 'transparent'}">${flower.needs_watering ? "Yes" : "No"}</td>
+                            <td class="action-buttons">
+                                <button onclick="waterFlower(this)">Water</button>
+                                <button onclick="editFlower(this)">Edit</button>
+                                <button onclick="deleteFlower(this)">Delete</button>
+                            </td>
+                        </tr>`;
+                    });
+                    document.getElementById("flower-data").innerHTML = rows;
+                });
+        }
+
+        // Creates a listener that will listen for the submission of a new flower using the form submit. 
+        document.getElementById('add-flower-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get and validate water level
+            const waterLevel = parseInt(document.getElementById('water-level').value);
+            if (isNaN(waterLevel) || waterLevel < 0) {
+                confirm("Water level must be 0 or greater!");
+                return;
+            }
+
+            // Get and validate minimum water required
+            const minWaterRequired = parseInt(document.getElementById('min-water-required').value);
+            if (isNaN(minWaterRequired) || minWaterRequired <= 0) {
+                confirm("Minimum water required must be greater than 0!");
+                return;
+            }
+
+            const data = {
+                flower_name: document.getElementById('flower-name').value,
+                last_watered: document.getElementById('last-watered').value,
+                water_level: waterLevel,
+                min_water_required: minWaterRequired
+            };
+            
+            fetch('http://127.0.0.1:5000/flowers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(() => {
+                showNotification(`Added new flower: ${data.flower_name}`);
+                fetchFlowers();
+                e.target.reset();
+            });
+        });
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.5s ease-out';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                    notification.style.animation = 'slideIn 0.5s ease-out';
+                }, 500);
+            }, 3000);
+        }
+
+        function waterFlower(button) {
+            // Locate the ID of the flower that the user pressed the water button for
+            const row = button.closest('tr');
+            const id = row.dataset.id;
+            const flowerName = row.querySelector('.flower-name').textContent;
+
+            // Prompt for water amount
+            let waterAmount = prompt("Enter the amount of water to add (must be greater than 0):");
+            
+            // Input validation
+            if (waterAmount === null) {
+                return; // User clicked Cancel
+            }
+            
+            // Convert to integer and validate
+            waterAmount = parseInt(waterAmount);
+            if (isNaN(waterAmount) || waterAmount <= 0) {
+                showNotification("Invalid water amount. Please enter a number greater than 0.");
+                return;
+            }
+
+            // Signal the backend to update the flower based on its ID
+            fetch(`http://127.0.0.1:5000/flowers/water/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ water_amount: waterAmount })
+            })
+            .then(response => response.json())
+            .then(() => {
+                showNotification(`${waterAmount} units of water added to ${flowerName}`);
+                fetchFlowers();
+            });
+        }
+
+        // Edit Flower: When the 'edit' button is pressed. This function will modify the table so that the user can edit the values of flower attribute.
+        // The function will also add a 'save' and 'cancel' button which will trigger their respective functions as well.
+        function editFlower(button) {
+            const row = button.closest('tr');
+            const id = row.dataset.id;
+            const name = row.querySelector('.flower-name').textContent;
+            const waterLevel = row.querySelector('.water-level').textContent;
+            const minWaterRequired = row.querySelector('.min-water-required').textContent;
+            
+            row.classList.add('edit-mode');
+            row.querySelector('.flower-name').innerHTML = `<input type="text" value="${name}">`;
+            // row.querySelector('.water-level').innerHTML = `<input type="number" class="water-level-input" value="${waterLevel}">`;
+            row.querySelector('.min-water-required').innerHTML = `<input type="number" class="min-water-required-input" value="${minWaterRequired}">`;
+            row.querySelector('.action-buttons').innerHTML = `
+                <button onclick="saveEdit(this)">Save</button>
+                <button onclick="cancelEdit(this)">Cancel</button>
+            `;
+        }
+
+        // Save edit. This function reacts to the pressing of the 'save' button during the process of updating (putting) an existing flower
+        function saveEdit(button) {
+            const row = button.closest('tr');
+            const id = row.dataset.id;
+            const newName = row.querySelector('input[type="text"]').value;
+            const data = {
+                flower_name: newName,
+                min_water_required: parseInt(row.querySelector('.min-water-required-input').value)
+            };
+
+            // First update the specific flower's data
+            fetch(`http://127.0.0.1:5000/flowers/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(() => {
+                showNotification(`Updated flower: ${newName}`);
+                fetchFlowers();
+            });
+        }
+
+        // Cancel edit. This function reacts to the pressing of the 'cancel' button during the process of updating (putting) a flower
+        function cancelEdit(button) {
+            const row = button.closest('tr');
+            const name = row.querySelector('input[type="text"]').value;
+            fetchFlowers();
+        }
+
+        // Delete flower
+        function deleteFlower(button) {
+            const row = button.closest('tr');
+            const id = row.dataset.id;
+            const flowerName = row.querySelector('.flower-name').textContent;
+
+            if (confirm('Are you sure you want to delete this flower?')) {
+                fetch(`http://127.0.0.1:5000/flowers/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(() => {
+                    showNotification(`Deleted flower: ${flowerName}`);
+                    fetchFlowers();
+                });
+            } else {
+                showNotification("Delete operation cancelled");
+            }
+        }
+
+        // Initial load
+        fetchFlowers();
+    </script>
+</body>
+</html>
