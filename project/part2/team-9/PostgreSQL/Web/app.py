@@ -133,41 +133,55 @@ def delete_flower(id):
 # Slow Query
 @app.route('/slow_query')
 def slow_query():
-    start_time = time.time()
+    start_time = time.time()  # Start timer
     try:
         with get_db_connection() as conn:
             with conn.cursor() as cur:
-                # Deliberately drop indexes for poor performance
-                print('running slow query!')
-                
+                print('Running slow query...')
+
+                # Dropping indexes for poor performance (as you intended)
                 cur.execute("DROP INDEX IF EXISTS idx_orders_customer_id;")
                 cur.execute("DROP INDEX IF EXISTS idx_orders_flower_id;")
                 cur.execute("DROP INDEX IF EXISTS idx_customers_email;")
+                cur.execute("DROP INDEX IF EXISTS idx_orders_order_date;")
 
-                # Simulate expensive operations: joins, sorting, filtering, and fake "encryption"
-                # You can change limit to 1000000000 to make it slower, or remove limit all together and it will run for days.
+                # Simulate expensive operations: joins, sorting, filtering, and encryption
                 cur.execute("""
                     SELECT 
                         pgp_sym_encrypt(c.name, 'encryptionkey') AS encrypted_name,
                         pgp_sym_encrypt(c.email, 'encryptionkey') AS encrypted_email,
                         f.name AS flower_name,
-                        o.order_date
+                        o.order_date,
+                        LENGTH(c.email),
+                        UPPER(f.name)    
                     FROM team9_orders o
                     JOIN team9_customers c ON o.customer_id = c.id
                     JOIN team9_flowers f ON o.flower_id = f.id
                     WHERE o.order_date >= CURRENT_DATE - INTERVAL '365 days'
-                    ORDER BY c.email, o.order_date DESC LIMIT 100000; 
+                    ORDER BY c.email, o.order_date DESC
+                    LIMIT 100000;
                 """)
+
+                # Check if results are returned
                 results = cur.fetchall()
 
+                # Log the number of rows returned for debugging purposes
+                print(f"Number of rows returned: {len(results)}")
+
+        # Calculate and log the execution time
         execution_time = time.time() - start_time
-        print(execution_time)
+        print(f"Execution Time: {execution_time:.2f} seconds")
+
         return jsonify({
             "execution_time": f"{execution_time:.2f} seconds",
-            "result_count": len(results)
+            "result_count": len(results)  # Show how many rows were returned
         })
+
     except Exception as e:
+        # Log the error in more detail
+        print(f"Error occurred: {str(e)}")  # Print the exception message to the console
         return jsonify({"error": str(e)}), 500
+
 
 #Fast query 
 @app.route('/fast_query')
@@ -176,39 +190,36 @@ def fast_query():
     try:
         with get_db_connection() as conn:
             with conn.cursor() as cur:
-                #added Joins
-                # Re-create indexes for performance ONLY DO IT ONCE
-                # cur.execute("CREATE INDEX IF NOT EXISTS idx_customers_email ON team9_customers(email);")
-                # cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_customer_id ON team9_orders(customer_id);")
-                # cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_flower_id ON team9_orders(flower_id);")
-                # cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_order_date ON team9_orders(order_date);")
-                
+                # Only order in the CTE and join without an additional order
                 cur.execute("""
-                    SELECT
-                    c.name,
-                    c.email,
-                    f.name,
-                    o.order_date
+                    SELECT 
+                        c.name,
+                        c.email,
+                        f.name AS flower_name,
+                        o.order_date AS order_date
                     FROM team9_orders o
                     JOIN team9_customers c ON o.customer_id = c.id
                     JOIN team9_flowers f ON o.flower_id = f.id
                     WHERE o.order_date >= CURRENT_DATE - INTERVAL '365 days'
-                    ORDER BY c.email, o.order_date DESC LIMIT 100000;
+                    LIMIT 100;
                 """)
-                _ = cur.fetchall()
-        #execution time 
-        execution_time = time.time() - start_time
+                
+                _ = cur.fetchall()  # Execute query (no need to store results here)
+
+        # Calculate execution time
+        execution_time = time.time() - start_time  # Calculate execution time
+        print(f"Execution Time: {execution_time:.2f} seconds")  # Print execution time
+
+        # Return the execution time
         return jsonify({
             "execution_time": f"{execution_time:.2f} seconds"
         })
+
     except Exception as e:
+        print(f"Error occurred: {str(e)}")  # Log error message
         return jsonify({"error": str(e)}), 500
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
-
-
-
