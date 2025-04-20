@@ -218,24 +218,23 @@ def slow_query():
     res = execute(
         """
         EXPLAIN ANALYZE
-        SELECT
-        *
-        FROM
-        team10_orders
+        SELECT *
+        FROM team10_orders
         FULL JOIN team10_customers ON team10_orders.customer_id=team10_customers.id
         CROSS JOIN team10_flowers
-        ORDER BY team10_orders.order_date DESC, team10_customers.name;
+        ORDER BY team10_flowers.name
         """
     ) #('Execution Time: 592.386 ms',)
     print('Duration: {}'.format(datetime.datetime.now() - start_time))
 
     rows = res.fetchall()
     for row in rows:
-        print(row)
         for item in row:
             if (re.search(".*Execution Time:.*", item)):
-                print(item)
-    
+                match = re.search("[0-9]*\.[0-9]*", item);
+                seconds = round(float(item[match.span()[0]:match.span()[1]]) / 1000, 3)
+                print('Execution Time: ', seconds)
+
 def print_table_prompt():
     print("|----------------------------------|")
     print("| Options:                         |")

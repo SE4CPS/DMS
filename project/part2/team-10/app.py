@@ -1,5 +1,6 @@
 import sqlite3
 import psycopg2
+import re
 from datetime import datetime, timedelta
 from flask import Flask, request, jsonify, render_template, redirect, url_for 
 
@@ -91,29 +92,41 @@ def delete_flower():
     conn.close()
     return redirect(url_for('index'))
 
-@app.route('/slow_query', methods=['POST'])
+@app.route('/slow_query', methods=['GET'])
 def slow_query():
+    query = """
+        EXPLAIN ANALYZE
+        SELECT *
+        FROM team10_orders
+        FULL JOIN team10_customers ON team10_orders.customer_id=team10_customers.id
+        CROSS JOIN team10_flowers
+        ORDER BY team10_flowers.name
+        """
+
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute(
-            """
-            SELECT
-            id,
-            customer_id,
-            flower_id
-            FROM
-            team10_orders
-            FULL JOIN team10_customers ON team10_orders.customer_id=team10_customers.id
-            FULL JOIN team10_flowers ON team10_orders.flower_id=team10_flowers.id
-            ORDER BY team10_customers.name DESC;
-            """
-        )
-    conn.commit()
+            query
+    )
+
+    rows = cur.fetchall()
+
+    for row in rows:
+        for item in row:
+            if (re.search(".*Execution Time:.*", item)):
+                match = re.search("[0-9]*\.[0-9]*", item);
+                seconds = round(float(item[match.span()[0]:match.span()[1]]) / 1000, 3)
+                print('Execution Time: ', seconds)
+
     cur.close()
     conn.close()
-    return redirect(url_for('index'))
-
-slow_query()
+    return """
+    <h1>Slow Query:</h1>
+    <h2>Execution Time (from EXPLAIN ANALYZE):</h2>
+    <h3>{}</h3>
+    <h2>SQL:</h2>
+    <h3>{}</h3>
+    """.format(seconds, query)
 
 if __name__ == "__main__":
     app.run(debug=True)

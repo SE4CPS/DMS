@@ -15,6 +15,12 @@
     <h2>Flower Watering Status</h2>
     <ul style="list-style-type: none; margin: 20px 0;">
 	    <li>
+		    <p>Slow Query</p>
+		    <form name="slowquery" action="/slow_query" method="get">
+		    	<button type="submit">Run Slow Query</button>
+		    </form>
+	    </li>
+	    <li>
 		    <p>Refresh Table</p>
 		    <button onclick="getFlowers()">Update</button>
 	    </li>
@@ -89,6 +95,8 @@
         	        });
         	        document.getElementById("flower-data").innerHTML = rows;
         	    });
+	}
+	function slowQuery() {
 	}
     </script>
 <script>
