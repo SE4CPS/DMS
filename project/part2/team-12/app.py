@@ -165,12 +165,12 @@ def fast_query():
     JOIN team12_customers c ON o.customer_id = c.id
     JOIN team12_flowers f ON o.flower_id = f.id
     WHERE 
-        c.email ILIKE '%example.com'  -- case-insensitive, may use index depending on collation
+        c.email ILIKE '%example.com'  
         AND f.last_watered < CURRENT_DATE - INTERVAL '10 days'
         AND f.water_level < f.min_water_required
         AND LENGTH(o.encrypted_notes) > 30
     ORDER BY
-        o.order_date ASC  -- simpler sort = faster
+        o.order_date ASC  
     LIMIT 5000;
     """
     
