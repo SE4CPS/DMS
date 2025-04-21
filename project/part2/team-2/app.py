@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect
 import psycopg2
 from datetime import datetime
+import time 
 
 app = Flask(__name__)
 DATABASE_URL = "postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
@@ -14,7 +15,6 @@ def index():
 
 @app.route('/team2_flowers', methods=['GET'])
 def manage_flowers():
-    print("Rendering team2_flowers.html")
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("SELECT * FROM team2_flowers")
@@ -33,7 +33,8 @@ def manage_flowers():
   
     cur.close()
     conn.close()
-    return render_template('team2_flowers.html', flowers=flowers_with_status)
+    return render_template('team2_flowers.html', 
+                         flowers=flowers_with_status)
 
 @app.route('/add_flower', methods=['POST'])
 def add_flower():
@@ -102,7 +103,67 @@ def water_loss():
         cur.close()
         conn.close()
 
-    return redirect('/team2_flowers')  # Redirect back to the flowers page to see updated values
+    return redirect('/team2_flowers') 
+
+@app.route('/run_query', methods=['POST'])
+def run_query():
+    query_type = request.form.get('query_type')
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    if query_type == 'slow':
+        query = """
+    SELECT 
+        c.name,
+        pgp_sym_encrypt(c.email, 'secret')::text AS encrypted_email,
+        o.id AS order_id,
+        f.name AS flower_name,
+        f.water_level
+    FROM 
+        team2_customers c
+    JOIN 
+        team2_orders o ON c.id = o.customer_id
+    JOIN 
+        team2_flowers f ON o.flower_id = f.id
+    WHERE 
+        (SELECT COUNT(*) FROM generate_series(1,100000)) > 0
+        AND f.water_level BETWEEN 0 AND 30
+    ORDER BY 
+        pgp_sym_encrypt(c.email, 'secret')::text
+    LIMIT 200;
+    """
+
+    else:
+        query = """
+    SELECT 
+        c.name,
+        c.email,
+        o.id AS order_id,
+        f.name AS flower_name,
+        f.water_level
+    FROM 
+        team2_customers c
+    JOIN 
+        team2_orders o ON c.id = o.customer_id
+    JOIN 
+        team2_flowers f ON o.flower_id = f.id
+    LIMIT 200;
+    """
+
+    start_time = time.time()
+    cur.execute(query)
+    execution_time = time.time() - start_time
+
+    cur.close()
+    conn.close()
+
+    return {
+        "query": query,
+        "execution_time": round(execution_time, 3),
+        "query_type": query_type
+    }
+
 
 if __name__ == '__main__':
     app.run(debug=True)

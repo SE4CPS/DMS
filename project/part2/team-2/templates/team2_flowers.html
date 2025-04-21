@@ -19,10 +19,24 @@
         <input type="number" name="max_water_required" placeholder="Max Water Required">
         <button type="submit">Add Flower</button>
     </form>
+    
     <!-- Water Loss Simulation -->
     <button class = "simulation-button" onclick="applyWaterLoss()">
         Apply Water Loss Simulation
     </button>
+
+    <!-- Query Testing Section -->
+    <div class = "query-section">
+        <h3>Database Performance</h3>
+        <button class="query-button" onclick="runQuery('slow')">Slow Query</button>
+        <button class="query-button" onclick="runQuery('fast')">Fast Query</button>
+
+    <!-- Results will appear here -->
+        <div id="query-results">
+    
+        </div>
+    </div>
+
 
 
     <h3>Available Flowers</h3>
