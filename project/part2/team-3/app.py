@@ -143,19 +143,23 @@ def update_flower():
     return jsonify({"message": "Flower updated successfully!"})
 
 # Delete a flower by ID
-# @app.route('/flowers/<int:id>', methods=['DELETE'])
-# def delete_flower(id):
-#     conn = get_db_connection()
-#     cur = conn.cursor()
-#     cur.execute(
-#         """
-#         DELETE FROM team3_flowers WHERE flower_id = %s
-#         """, (id,))
-#     conn.commit()
-#     cur.close()
-#     conn.close()
-#     return jsonify({"message": "Flower deleted successfully!"})  
-  
+@app.route('/flowers/<int:id>', methods=['DELETE'])
+def delete_flower(id):
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(
+            """
+            DELETE FROM team3_flowers WHERE flower_id = %s
+            """, (id,))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return jsonify({"message": "Flower deleted successfully!"})
+    except psycopg2.Error as e:
+        if e.pgcode == '23503':  # Foreign key violation error code
+            return jsonify({"error": "foreign key constraint violation"}), 500
+        return jsonify({"error": str(e)}), 500
 
 # Slow query that joins customers and orders with decryption
 @app.route('/slow-query', methods=['GET'])
