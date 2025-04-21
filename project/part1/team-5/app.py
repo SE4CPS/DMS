@@ -10,11 +10,45 @@ def get_db_connection():
 
 @app.route('/')
 def index():
-    return '''
-    <h2>Flower Shop Management</h2>
-    <button onclick="location.href='/flowers'">Manage Flowers</button>
-    <button onclick="location.href='/flowers/needs_watering'">Manage Water Levels</button>
+   return '''
+    <html>
+    <head>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f2f2f2;
+                text-align: center;
+                padding-top: 50px;
+            }
+            h2 {
+                color: #4CAF50;
+                margin-bottom: 40px;
+            }
+            button {
+                background-color: #4CAF50;
+                border: none;
+                color: white;
+                padding: 15px 30px;
+                margin: 10px;
+                text-align: center;
+                font-size: 16px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+            button:hover {
+                background-color: #45a049;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>Flower Shop Management</h2>
+        <button onclick="location.href='/flowers'">Manage Flowers</button>
+        <button onclick="location.href='/flowers/needs_watering'">Manage Water Levels</button>
+    </body>
+    </html>
     '''
+
 
 # Get all flowers
 @app.route('/flowers')
@@ -66,16 +100,16 @@ def add_flower():
     min_water_required = request.form['min_water_required']
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("INSERT INTO team5_flowers (name, last_watered, water_level, min_water_required) VALUES (%s, %s, %s, %s)", (name, last_watered, water_level, min_water_required))
+    cur.execute("INSERT INTO team5_flowers (name, last_watered, water_level, min_water_required) VALUES (%s, %s, %s, %s)", (name, last_watered, water_level, min_water_required)) #protecting from SQL injection
     conn.commit()
     cur.close()
     conn.close()
     return redirect('/flowers')
 
-    # Update a flower by ID
+    # Update a flower water level by ID
 @app.route('/flowers/<int:flower_id>', methods=['PUT'])
 def update_flower(flower_id):
-    data = request.json
+    data = request.json # Get the JSON data from the request
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("UPDATE team5_flowers SET last_watered = %s, water_level = %s WHERE id = %s",
