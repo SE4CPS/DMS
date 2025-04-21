@@ -249,7 +249,6 @@ def fast_query():
         FROM team7_orders o
         JOIN team7_customers c ON o.customer_id = c.id
         ORDER BY o.order_date DESC
-        WHERE o.
         LIMIT 10;
     """)
     rows = cur.fetchall()
