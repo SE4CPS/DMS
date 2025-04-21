@@ -69,3 +69,26 @@ function waterFlower(flowerId) {
         });
     }
 }
+
+function runQuery(type) {
+    const resultsDiv = document.getElementById('query-results');
+    resultsDiv.innerHTML = "⏳ Running " + type + " query...";
+
+    fetch('/run_query', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'query_type=' + encodeURIComponent(type)
+    })
+    .then(response => response.json())
+    .then(data => {
+        resultsDiv.innerHTML = `
+            <h4>${data.query_type.charAt(0).toUpperCase() + data.query_type.slice(1)} Query Results</h4>
+            <p>⏱️ <strong>Execution Time:</strong> ${data.execution_time} seconds</p>
+        `;
+    })
+    .catch(error => {
+        resultsDiv.innerHTML = "❌ Error running query: " + error;
+    });
+}
