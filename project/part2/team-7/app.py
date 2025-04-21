@@ -239,15 +239,6 @@ def fast_query():
     start_time = time.time()
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
-
-    #Tests
-    cur.execute("SELECT COUNT(*) FROM team7_orders")
-    order_count = cur.fetchone()[0]
-    cur.execute("SELECT COUNT(*) FROM team7_customers")
-    customer_count = cur.fetchone()[0]
-
-    if order_count == 0 or customer_count == 0:
-        return jsonify({"message": "No data in orders or customers"})
     
     # FAST: efficient join with LIMIT and only recent orders
     cur.execute("""
