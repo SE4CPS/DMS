@@ -37,6 +37,27 @@ def db_init():
             """
         )
         
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS team3_customers_encrypted (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(100),
+                email BYTEA  -- For storing encrypted data
+            );
+            """
+        )
+        
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS team3_orders_encrypted (
+                id SERIAL PRIMARY KEY,
+                customer_id INT REFERENCES team3_customers_encrypted(id),
+                flower_id INT REFERENCES team3_flowers(flower_id),
+                order_date BYTEA  -- For storing encrypted data
+            );
+            """
+        )
+        
         conn.commit()
         cur.close()
         conn.close()

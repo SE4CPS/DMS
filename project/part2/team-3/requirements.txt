@@ -3,3 +3,4 @@ Flask==3.1.0
 python-dotenv==1.0.1
 psycopg2-binary==2.9.10 
 psycopg2==2.9.10
+Faker==37.1.0
