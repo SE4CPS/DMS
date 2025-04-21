@@ -209,10 +209,10 @@ def slow_query():
         pgp_sym_decrypt(c.name, 'secret_key') AS customer_name,
         pgp_sym_decrypt(c.email, 'secret_key') AS customer_email,
         o.order_date
-    FROM team7p2_orders o
-    JOIN team7p2_customers c ON o.customer_id = c.id
+    FROM team7_p2_orders o
+    JOIN team7_p2_customers c ON o.customer_id = c.id
     CROSS JOIN team7_flowers f -- Adds the CROSS JOIN on team7_flowers
-    WHERE EXISTS (SELECT 1 FROM team7p2_orders o2 WHERE o2.customer_id = o.customer_id)
+    WHERE EXISTS (SELECT 1 FROM team7_p2_orders o2 WHERE o2.customer_id = o.customer_id)
     ORDER BY c.name DESC;
     """)
     
@@ -234,7 +234,22 @@ def slow_query():
         "results": results[:10]
     })
 
+@app.route('/create_indexes', methods=['GET'])
+def create_indexes():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("CREATE INDEX IF NOT EXISTS idx_orders_order_date ON team7_p2_orders(order_date DESC);")
+        conn.commit()
+        message = "Index on order_date created successfully!"
+    except Exception as e:
+        conn.rollback()
+        message = f"Error creating index: {str(e)}"
+    finally:
+        cur.close()
+        conn.close()
 
+    return jsonify({"message": message})
 
 @app.route('/fast', methods=['GET'])
 def fast_query():
@@ -249,8 +264,8 @@ def fast_query():
             pgp_sym_decrypt(c.name, 'secret_key') AS customer_name,
             pgp_sym_decrypt(c.email, 'secret_key') AS customer_email,
             o.order_date
-        FROM team7p2_orders o
-        JOIN team7p2_customers c ON o.customer_id = c.id
+        FROM team7_p2_orders o
+        JOIN team7_p2_customers c ON o.customer_id = c.id
         ORDER BY o.order_date DESC
         LIMIT 10;
     """)
@@ -281,12 +296,12 @@ def create_tables():
     cur = conn.cursor()
 
     try:
-        cur.execute("DROP TABLE IF EXISTS team7p2_orders;")
-        cur.execute("DROP TABLE IF EXISTS team7p2_customers;")
+        cur.execute("DROP TABLE IF EXISTS team7_p2_orders;")
+        cur.execute("DROP TABLE IF EXISTS team7_p2_customers;")
 
         # Create team7_customers table
         cur.execute("""
-            CREATE TABLE IF NOT EXISTS team7p2_customers (
+            CREATE TABLE IF NOT EXISTS team7_p2_customers (
                 id SERIAL PRIMARY KEY,
                 name BYTEA,
                 email BYTEA
@@ -295,9 +310,9 @@ def create_tables():
 
         # Create team7_orders table
         cur.execute("""
-            CREATE TABLE IF NOT EXISTS team7p2_orders (
+            CREATE TABLE IF NOT EXISTS team7_p2_orders (
                 id SERIAL PRIMARY KEY,
-                customer_id INT REFERENCES team7p2_customers(id),
+                customer_id INT REFERENCES team7_p2_customers(id),
                 flower_id INT REFERENCES team7_flowers(id),
                 order_date DATE
             );
@@ -322,11 +337,11 @@ def populate_data():
         cur.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto;")
 
         print("Inserting encrypted customers:")
-        for i in range(10000000):
+        for i in range(10000):
             name = f'Customer {i}'
             email = f'customer{i}@example.com'
             cur.execute("""
-                INSERT INTO team7p2_customers (name, email)
+                INSERT INTO team7_p2_customers (name, email)
                 VALUES (
                     pgp_sym_encrypt(%s, 'secret_key'),
                     pgp_sym_encrypt(%s, 'secret_key')
@@ -336,12 +351,12 @@ def populate_data():
                 print(f"Inserted customer {i}: {name}, {email}")
 
         print("\nInserting random orders:")
-        for i in range(10000000):
+        for i in range(10000):
             customer_id = random.randint(1, 10)
             flower_id = random.randint(1, 3)  # Ensure you have at least 5 flowers
             order_date = datetime.today() - timedelta(days=random.randint(0, 365))
             cur.execute("""
-                INSERT INTO team7p2_orders (customer_id, flower_id, order_date)
+                INSERT INTO team7_p2_orders (customer_id, flower_id, order_date)
                 VALUES (%s, %s, %s);
             """, (customer_id, flower_id, order_date))
             if i < 5:  # Only print the first few to avoid too much output
@@ -368,7 +383,7 @@ def get_customers():
         SELECT id, 
                pgp_sym_decrypt(name, 'secret_key') AS name, 
                pgp_sym_decrypt(email, 'secret_key') AS email 
-        FROM team7p2_customers 
+        FROM team7_p2_customers 
         LIMIT 100;
     """)
     rows = cur.fetchall()
@@ -376,7 +391,7 @@ def get_customers():
     conn.close()
     
     customers = [{'id': row[0], 'name': row[1], 'email': row[2]} for row in rows]
-    return jsonify(customers)
+    return jsonify(customers[:10])
 
 @app.route('/orders', methods=['GET'])
 def get_orders():
@@ -384,7 +399,7 @@ def get_orders():
     cur = conn.cursor()
     
     cur.execute("""
-        SELECT * FROM team7p2_orders 
+        SELECT * FROM team7_p2_orders 
         LIMIT 100;
     """)
     
@@ -397,11 +412,9 @@ def get_orders():
         for row in orders
     ]
     
-    print("First 100 orders:")
-    for order in order_json:
-        print(order)
-
-    return jsonify(order_json)
+   
+   
+    return jsonify(order_json[:10])
 
 
 

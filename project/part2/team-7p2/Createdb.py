@@ -13,37 +13,35 @@ def populate_data():
     conn = get_db_connection()
     cur = conn.cursor()
     try:
-        # Ensure the pgcrypto extension is available
+        # Ensure pgcrypto extension is available
         cur.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto;")
 
         print("Inserting encrypted customers:")
-        for i in range(10000000):  # Consider reducing this number for testing purposes
+        for i in range(10000):
             name = f'Customer {i}'
             email = f'customer{i}@example.com'
             cur.execute("""
-                INSERT INTO team7p2_customers (name, email)
+                INSERT INTO team7_p2_customers (name, email)
                 VALUES (
                     pgp_sym_encrypt(%s, 'secret_key'),
                     pgp_sym_encrypt(%s, 'secret_key')
                 );
             """, (name, email))
-            if i < 5:  # Only print the first few to avoid clutter
-                print(f"Inserted customer {i}: {name}, {email}")
+            print(f"Inserted customer {i}: {name}, {email}")  # Prints every customer
 
         print("\nInserting random orders:")
-        for i in range(10000000):  # Again, consider reducing the number
+        for i in range(10000):
             customer_id = random.randint(1, 10)
-            flower_id = random.randint(1, 3)  # Ensure you have at least 5 flowers
+            flower_id = random.randint(1, 3)  # Ensure you have at least 3 flowers
             order_date = datetime.today() - timedelta(days=random.randint(0, 365))
             cur.execute("""
-                INSERT INTO team7p2_orders (customer_id, flower_id, order_date)
+                INSERT INTO team7_p2_orders (customer_id, flower_id, order_date)
                 VALUES (%s, %s, %s);
             """, (customer_id, flower_id, order_date))
-            if i < 5:  # Only print the first few to avoid too much output
-                print(f"Inserted order {i}: Customer ID {customer_id}, Flower ID {flower_id}, Date {order_date}")
+            print(f"Inserted order {i}: Customer ID {customer_id}, Flower ID {flower_id}, Date {order_date}")  # Prints every order
 
         conn.commit()
-        print("Inserted 10000000 encrypted customers and 10000000 orders successfully!")
+        print("\nData insertion complete!")
     except Exception as e:
         conn.rollback()
         print(f"Error: {str(e)}")
@@ -51,5 +49,6 @@ def populate_data():
         cur.close()
         conn.close()
 
-if __name__ == '__main__':
+# Call the function to populate the data
+if __name__ == "__main__":
     populate_data()

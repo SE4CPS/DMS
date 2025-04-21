@@ -181,7 +181,14 @@
             })
             .catch(error => console.error("Error fetching orders:", error));
     }
-      // s
+    
+    function refreshData() {
+        fetchFlowers();     // Fetch flowers
+        fetchCustomers();   // Fetch customers
+        fetchOrders();      // Fetch orders
+    }
+
+    
     // Fetch data on page load
     fetchFlowers();
    fetchCustomers();
