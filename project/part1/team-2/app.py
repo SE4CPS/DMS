@@ -25,7 +25,7 @@ def manage_flowers():
         id, name, last_watered, water_level, min_water_required, max_water_required = flower
         if water_level < min_water_required:
             water_status = "Needs Water💧"
-        elif water_level >= min_water_required and water_level <= max_water_required:
+        elif water_level == min_water_required:
             water_status = "Healthy ✅"
         else:
             water_status = "Overwatered 🚨"
