@@ -1,3 +1,4 @@
+import time # added 
 import psycopg2
 from psycopg2 import OperationalError, DatabaseError
 from flask import Flask, request, jsonify, render_template
@@ -37,7 +38,7 @@ def get_flowers():
             "last_watered": f[2].strftime("%Y-%m-%d"),
             "water_level": f[3],
             "min_water_required": f[4],
-            "needs_water": f[5]  # Including the needs_water status
+            "needs_water": f[3] < f[4]  # Including the needs_water status
         } for f in flowers])
     except (OperationalError, DatabaseError) as e:
         return jsonify({"error": str(e)}), 500
@@ -128,6 +129,61 @@ def delete_flower(id):
         return jsonify({"message": "Flower deleted successfully!"})
     except (OperationalError, DatabaseError) as e:
         return jsonify({"error": str(e)}), 500
+
+# # Slow query 
+# @app.route('/slow_query')
+# def slow_query():
+#     start_time = time.time()
+#     try:
+#         with get_db_connection() as conn:
+#             with conn.cursor() as cur:
+#                 #attemted Slow query but still not working 
+#                 cur.execute("""
+#                     SELECT 
+#                         c.name,
+#                         encode(digest(c.email, 'sha512'), 'hex') AS hashed_email,
+#                         f.name AS flower_name,
+#                         o.order_date,
+#                         COUNT(*) OVER(PARTITION BY c.id) AS total_orders
+#                     FROM team9_orders o
+#                     JOIN team9_customers c ON o.customer_id = c.id
+#                     JOIN team9_flowers f ON o.flower_id = f.id
+#                     WHERE c.email LIKE 'flowers.com'
+#                     ORDER BY c.name, o.order_date, f.name;
+#                 """)
+#                 _ = cur.fetchall() 
+#          #execution time 
+#         execution_time = time.time() - start_time
+#         return jsonify({
+#             "execution_time": f"{execution_time:.2f} seconds"
+#         })
+#     except Exception as e:
+#         print("SLOW ERROR:", e)
+#         return jsonify({"error": str(e)}), 500
+  
+# #Fast query 
+# @app.route('/fast_query')
+# def fast_query():
+#     start_time = time.time()
+#     try:
+#         with get_db_connection() as conn:
+#             with conn.cursor() as cur:
+#                 #added Joins
+#                 cur.execute("""
+#                     SELECT c.name, f.name
+#                     FROM team9_orders o 
+#                     JOIN team9_customers c ON o.customer_id = c.id
+#                     JOIN team9_flowers f ON o.flower_id = f.id
+#                     LIMIT 100;
+#                 """)
+#                 _ = cur.fetchall()
+#         #execution time 
+#         execution_time = time.time() - start_time
+#         return jsonify({
+#             "execution_time": f"{execution_time:.2f} seconds"
+#         })
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

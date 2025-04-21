@@ -1,10 +1,14 @@
 import sqlite3
 from flask import Flask, request, jsonify, render_template, redirect
+import gen_insert_data
+import time
 
 app = Flask(__name__)
 
+
 def get_db_connection():
-    conn = sqlite3.connect("../team11_flowers.db")
+    DATABASE = "../team11_flowers.db"
+    conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -22,7 +26,7 @@ def index():
     <button onclick="location.href='/flowers_ui'">Manage Flowers (UI)</button>
     <br><br>
     <!-- If you have other sections, link them here as well -->
-    <button onclick="location.href='/flowers'">List Flowers (JSON)</button>
+    <button onclick="location.href='/JSON'">List Tables (JSON)</button>
     '''
 
 # -----------------------
@@ -36,11 +40,20 @@ def flowers_ui():
     """
     conn = get_db_connection()
     cur = conn.cursor()
+
     cur.execute("SELECT * FROM team11_flowers;")
     flowers = cur.fetchall()
+
+    cur.execute("SELECT * FROM team11_customers;")
+    customers = cur.fetchall()
+    
+    cur.execute("SELECT * FROM team11_orders;")
+    orders =  cur.fetchall()
+
     cur.close()
     conn.close()
-    return render_template('flowers11.html', flowers=flowers)
+    return render_template("flowers11.html", flowers=flowers, customers=customers, orders=orders)
+
 
 @app.route('/add_flower_form', methods=['POST'])
 def add_flower_form():
@@ -66,6 +79,7 @@ def add_flower_form():
     # Redirect back to /flowers_ui so we see the new flower listed
     return redirect('/flowers_ui')
 
+
 @app.route('/delete_flower_ui/<int:flower_id>')
 def delete_flower_ui(flower_id):
     """
@@ -78,6 +92,7 @@ def delete_flower_ui(flower_id):
     cur.close()
     conn.close()
     return redirect('/flowers_ui')
+
 
 @app.route('/update_flower_ui/<int:flower_id>', methods=['GET'])
 def update_flower_ui(flower_id):
@@ -97,6 +112,7 @@ def update_flower_ui(flower_id):
 
     # The form includes placeholders showing old data, but user can clear fields if desired
     return render_template('update_flower.html', flower=flower)
+
 
 @app.route('/update_flower_form/<int:flower_id>', methods=['POST'])
 def update_flower_form(flower_id):
@@ -144,11 +160,31 @@ def update_flower_form(flower_id):
 
     return redirect('/flowers_ui')
 
+# -----------------------
+# 3) JSON TABLES ROUTE (UI)
+# -----------------------
+@app.route('/JSON', methods=['GET'])
+def json_homepage():
+    """
+    A simple Table Page with buttons to navigate.
+    """
+    return '''
+    <h2>Team 11 Flower Management System</h2>
+    <p>Welcome! Choose a section below:</p>
+    <button onclick="location.href='/flowers'"> Flowers Table (JSON)</button>
+    <br><br>
+        <!-- If you have other sections, link them here as well -->
+    <button onclick="location.href='/customers'"> Customers Tables (JSON)</button>
+    <br><br>
+    <button onclick="location.href='/orders'"> Orders Tables (JSON)</button>
+    '''
+
+
 # ---------------------------------
-# 3) JSON ENDPOINTS (API)
+# 4) JSON ENDPOINTS (API)
 # ---------------------------------
 
-# GET all flowers as JSON
+# GET flowers table (JSON)
 @app.route('/flowers', methods=['GET'])
 def get_flowers():
     conn = get_db_connection()
@@ -166,12 +202,44 @@ def get_flowers():
         "needs_watering": f["water_level"] < f["min_water_required"]
     } for f in flowers])
 
+# GET customers table (JSON)
+@app.route('/customers', methods=['GET'])
+def get_customers():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM team11_customers;")
+    customers = cur.fetchall()
+    cur.close()
+    conn.close()
+    return jsonify([{
+        "id": f["id"],
+        "name": f["name"],
+        "email": f["email"],
+    } for f in customers])
+
+# GET orders table (JSON)
+@app.route('/orders', methods=['GET'])
+def get_orders():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM team11_orders;")
+    orders = cur.fetchall()
+    cur.close()
+    conn.close()
+    return jsonify([{
+        "id": f["id"],
+        "customer_id": f["customer_id"],
+        "flower_id": f["flower_id"],
+        "order_date": f["order_date"],
+    } for f in orders])
+
 # GET flowers that need watering (JSON)
 @app.route('/flowers/needs_watering', methods=['GET'])
 def get_flowers_needing_water():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM team11_flowers WHERE water_level < min_water_required;")
+    cur.execute(
+        "SELECT * FROM team11_flowers WHERE water_level < min_water_required;")
     flowers = cur.fetchall()
     cur.close()
     conn.close()
@@ -192,7 +260,8 @@ def add_flower():
     cur = conn.cursor()
     cur.execute(
         "INSERT INTO team11_flowers (name, last_watered, water_level, min_water_required) VALUES (?, ?, ?, ?)",
-        (data['name'], data['last_watered'], data['water_level'], data['min_water_required'])
+        (data['name'], data['last_watered'],
+         data['water_level'], data['min_water_required'])
     )
     conn.commit()
     cur.close()
@@ -224,6 +293,99 @@ def delete_flower(id):
     cur.close()
     conn.close()
     return jsonify({"message": "Flower deleted successfully!"})
+
+# Slow query
+@app.route('/slow_query', methods=['GET'])
+def slow_query():
+    start = time.time()
+
+    # Insert new data
+    gen_insert_data.generate_data()
+
+    conn = sqlite3.connect("../team11_flowers.db")
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+
+    # Select, Encryption, Join, Sort
+    cur.execute('''
+        SELECT 
+            o.id AS order_id,
+            c.name AS customer_name,
+            c.email,
+            f.name AS flower_name,
+            o.order_date,
+            LENGTH(c.email) * LENGTH(f.name) * ABS(RANDOM() % 100000) AS fake_load,
+            HEX(RANDOMBLOB(64)) AS fake_encryption_hash
+        
+        FROM team11_orders o
+        JOIN team11_customers c ON o.customer_id = c.id
+        JOIN team11_flowers f ON o.flower_id = f.id
+        ORDER BY fake_load DESC, o.order_date ASC
+    ''')
+
+    rows = cur.fetchall()
+    conn.close()
+
+    # Show only the first 5 and last 5 data (for UI)
+    limited_rows = rows[:5] + rows[-5:] if len(rows) > 10 else rows
+
+    results = [{
+        "order_id": r["order_id"],
+        "customer_name": r["customer_name"],
+        "email": r["email"],
+        "flower_name": r["flower_name"],
+        "order_date": r["order_date"],
+        "fake_load": r["fake_load"],
+        "fake_encryption_hash": r["fake_encryption_hash"]
+    } for r in limited_rows]
+
+    return jsonify({
+        "elapsed_seconds": round(time.time() - start, 2),
+        "results": results
+    })
+
+# Fast query
+@app.route('/fast_query', methods=['GET'])
+def fast_query():
+    start = time.time()
+    conn = sqlite3.connect("../team11_flowers.db")
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+
+    # Select Data
+    cur.execute('''
+        SELECT 
+            o.id AS order_id,
+            c.name AS customer_name,
+            c.email,
+            f.name AS flower_name,
+            o.order_date,
+            LENGTH(c.email) * LENGTH(f.name) * ABS(RANDOM() % 100000) AS fake_load
+
+        FROM team11_orders o
+        JOIN team11_customers c ON o.customer_id = c.id
+        JOIN team11_flowers f ON o.flower_id = f.id
+        LIMIT 1000;
+    ''')
+
+    rows = cur.fetchall()
+    conn.close()
+
+    # Show only the first 5 and last 5 data (for UI)
+    limited_rows = rows[:5] + rows[-5:] if len(rows) > 10 else rows
+
+    results = [{
+        "order_id": r["order_id"],
+        "customer_name": r["customer_name"],
+        "email": r["email"],
+        "flower_name": r["flower_name"],
+        "order_date": r["order_date"],
+    } for r in limited_rows]
+
+    return jsonify({
+        "elapsed_seconds": time.time() - start,
+        "results": results
+    })
 
 # ---------------------------------
 # Entry Point

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower Shop</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+    <h2>Flower Management</h2>
+
+    <form action="/add_flower" method="post">
+        <input type="text" name="name" placeholder="Flower Name">
+        <input type="text" name="last_watered" placeholder="Last Watered">
+        <input type="number" name="water_level" placeholder="Water Level">
+        <input type="number" name="min_water_required" placeholder="Min Water Required">
+        <input type="number" name="max_water_required" placeholder="Max Water Required">
+        <button type="submit">Add Flower</button>
+    </form>
+    
+    <!-- Water Loss Simulation -->
+    <button class = "simulation-button" onclick="applyWaterLoss()">
+        Apply Water Loss Simulation
+    </button>
+
+    <!-- Query Testing Section -->
+    <div class = "query-section">
+        <h3>Database Performance</h3>
+        <button class="query-button" onclick="runQuery('slow')">Slow Query</button>
+        <button class="query-button" onclick="runQuery('fast')">Fast Query</button>
+
+    <!-- Results will appear here -->
+        <div id="query-results">
+    
+        </div>
+    </div>
+
+
+
+    <h3>Available Flowers</h3>
+    <div class = "flower-container">
+        {% if flowers %}
+            {% for flower in flowers %}
+                <li>
+                    <!-- Display specific attributes of each flower -->
+                    <div class = "flower-card">
+                        Name: {{ flower[1] }} <br>
+                        Last Watered: {{ flower[2] }} <br>
+                        Water Level: {{ flower[3] }} <br>
+                        Min Water Required: {{ flower[4] }} <br>
+                        Max Water Required: {{ flower[5] }} <br>
+                        Water Status: {{ flower[6] }}<br>
+                        <div class = "button-group">
+                            <!-- Delete Flower -->
+                            <button class = "standalone-button" onclick= "deleteFlower({{flower[0]}})">Delete</button>
+                            <!-- Water Flower -->
+                            <button class = "standalone-button" onclick= "waterFlower({{flower[0]}})">Water</button>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        {% else %}
+            <li>No flowers available.</li>
+        {% endif %}
+    </div>
+    <script src = "{{url_for('static', filename='js/script.js')}}"></script>
+</body>
+
+</html>

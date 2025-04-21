@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <title>Flower Shop</title>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>Flower Management</h2>
+
+      <form id="flower_form" action="/add_flower" method="post">
+        <div class="">
+          <input class="text_entry_flower" id="name" type="text" name="name" placeholder="Flower Name" />
+          <input
+            class="text_entry_flower"
+            id="last_watered"
+            type="text"
+            name="last_watered"
+            placeholder="Last Watered" />
+          <input
+            class="text_entry_flower"
+            id="water_level"
+            type="number"
+            name="water_level"
+            placeholder="Water Level" />
+          <input
+            class="text_entry_flower"
+            id="min_water_required"
+            type="number"
+            name="min_water_required"
+            placeholder="Min Water Required" />
+        </div>
+        <button class="add_flower" type="submit">Add Flower</button>
+      </form>
+
+      <h3>Available Flowers</h3>
+      <ul id="flower-data">
+        {% if flowers %} {% for flower in flowers %}
+        <li>{{ flower }}</li>
+        {% endfor %} {% else %}
+        <li>No flowers available.</li>
+        {% endif %}
+      </ul>
+
+      <form id="flower-water">
+        <div class="text_entry_water">
+          <input class="text_entry_flower" type="text" name="id" id="flower_id" placeholder="Flower Id" />
+          <input class="text_entry_flower" type="text" name="name" id="flower_name" placeholder="Flower name" />
+          <input
+            class="text_entry_flower"
+            type="text"
+            name="water_level"
+            id="flower_water"
+            placeholder="How much water to add" />
+        </div>
+        <button class="update_flower" type="submit">Update Flowers Water</button>
+      </form>
+      <form id="delete-flower">
+        <div class="delete_flower_margin">
+          <div class="text_entry_delete">
+            <input class="text_entry_flower" type="text" name="id" id="delete_flower_id" placeholder="Flower Id" />
+            <input
+              class="text_entry_flower"
+              type="text"
+              name="name"
+              id="delete_flower_name"
+              placeholder="Flower name" />
+          </div>
+        </div>
+        <button class="delete_flower" type="submit">Remove Flower</button>
+      </form>
+    </div>
+
+    <!-- Gathering all the flowers from db -->
+    <script>
+      const flower_f = document.getElementById("flower_form");
+      flower_f.addEventListener("submit", function (event) {
+        const name = document.getElementById("name");
+        const last_watered = document.getElementById("last_watered");
+        const water_level = document.getElementById("water_level");
+        const min_water_required = document.getElementById("min_water_required");
+        if (name.value && last_watered.value && water_level.value && min_water_required.value) {
+          console.log("Flowers successfully gathered");
+        } else {
+          event.preventDefault();
+          alert("Please enter all fields.");
+        }
+      });
+    </script>
+
+    <!-- Updating the water level to the flower by manual input -->
+    <script>
+      const flower_w = document.getElementById("flower-water");
+      flower_w.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const flower_id = document.getElementById("flower_id").value;
+        const flower_n = document.getElementById("flower_name").value;
+        const water = document.getElementById("flower_water").value;
+
+        if (flower_id && flower_n && water) {
+          fetch(`/flowers/${flower_id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              last_watered: new Date().toISOString().split("T")[0],
+              water_level: water,
+              flower_id: flower_id,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              location.reload();
+            });
+        } else {
+          event.preventDefault();
+          alert("Please enter all fields");
+        }
+      });
+    </script>
+
+    <!-- water loss algorithm -->
+    <script>
+      window.onload = async function updateFlowers() {
+        try {
+          const response = await fetch("/flowers/daily_loss");
+          const flowers = await response.json();
+
+          const today = new Date();
+          let reload = false;
+
+          const updates = flowers.map(async (flower) => {
+            const last_watered_date = new Date(flower.last_watered);
+            const daysDifference = Math.floor((today - last_watered_date) / 86400000);
+
+            if (daysDifference > 0) {
+              const new_water_level = Math.max(0, flower.water_level - 5 * daysDifference);
+              reload = true;
+
+              return fetch(`/flowers/${flower.id}`, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  water_level: new_water_level,
+                  last_watered: today.toISOString().split("T")[0],
+                }),
+              });
+            }
+          });
+          await Promise.all(updates.filter(Boolean));
+
+          if (reload) {
+            setTimeout(() => location.reload(), 1000);
+          }
+        } catch (error) {
+          console.error("Error updating water level:", error);
+        }
+      };
+    </script>
+
+    <!-- Deleting flowers from the db -->
+    <script>
+      const delete_f = document.getElementById("delete-flower");
+      const flowerIdInput = document.getElementById("delete_flower_id");
+      const flowerNameInput = document.getElementById("delete_flower_name");
+
+      delete_f.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const flowerId = flowerIdInput.value;
+        const flowerName = flowerNameInput.value;
+
+        if (flower_id) {
+          fetch(`/delete_flower/${flowerId}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              flower_id: flowerId,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              location.reload();
+            });
+        } else {
+          alert("Please enter a valid ID");
+          event.preventDefault();
+        }
+      });
+    </script>
+  </body>
+</html>

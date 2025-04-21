@@ -1,3 +1,11 @@
+    
+    function resetForm() {
+        document.getElementById("flower-name").value = "";
+        document.getElementById("last-watered").value = "";
+        document.getElementById("water-level").value = "";
+        document.getElementById("min-water-required").value = "";
+    }
+
     function fetchFlowers() {
         fetch('http://127.0.0.1:5000/flowers')
         .then(response => response.json())
@@ -56,6 +64,7 @@
         .then(response => response.json())
         .then(data => {
             alert(data.message);
+            resetForm();
             fetchFlowers();  // Refresh the data after adding
         })
         .catch(error => console.error("Error adding flower:", error));

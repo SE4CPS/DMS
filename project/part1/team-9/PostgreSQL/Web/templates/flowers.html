@@ -140,6 +140,28 @@
     <button id="deleteButton" onclick="deleteFlower()">Delete</button>
     <button id="goBackButton" onclick="goBack()">Go Back</button>
 
+
+<!-- Query Buttons
+<div class="button-container">
+    <button type="button" onclick="runSlowQuery()">Slow Query</button>
+    <button type="button" onclick="runFastQuery()">Fast Query</button>
+</div>
+-->
+<!-- Display's Query and Execution  -->
+<!-- <div id="queryResult" style="
+  display: none;
+  margin: 20px auto;
+  width: fit-content;
+  background-color: white;
+  color: rgb(229, 140, 195);
+  padding: 10px;
+  border: 2px solid rgb(229, 140, 195);
+  white-space: pre-line;
+  font-weight: bold;
+  font-size: 1.2em; 
+  text-align: center;">
+</div> -->
+
     <!-- Flowers Table (initially hidden) -->
     <div id="flowerTable">
         <table>
@@ -296,6 +318,40 @@
             })
             .catch(error => console.error('Error deleting flower:', error));
         }
+// Slow Query  
+function runSlowQuery() {
+    fetch('/slow_query')
+        .then(response => response.json())
+        .then(result => {
+            const resultDiv = document.getElementById('queryResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <strong>Slow Query:</strong><br>
+                <strong>Execution Time:</strong> ${result.execution_time}
+            `;
+        })
+        .catch(error => {
+            console.error('Slow query error:', error);
+            alert('Error with Slow query');
+        });
+}
+// fast query 
+function runFastQuery() {
+    fetch('/fast_query')
+        .then(response => response.json())
+        .then(result => {
+            const resultDiv = document.getElementById('queryResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <strong>Fast Query:</strong><br>
+                <strong>Execution Time:</strong> ${result.execution_time}
+            `;
+        })
+        .catch(error => {
+            console.error('Fast query error:', error);
+            alert('Error with Fast query');
+        });
+}
 
         // Go back to the "Add Flower" form
         function goBack() {
