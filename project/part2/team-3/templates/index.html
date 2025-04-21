@@ -30,15 +30,29 @@
     </table>
 
     <h2>Performance Test</h2>
-    <button onclick="runSlowQuery()">Run Slow Query</button>
-    <button onclick="runFastQuery()">Run Fast Query</button>
-    <div id="query-status" style="display: none;">
-        <p>Query Status: <span id="status-text">Running slow query...</span></p>
-        <p>Time Elapsed: <span id="timer">0</span> seconds</p>
-    </div>
-    <div id="query-results">
-        <h3>Query Execution Plan</h3>
-        <div id="explain-results"></div>
+    <div style="display: flex; gap: 20px;">
+        <div style="flex: 1;">
+            <button onclick="runSlowQuery()">Run Slow Query</button>
+            <div id="slow-query-status" style="display: none;">
+                <p>Query Status: <span id="slow-status-text">Running slow query...</span></p>
+                <p>Time Elapsed: <span id="slow-timer">0</span> seconds</p>
+            </div>
+            <div class="query-results">
+                <h3>Slow Query Execution Plan</h3>
+                <div id="slow-explain-results"></div>
+            </div>
+        </div>
+        <div style="flex: 1;">
+            <button onclick="runFastQuery()">Run Fast Query</button>
+            <div id="fast-query-status" style="display: none;">
+                <p>Query Status: <span id="fast-status-text">Running fast query...</span></p>
+                <p>Time Elapsed: <span id="fast-timer">0</span> seconds</p>
+            </div>
+            <div class="query-results">
+                <h3>Fast Query Execution Plan</h3>
+                <div id="fast-explain-results"></div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -231,9 +245,9 @@
         // Function to run the slow query and display results
         function runSlowQuery() {
             // Show status and start timer
-            const statusDiv = document.getElementById('query-status');
-            const statusText = document.getElementById('status-text');
-            const timerElement = document.getElementById('timer');
+            const statusDiv = document.getElementById('slow-query-status');
+            const statusText = document.getElementById('slow-status-text');
+            const timerElement = document.getElementById('slow-timer');
             statusDiv.style.display = 'block';
             statusText.textContent = 'Running slow query...';
             
@@ -249,7 +263,7 @@
                     // Clear timer and update status
                     clearInterval(timer);
                     statusText.textContent = 'Query completed!';
-                    displayQueryResults(data.explain);
+                    displayQueryResults(data.explain, 'slow');
                 })
                 .catch(error => {
                     clearInterval(timer);
@@ -261,9 +275,9 @@
         // Function to run the fast query and display results
         function runFastQuery() {
             // Show status and start timer
-            const statusDiv = document.getElementById('query-status');
-            const statusText = document.getElementById('status-text');
-            const timerElement = document.getElementById('timer');
+            const statusDiv = document.getElementById('fast-query-status');
+            const statusText = document.getElementById('fast-status-text');
+            const timerElement = document.getElementById('fast-timer');
             statusDiv.style.display = 'block';
             statusText.textContent = 'Running fast query...';
             
@@ -279,7 +293,7 @@
                     // Clear timer and update status
                     clearInterval(timer);
                     statusText.textContent = 'Query completed!';
-                    displayQueryResults(data.explain);
+                    displayQueryResults(data.explain, 'fast');
                 })
                 .catch(error => {
                     clearInterval(timer);
@@ -288,8 +302,8 @@
                 });
         }
 
-        function displayQueryResults(results) {
-            const resultsDiv = document.getElementById('explain-results');
+        function displayQueryResults(results, queryType) {
+            const resultsDiv = document.getElementById(`${queryType}-explain-results`);
             resultsDiv.innerHTML = results.map(line => `<p>${line}</p>`).join('');
         }
 
