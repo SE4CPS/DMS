@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect
 import psycopg2
 from datetime import datetime
+import time
 
 app = Flask(__name__)
 DATABASE_URL = "postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
@@ -22,14 +23,14 @@ def manage_flowers():
 
     flowers_with_status = []
     for flower in flowers:
-        id, name, last_watered, water_level, min_water_required = flower
+        id, name, last_watered, water_level, min_water_required, max_water_required = flower
         if water_level < min_water_required:
             water_status = "Needs Water💧"
         elif water_level == min_water_required:
             water_status = "Healthy ✅"
         else:
             water_status = "Overwatered 🚨"
-        flowers_with_status.append((id, name, last_watered, water_level, min_water_required, water_status))
+        flowers_with_status.append((id, name, last_watered, water_level, min_water_required, max_water_required, water_status))
   
     cur.close()
     conn.close()
@@ -41,14 +42,15 @@ def add_flower():
     last_watered = request.form['last_watered']
     water_level = int(request.form['water_level'])
     min_water_required = int(request.form['min_water_required'])
+    max_water_required = int(request.form['max_water_required'])
 
     if water_level < 0 or min_water_required < 0:
         raise ValueError("Water level and minimum water required must be positive integers")
     
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("INSERT INTO team2_flowers (name, last_watered, water_level, min_water_required) VALUES (%s, %s, %s, %s)",
-                (name, last_watered, water_level, min_water_required))
+    cur.execute("INSERT INTO team2_flowers (name, last_watered, water_level, min_water_required, max_water_required) VALUES (%s, %s, %s, %s, %s)",
+                (name, last_watered, water_level, min_water_required, max_water_required))
     conn.commit()
     cur.close()
     conn.close()
@@ -101,7 +103,54 @@ def water_loss():
         cur.close()
         conn.close()
 
-    return redirect('/team2_flowers')  # Redirect back to the flowers page to see updated values
+    return redirect('/team2_flowers') 
+
+@app.route('/slow_query')
+def slow_query():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    slow_query_sql =  """
+    SELECT 
+        c.name,
+        c.email,
+        o.id AS order_id,
+        f.name AS flower_name,
+        f.water_level,
+        (f.max_water_required - f.water_level) AS water_needed,
+        EXTRACT(EPOCH FROM (NOW() - f.last_watered))/3600 AS hours_since_watering,
+        CASE 
+            WHEN f.water_level < f.min_water_required THEN 'Needs water'
+            ELSE 'Healthy'
+        END AS water_status
+    FROM 
+        team2_customers c
+    JOIN 
+        team2_orders o ON c.id = o.customer_id
+    JOIN 
+        team2_flowers f ON o.flower_id = f.id
+    WHERE 
+        o.order_date BETWEEN '2023-01-01' AND '2025-04-20'
+        AND (SELECT COUNT(*) FROM generate_series(1,25000)) > 0 
+        AND f.water_level < f.max_water_required
+    ORDER BY 
+        (SELECT COUNT(*) FROM team2_orders WHERE customer_id = c.id) DESC,
+        hours_since_watering DESC,
+        (SELECT COUNT(*) FROM team2_orders WHERE flower_id = f.id) DESC
+    LIMIT 300;
+    """
+
+    start_time = time.time()
+    cur.execute(slow_query_sql)
+    execution_time = time.time() - start_time
+    
+    cur.close()
+    conn.close()
+    
+    return render_template('query_results.html',
+                         query_type="Slow Query (15-20s Target)",
+                         query=slow_query_sql,
+                         execution_time=execution_time)
 
 if __name__ == '__main__':
     app.run(debug=True)
