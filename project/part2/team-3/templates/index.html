@@ -31,6 +31,7 @@
 
     <h2>Performance Test</h2>
     <button onclick="runSlowQuery()">Run Slow Query</button>
+    <button onclick="runFastQuery()">Run Fast Query</button>
     <div id="query-status" style="display: none;">
         <p>Query Status: <span id="status-text">Running slow query...</span></p>
         <p>Time Elapsed: <span id="timer">0</span> seconds</p>
@@ -248,18 +249,48 @@
                     // Clear timer and update status
                     clearInterval(timer);
                     statusText.textContent = 'Query completed!';
-                    
-                    // Display EXPLAIN ANALYZE results
-                    const explainDiv = document.getElementById('explain-results');
-                    explainDiv.innerHTML = '<pre>' + data.explain.join('\n') + '</pre>';
+                    displayQueryResults(data.explain);
                 })
                 .catch(error => {
-                    // Clear timer and update status on error
                     clearInterval(timer);
                     statusText.textContent = 'Query failed!';
                     console.error('Error:', error);
-                    showNotification('Error running slow query: ' + error);
                 });
+        }
+
+        // Function to run the fast query and display results
+        function runFastQuery() {
+            // Show status and start timer
+            const statusDiv = document.getElementById('query-status');
+            const statusText = document.getElementById('status-text');
+            const timerElement = document.getElementById('timer');
+            statusDiv.style.display = 'block';
+            statusText.textContent = 'Running fast query...';
+            
+            let seconds = 0;
+            const timer = setInterval(() => {
+                seconds++;
+                timerElement.textContent = seconds;
+            }, 1000);
+
+            fetch('http://127.0.0.1:5000/fast-query')
+                .then(response => response.json())
+                .then(data => {
+                    // Clear timer and update status
+                    clearInterval(timer);
+                    statusText.textContent = 'Query completed!';
+                    displayQueryResults(data.explain);
+                })
+                .catch(error => {
+                    clearInterval(timer);
+                    statusText.textContent = 'Query failed!';
+                    console.error('Error:', error);
+                });
+        }
+
+        function displayQueryResults(results) {
+            const resultsDiv = document.getElementById('explain-results');
+            resultsDiv.innerHTML = results.map(line => `<p>${line}</p>`).join('');
         }
 
         // Initial load

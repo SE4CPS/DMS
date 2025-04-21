@@ -185,5 +185,33 @@ def slow_query():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# Fast query that joins customers and orders without encryption
+@app.route('/fast-query', methods=['GET'])
+def fast_query():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        # First get the EXPLAIN ANALYZE results
+        cur.execute("""
+            EXPLAIN ANALYZE
+            SELECT c.id, c.name, c.email,
+                   o.id as order_id, o.order_date
+            FROM team3_customers c
+            JOIN team3_orders o ON c.id = o.customer_id
+            WHERE c.email LIKE '%@gmail.com'
+            ORDER BY o.order_date DESC
+        """)
+        explain_results = cur.fetchall()
+        
+        cur.close()
+        conn.close()
+        
+        return jsonify({
+            'explain': [row[0] for row in explain_results]
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True)
