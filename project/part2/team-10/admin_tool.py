@@ -82,6 +82,7 @@ def create_tables():
     execute(
     """
     BEGIN;
+    CREATE EXTENSION IF NOT EXISTS pgcrypto;
     CREATE TABLE team10_flowers (
         id SERIAL PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
@@ -206,10 +207,33 @@ def print_schema():
     """
     )
 
-    rows = res.fetchall();
+    rows = res.fetchall()
+
     for row in rows:
         if (re.search("team10_.*", row[1])):
             print(row)
+
+def slow_query():
+    start_time = datetime.datetime.now()
+    res = execute(
+        """
+        EXPLAIN ANALYZE
+        SELECT *
+        FROM team10_orders
+        FULL JOIN team10_customers ON team10_orders.customer_id=team10_customers.id
+        CROSS JOIN team10_flowers
+        ORDER BY team10_flowers.name
+        """
+    ) #('Execution Time: 592.386 ms',)
+    print('Duration: {}'.format(datetime.datetime.now() - start_time))
+
+    rows = res.fetchall()
+    for row in rows:
+        for item in row:
+            if (re.search(".*Execution Time:.*", item)):
+                match = re.search("[0-9]*\.[0-9]*", item);
+                seconds = round(float(item[match.span()[0]:match.span()[1]]) / 1000, 3)
+                print('Execution Time: ', seconds)
 
 def print_table_prompt():
     print("|----------------------------------|")
@@ -278,6 +302,8 @@ while user_input != 'q':
             table_data()
         case 'h':
             print('\n')
+        case 's':
+            slow_query()
         case _:
             print("=> Invalid Input..")
 
