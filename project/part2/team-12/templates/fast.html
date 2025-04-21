@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Fast Query Execution</title>
+</head>
+<body>
+    <h3>Run Fast Query</h3>
+    <form method="post">
+        <button type="submit">Execute Fast Query</button>
+    </form>
+
+    <!-- Show the SQL query -->
+    <p><strong>SQL Query:</strong></p>
+    <pre>{{ query }}</pre>
+
+    <!-- Show the execution time if it was run -->
+    {% if time %}
+        <p><strong>Execution Time:</strong> {{ time }} seconds</p>
+    {% endif %}
+</body>
+</html>

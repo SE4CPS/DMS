@@ -1,51 +1,106 @@
-**Team3:** <br>
-Han Nguyen <br>
-Raymond Lee <br>
-Junah Kim <br>
-
 # Flower Water Tracking System
-Web application to track flower watering status, indicate when the flower will to be watered again.
 
-## Technologies:
-Database: PostgreSQL, Neon database <br> 
-Frontend: HTML/CSS <br>
-Backend: Python - Flask framework <br>
+**Team Members:**
+- Han Nguyen
+- Raymond Lee
+- Junah Kim
 
-## Features:
-- Track flower watering status.
-- View when flower need watering.
-- Add, update, and delete flower records. 
-- Simple web interfaces.
+A web application to track flower watering status and indicate when flowers need to be watered again.
 
-## Project stucture:
-.gitignore  
-.env                        # Store db_url, remember to delete pooler for it to work. <br>
+## Technologies
 
-app.py                      # Routing command to interact with database & will be connected with frontend. <br>
+### Backend
+- Framework: Python Flask 3.1.0
+- Database: Neon (Serverless PostgreSQL)
 
-/database:<br>
-    db_connection.py        # Connect to database <br>
-    db_init.py              # Initialize database schema <br>
-    
+### Frontend
+- HTML/CSS
 
-/static:<br>
-    style.css              # Styles the index.html, styles the frontend
-/templates:<br>
-    index.html <br>        # The frontend
-/backend: 
-    crud.py       
-    
+### Dependencies
+- python-dotenv 1.0.1
+- psycopg2-binary 2.9.10
+- Faker 37.1.0
+
+## Features
+
+- Track flower watering status and water levels
+- View flowers that need watering
+- Add, update, and delete flower records
+- Automatic water level updates
+- Performance comparison between query implementations
+- Simple web interface
+
+## Project Structure
+
+```
+.
+├── .gitignore                    # Git ignore file.
+├── .env                          # API key.
+├── app.py                        # Main Flask application with all routes.
+├── requirements.txt              # Project dependencies.
+├── database/
+│   ├── db_connection.py          # Database connection management.
+│   └── db_init.py                # Database schema initialization.
+│   └── generate_data.py          # Insert data in the database & ensure encrypted table have same data as normal table.
+├── static/
+│   └── style.css                 # CSS styles for the frontend.
+├── templates/
+│   └── index.html                # Main frontend template.           
+└── backend/
+    └── test_insert_data          # Test insertion         
+    └── test_queries              # Test querying    
+```
+
+## Available Endpoints:
+- `GET /` - Home page
+- `GET /flowers` - Get all flowers
+- `GET /flowers/needs_watering` - Get flowers that need watering
+- `PUT /flowers/water/<id>` - Update water level for a specific flower
+- `POST /flowers` - Add a new flower
+- `PUT /flowers/<id>` - Update flower information
+- `GET /updated_flowers_level/` - Get updated water levels
+- `GET /slow-query` - Performance test endpoint (slow implementation)
+- `GET /fast-query` - Performance test endpoint (optimized implementation)
+
+## Installation and Setup
 ## How to Run
 
-1. Make sure that PostgreSQL is installed. To install PostgreSQL on MacOS using Brew, use: `brew install postgresql` on MacOS. 
-2. Create a virtual environment using `python3 -m venv venv`.
-3. Activate the virtual environment using `source venv/bin/activate` if you are on Mac.
-4. Once the virtual environment is running, install the requirements needed for the project: `pip install -r requirements.txt`.
-5. Create a config file to store the database API key in the team3 directory using `touch .env`. Then insert the database API key like so `database_url=[insert database api key here]`.
-6. Run the app using: `python3 app.py`.
-7. Navigate to the local host link to see the webapp in the browser: `http://127.0.0.1:5000`. 
-8. Add endpoints to the URL as needed for testing e.g (`http://127.0.0.1:5000/flowers`).
+1. **Create a virtual environment** 
+   **Activate virtual environment**
+  
 
-## Note for Developers
+2. **Install Dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-1. To add additional requirements to the requirements.txt file, do `python3 -m pip freeze > requirements.txt`.
+3. **Database Setup**
+   - Create a Neon database account at [https://neon.tech](https://neon.tech)
+   - Create a new project and get your connection string
+   - Create a `.env` file in the project root:
+     ```
+     DATABASE_URL=your_neon_connection_string
+     ```
+   - Note: Remove the `?sslmode=require` from the connection string if present
+
+4. **Run the Application**
+   ```bash
+   python3 app.py
+   ```
+
+5. **Access the Application**
+   - Open your browser and navigate to `http://127.0.0.1:5000`
+   - Use the available endpoints as needed
+
+## Development Notes
+
+1. **Updating Requirements**
+   ```bash
+   pip freeze > requirements.txt
+   ```
+
+2. **Database Initialization**
+   - The database schema is automatically initialized when the application starts
+
+3. **Performance Testing**
+   - Endpoints available at `/slow-query` and `/fast-query` for comparison

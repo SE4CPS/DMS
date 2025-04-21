@@ -2,6 +2,8 @@ import psycopg2
 import json
 from flask import Flask, render_template, request, jsonify
 import time
+from datetime import date, timedelta, datetime
+import random
 
 app = Flask(__name__)
 
@@ -194,50 +196,221 @@ def delete_multiple_flowers():
 
     return jsonify({"message": f"{deleted_count} flowers deleted successfully."}), 200
 
-
 @app.route('/slow', methods=['GET'])
 def slow_query():
     start_time = time.time()
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
     
-    # Example of a slow query (e.g., missing index or large dataset scan)
-    cur.execute("SELECT * FROM team7_flowers ORDER BY name;")  # Replace with your actual slow query if needed
+    # Intentionally slow query: No LIMIT, inefficient order, decrypts everything
+    cur.execute("""
+        SELECT 
+            o.id AS order_id,
+            pgp_sym_decrypt(c.name, 'secret_key') AS customer_name,
+            pgp_sym_decrypt(c.email, 'secret_key') AS customer_email,
+            o.order_date
+        FROM team7_orders o
+        JOIN team7_customers c ON o.customer_id = c.id
+        ORDER BY c.name DESC;
+    """)
     
-    flowers = cur.fetchall()
+    rows = cur.fetchall()
     cur.close()
     conn.close()
-
     end_time = time.time()
-    duration = end_time - start_time
-    
+
+    results = [{
+        "order_id": row[0],
+        "customer_name": row[1],
+        "customer_email": row[2],
+        "order_date": row[3].strftime("%Y-%m-%d")
+    } for row in rows]
+
     return jsonify({
         "query_type": "slow",
-        "duration_seconds": round(duration, 4),
-        "results": flowers
+        "duration_seconds": round(end_time - start_time, 4),
+        "results": results[:10]
     })
+
+
 
 @app.route('/fast', methods=['GET'])
 def fast_query():
     start_time = time.time()
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
+
+    #Tests
+    cur.execute("SELECT COUNT(*) FROM team7_orders")
+    order_count = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM team7_customers")
+    customer_count = cur.fetchone()[0]
+
+    if order_count == 0 or customer_count == 0:
+        return jsonify({"message": "No data in orders or customers"})
     
-    # Example of a fast query (e.g., uses index or LIMIT)
-    cur.execute("SELECT * FROM team7_flowers LIMIT 10;")  # Replace with your actual fast query
+    # FAST: efficient join with LIMIT and only recent orders
+    cur.execute("""
+        SELECT 
+            o.id AS order_id,
+            pgp_sym_decrypt(c.name, 'secret_key') AS customer_name,
+            pgp_sym_decrypt(c.email, 'secret_key') AS customer_email,
+            o.order_date
+        FROM team7_orders o
+        JOIN team7_customers c ON o.customer_id = c.id
+        ORDER BY o.order_date DESC
+        LIMIT 10;
+    """)
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    end_time = time.time()
+
+    results = [{
+        "order_id": row[0],
+        "customer_name": row[1],
+        "customer_email": row[2],
+        "order_date": row[3].strftime("%Y-%m-%d")
+    } for row in rows]
+
+    return jsonify({
+        "query_type": "fast",
+        "duration_seconds": round(end_time - start_time, 4),
+        "results": results
+    })
+
+
+
+
+@app.route('/create_tables', methods=['GET'])
+def create_tables():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    try:
+        cur.execute("DROP TABLE IF EXISTS team7_orders;")
+        cur.execute("DROP TABLE IF EXISTS team7_customers;")
+
+        # Create team7_customers table
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS team7_customers (
+                id SERIAL PRIMARY KEY,
+                name BYTEA,
+                email BYTEA
+            );
+        """)
+
+        # Create team7_orders table
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS team7_orders (
+                id SERIAL PRIMARY KEY,
+                customer_id INT REFERENCES team7_customers(id),
+                flower_id INT REFERENCES team7_flowers(id),
+                order_date DATE
+            );
+        """)
+
+        conn.commit()
+        message = "Tables created successfully!"
+    except Exception as e:
+        conn.rollback()
+        message = f"Error: {str(e)}"
+    finally:
+        cur.close()
+        conn.close()
+
+    return jsonify({"message": message})
+
+@app.route('/populate_data', methods=['GET'])
+def populate_data():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto;")
+
+        print("Inserting encrypted customers:")
+        for i in range(10):
+            name = f'Customer {i}'
+            email = f'customer{i}@example.com'
+            cur.execute("""
+                INSERT INTO team7_customers (name, email)
+                VALUES (
+                    pgp_sym_encrypt(%s, 'secret_key'),
+                    pgp_sym_encrypt(%s, 'secret_key')
+                );
+            """, (name, email))
+            if i < 5:  # Only print the first few to avoid clutter
+                print(f"Inserted customer {i}: {name}, {email}")
+
+        print("\nInserting random orders:")
+        for i in range(10):
+            customer_id = random.randint(1, 10)
+            flower_id = random.randint(1, 3)  # Ensure you have at least 5 flowers
+            order_date = datetime.today() - timedelta(days=random.randint(0, 365))
+            cur.execute("""
+                INSERT INTO team7_orders (customer_id, flower_id, order_date)
+                VALUES (%s, %s, %s);
+            """, (customer_id, flower_id, order_date))
+            if i < 5:  # Only print the first few to avoid too much output
+                print(f"Inserted order {i}: Customer ID {customer_id}, Flower ID {flower_id}, Date {order_date}")
+
+        conn.commit()
+        message = "Inserted 1000 encrypted customers and 1000 orders"
+    except Exception as e:
+        conn.rollback()
+        message = f"Error: {str(e)}"
+    finally:
+        cur.close()
+        conn.close()
+
+    return jsonify({"message": message})
+
+
+
+@app.route('/customers')
+def get_customers():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT id, 
+               pgp_sym_decrypt(name, 'secret_key') AS name, 
+               pgp_sym_decrypt(email, 'secret_key') AS email 
+        FROM team7_customers 
+        LIMIT 100;
+    """)
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
     
-    flowers = cur.fetchall()
+    customers = [{'id': row[0], 'name': row[1], 'email': row[2]} for row in rows]
+    return jsonify(customers)
+
+@app.route('/orders', methods=['GET'])
+def get_orders():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    cur.execute("""
+        SELECT * FROM team7_orders 
+        LIMIT 100;
+    """)
+    
+    orders = cur.fetchall()
     cur.close()
     conn.close()
 
-    end_time = time.time()
-    duration = end_time - start_time
+    order_json = [
+        {"id": row[0], "customer_id": row[1], "flower_id": row[2], "order_date": row[3].strftime("%Y-%m-%d")}
+        for row in orders
+    ]
     
-    return jsonify({
-        "query_type": "slow",
-        "duration_seconds": round(duration, 4),
-        "results": flowers
-    })
+    print("First 100 orders:")
+    for order in order_json:
+        print(order)
+
+    return jsonify(order_json)
+
+
 
 # Run the application
 if __name__ == '__main__':
