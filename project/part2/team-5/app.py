@@ -11,13 +11,47 @@ def get_db_connection():
 
 @app.route('/')
 def index():
-    return '''
-    <h2>Flower Shop Management</h2>
-    <button onclick="location.href='/flowers'">Manage Flowers</button>
-    <button onclick="location.href='/flowers/needs_watering'">Manage Water Levels</button>
-    <button onclick="location.href='/fast_query'">Fast Query</button>
-    <button onclick="location.href='/orders/slow_query'">Slow Query</button>
+   return '''
+    <html>
+    <head>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f2f2f2;
+                text-align: center;
+                padding-top: 50px;
+            }
+            h2 {
+                color: #4CAF50;
+                margin-bottom: 40px;
+            }
+            button {
+                background-color: #4CAF50;
+                border: none;
+                color: white;
+                padding: 15px 30px;
+                margin: 10px;
+                text-align: center;
+                font-size: 16px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+            button:hover {
+                background-color: #45a049;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>Flower Shop Management</h2>
+        <button onclick="location.href='/flowers'">Manage Flowers</button>
+        <button onclick="location.href='/flowers/needs_watering'">Manage Water Levels</button>
+        <button onclick="location.href='/orders/slow_query'">Slow Query</button>
+        <button onclick="location.href='/fast_query'">Fast Query</button>
+    </body>
+    </html>
     '''
+
 
 # Get all flowers
 @app.route('/flowers')
