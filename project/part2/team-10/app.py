@@ -95,6 +95,11 @@ def delete_flower():
 @app.route('/slow_query', methods=['GET'])
 def slow_query():
     query = """
+        BEGIN;
+        DROP INDEX IF EXISTS idx_customers_id;
+        DROP INDEX IF EXISTS idx_orders_customer_id;
+        DROP INDEX IF EXISTS idx_flowers_name;
+        COMMIT;
         EXPLAIN ANALYZE
         SELECT *
         FROM team10_orders
