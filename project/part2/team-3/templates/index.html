@@ -35,7 +35,7 @@
             <button onclick="runSlowQuery()">Run Slow Query</button>
             <div id="slow-query-status" style="display: none;">
                 <p>Query Status: <span id="slow-status-text">Running slow query...</span></p>
-                <p>Time Elapsed: <span id="slow-timer">0</span> seconds</p>
+                <p>Time Elapsed: <span id="slow-timer">0</span></p>
             </div>
             <div class="query-results">
                 <h3>Slow Query Execution Plan</h3>
@@ -46,7 +46,7 @@
             <button onclick="runFastQuery()">Run Fast Query</button>
             <div id="fast-query-status" style="display: none;">
                 <p>Query Status: <span id="fast-status-text">Running fast query...</span></p>
-                <p>Time Elapsed: <span id="fast-timer">0</span> seconds</p>
+                <p>Time Elapsed: <span id="fast-timer">0</span></p>
             </div>
             <div class="query-results">
                 <h3>Fast Query Execution Plan</h3>
@@ -251,11 +251,12 @@
             statusDiv.style.display = 'block';
             statusText.textContent = 'Running slow query...';
             
-            let seconds = 0;
+            let startTime = Date.now();
             const timer = setInterval(() => {
-                seconds++;
-                timerElement.textContent = seconds;
-            }, 1000);
+                const elapsedTime = (Date.now() - startTime) / 1000;
+                const elapsedMs = Math.round((Date.now() - startTime));
+                timerElement.textContent = `${elapsedTime.toFixed(2)} seconds (${elapsedMs} ms)`;
+            }, 10); // Update every 10ms for smoother display
 
             fetch('http://127.0.0.1:5000/slow-query')
                 .then(response => response.json())
@@ -281,11 +282,12 @@
             statusDiv.style.display = 'block';
             statusText.textContent = 'Running fast query...';
             
-            let seconds = 0;
+            let startTime = Date.now();
             const timer = setInterval(() => {
-                seconds++;
-                timerElement.textContent = seconds;
-            }, 1000);
+                const elapsedTime = (Date.now() - startTime) / 1000;
+                const elapsedMs = Math.round((Date.now() - startTime));
+                timerElement.textContent = `${elapsedTime.toFixed(2)} seconds (${elapsedMs} ms)`;
+            }, 10); // Update every 10ms for smoother display
 
             fetch('http://127.0.0.1:5000/fast-query')
                 .then(response => response.json())
