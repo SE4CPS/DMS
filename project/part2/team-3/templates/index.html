@@ -29,6 +29,17 @@
         <tbody id="flower-data"></tbody>
     </table>
 
+    <h2>Performance Test</h2>
+    <button onclick="runSlowQuery()">Run Slow Query</button>
+    <div id="query-status" style="display: none;">
+        <p>Query Status: <span id="status-text">Running slow query...</span></p>
+        <p>Time Elapsed: <span id="timer">0</span> seconds</p>
+    </div>
+    <div id="query-results">
+        <h3>Query Execution Plan</h3>
+        <div id="explain-results"></div>
+    </div>
+
     <script>
         // Fetch flowers from the database API and initialize the table.
         function fetchFlowers() {
@@ -214,6 +225,41 @@
             } else {
                 showNotification("Delete operation cancelled");
             }
+        }
+
+        // Function to run the slow query and display results
+        function runSlowQuery() {
+            // Show status and start timer
+            const statusDiv = document.getElementById('query-status');
+            const statusText = document.getElementById('status-text');
+            const timerElement = document.getElementById('timer');
+            statusDiv.style.display = 'block';
+            statusText.textContent = 'Running slow query...';
+            
+            let seconds = 0;
+            const timer = setInterval(() => {
+                seconds++;
+                timerElement.textContent = seconds;
+            }, 1000);
+
+            fetch('http://127.0.0.1:5000/slow-query')
+                .then(response => response.json())
+                .then(data => {
+                    // Clear timer and update status
+                    clearInterval(timer);
+                    statusText.textContent = 'Query completed!';
+                    
+                    // Display EXPLAIN ANALYZE results
+                    const explainDiv = document.getElementById('explain-results');
+                    explainDiv.innerHTML = '<pre>' + data.explain.join('\n') + '</pre>';
+                })
+                .catch(error => {
+                    // Clear timer and update status on error
+                    clearInterval(timer);
+                    statusText.textContent = 'Query failed!';
+                    console.error('Error:', error);
+                    showNotification('Error running slow query: ' + error);
+                });
         }
 
         // Initial load

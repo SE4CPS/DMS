@@ -157,5 +157,33 @@ def update_flower():
 #     return jsonify({"message": "Flower deleted successfully!"})  
   
 
+# Slow query that joins customers and orders with decryption
+@app.route('/slow-query', methods=['GET'])
+def slow_query():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        # First get the EXPLAIN ANALYZE results
+        cur.execute("""
+            EXPLAIN ANALYZE
+            SELECT c.id, c.name, pgp_sym_decrypt(c.email::bytea, '123')::text as email,
+                   o.id as order_id, pgp_sym_decrypt(o.order_date::bytea, '123')::date as order_date
+            FROM team3_customers_encrypted c
+            JOIN team3_orders_encrypted o ON c.id = o.customer_id
+            WHERE pgp_sym_decrypt(c.email::bytea, '123')::text LIKE '%@gmail.com'
+            ORDER BY pgp_sym_decrypt(o.order_date::bytea, '123')::date DESC
+        """)
+        explain_results = cur.fetchall()
+        
+        cur.close()
+        conn.close()
+        
+        return jsonify({
+            'explain': [row[0] for row in explain_results]
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True)
