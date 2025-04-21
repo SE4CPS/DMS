@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower Watering Status</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}">
+
+</head>
+<body>
+ <!--- -c--> 
+
+ <div class = "Slow_fast">
+    <div class = "slow">
+        <button class="slow_btn" onclick="fetchFlowers()">Slow query</button> 
+    </div>
+    <div class = "fast">
+        <button class="fast-btn" onclick="fetchFlowers()">Fast query</button>
+    </div>
+</div>
+<div class="container">
+    <h2>Flower Watering Status</h2>
+    
+    <div class="form-container">
+        <h3>Add a New Flower</h3>
+        <input type="text" id="flower-name" placeholder="Flower Name" required>
+        <input type="date" id="last-watered" required>
+        <input type="number" id="water-level" placeholder="Water Level (inches)" required>
+        <input type="number" id="min-water-required" placeholder="Min Water Required (inches)" required>
+        <button class="submit-btn" onclick="addFlower()">Add Flower</button>
+        <button class="refresh-btn" onclick="fetchFlowers()">Refresh Data</button>
+        <button class="delete-btn" onclick="deleteFlowers()">Delete selected</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Last Watered</th>
+                <th>Water Level</th>
+                <th>Min Water Required</th>
+                <th>Needs Watering</th>
+                <th>Action</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody id="flower-data"></tbody>
+    </table>
+</div>
+<script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>

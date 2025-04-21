@@ -72,7 +72,7 @@ def update_flower():
     update_value = request.form['update_value']
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("UPDATE team10_flowers SET {} = ? WHERE name = ?".format(update_field), ( update_value, name))
+    cur.execute("UPDATE team10_flowers SET {} = '{}' WHERE name = '{}'".format(update_field, update_value, name))
     conn.commit()
     cur.close()
     conn.close()
@@ -86,7 +86,7 @@ def delete_flower():
     name = request.form['name']
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("DELETE FROM team10_flowers WHERE name = ?", (name,))
+    cur.execute("DELETE FROM team10_flowers WHERE name = '{}'".format(name))
     conn.commit()
     cur.close()
     conn.close()
@@ -95,6 +95,11 @@ def delete_flower():
 @app.route('/slow_query', methods=['GET'])
 def slow_query():
     query = """
+        BEGIN;
+        DROP INDEX IF EXISTS idx_customers_id;
+        DROP INDEX IF EXISTS idx_orders_customer_id;
+        DROP INDEX IF EXISTS idx_flowers_name;
+        COMMIT;
         EXPLAIN ANALYZE
         SELECT *
         FROM team10_orders
