@@ -16,6 +16,10 @@
         <button type="submit">Add Flower</button>
     </form>
 
+    <div class="note">
+        <p><strong>Note:</strong> To test the delete functionality, please add a new flower and then try deleting it. The existing flowers within the table below cannot be deleted as they are linked to the 500,000 orders used for performance testing. Deleting them would affect the accuracy of the performance test results. Please add a new flower above and then delete it to test the deletion functionality.</p>
+    </div>
+
     <h2>Flower Watering Status</h2>
     <table border="1">
         <tr>
@@ -232,10 +236,24 @@
                 fetch(`http://127.0.0.1:5000/flowers/${id}`, {
                     method: 'DELETE'
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.error || 'Failed to delete flower');
+                        });
+                    }
+                    return response.json();
+                })
                 .then(() => {
                     showNotification(`Deleted flower: ${flowerName}`);
                     fetchFlowers();
+                })
+                .catch(error => {
+                    if (error.message.includes('foreign key constraint')) {
+                        showNotification('Cannot delete this flower because it is referenced in existing orders (foreign key constraint violation). Please delete the related orders first.');
+                    } else {
+                        showNotification(`Error: ${error.message}`);
+                    }
                 });
             } else {
                 showNotification("Delete operation cancelled");
