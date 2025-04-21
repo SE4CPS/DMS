@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Flower Watering Status</title>
+</head>
+<body>
+    <h2>Flower Watering Status</h2>
+
+    <!-- Flower Watering Status Table -->
+    <h3>Flower Watering Status</h3>
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Last Watered</th>
+            <th>Water Level</th>
+            <th>Needs Watering</th>
+        </tr>
+        {% for flower in flowers %}
+        <tr>
+            <td>{{ flower[1] }}</td>  <!-- flower name -->
+            <td>{{ flower[2] }}</td>  <!-- last watered date -->
+            <td>{{ flower[3] }} inches</td>  <!-- water level -->
+            <td>{{ "Yes" if flower[3] < 10 else "No" }}</td>  <!-- needs watering -->
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

@@ -105,52 +105,5 @@ def water_loss():
 
     return redirect('/team2_flowers') 
 
-@app.route('/slow_query')
-def slow_query():
-    conn = get_db_connection()
-    cur = conn.cursor()
-
-    slow_query_sql =  """
-    SELECT 
-        c.name,
-        c.email,
-        o.id AS order_id,
-        f.name AS flower_name,
-        f.water_level,
-        (f.max_water_required - f.water_level) AS water_needed,
-        EXTRACT(EPOCH FROM (NOW() - f.last_watered))/3600 AS hours_since_watering,
-        CASE 
-            WHEN f.water_level < f.min_water_required THEN 'Needs water'
-            ELSE 'Healthy'
-        END AS water_status
-    FROM 
-        team2_customers c
-    JOIN 
-        team2_orders o ON c.id = o.customer_id
-    JOIN 
-        team2_flowers f ON o.flower_id = f.id
-    WHERE 
-        o.order_date BETWEEN '2023-01-01' AND '2025-04-20'
-        AND (SELECT COUNT(*) FROM generate_series(1,25000)) > 0 
-        AND f.water_level < f.max_water_required
-    ORDER BY 
-        (SELECT COUNT(*) FROM team2_orders WHERE customer_id = c.id) DESC,
-        hours_since_watering DESC,
-        (SELECT COUNT(*) FROM team2_orders WHERE flower_id = f.id) DESC
-    LIMIT 300;
-    """
-
-    start_time = time.time()
-    cur.execute(slow_query_sql)
-    execution_time = time.time() - start_time
-    
-    cur.close()
-    conn.close()
-    
-    return render_template('query_results.html',
-                         query_type="Slow Query (15-20s Target)",
-                         query=slow_query_sql,
-                         execution_time=execution_time)
-
 if __name__ == '__main__':
     app.run(debug=True)

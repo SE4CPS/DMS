@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower Shop</title>
+    <link rel="stylesheet" href="flowers_style.css">
+</head>
+<!-- (name, last_watered, water_level, min_water_required) VALUES ('Rose', '2025-02-27', 10, 100) -->
+
+<body>
+    <div id="managing-tool">
+        <div id="form-container">
+            <div id="form-bg"></div>
+            <div id="form-section">
+                <h2>Flower Management</h2>
+                <form action="http://127.0.0.1:5000/add_flower" method="post">
+                    <div class="form-group">
+                        <div class="form-field">
+                            <input type="text" name="name" placeholder="flower name" required>
+                        </div>
+                        <div class="form-field">
+                            <input type="date" id="last_watered" name="last_watered" placeholder="last watered">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-field">
+                            <input type="number" name="water_level" placeholder="current water level" required value="0">                        
+                        </div>
+                        <div class="form-field">
+                            <input type="number" name="min_water_required" placeholder="min water required">                        
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-btn">
+                            <button class="btn" type="submit">Add Flower</button>
+                        </div>
+                    </div>
+                </form>
+            
+                <form action="/update_flower" method="post">
+                    <div class="form-group">
+                        <div class="form-btn">
+                            <button class="btn" type="submit">Update Flower</button>
+                        </div>
+                    </div>
+                </form>
+            
+                <form action="/delete_flower" method="post">
+                    <div class="form-group">
+                        <div class="form-field">
+                            <input type="number" name="id" placeholder="flower ID" required>
+                        </div>
+                        <div class="form-btn">
+                            <button class="btn" type="submit">Delete Flower</button>
+                        </div>
+                    </div>
+                </form>
+    
+                
+                <div class="form-group">
+                    <div class="form-btn">
+                        <button class="btn" type="button" onclick="runFastQuery()">Fast query</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="form-btn">
+                        <button class="btn" type="button" onclick="runSlowQuery()">Slow query</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tables">
+        <div id="flowers-stock-table">
+            <h3>Available Flowers</h3>
+            <table id="flower-data"></table>
+        </div>
+    
+        <div id="flowers-order-table">
+            <h3>Orders</h3>
+            <table id="order-data"></table>
+        </div>
+    
+        <div id="fast-query-results">
+            <p id="query-runtime" style="margin-top: 10px; font-weight: bold;"></p>
+            <table id="fast-query-table"></table>
+        </div>
+        
+        <div id="slow-query-results">
+            <p id="query-runtime" style="margin-top: 10px; font-weight: bold;"></p>
+        </div>
+    </div>
+
+    <script>
+        fetch('http://127.0.0.1:5000/flowers')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                let rows = "";
+                for (let flowerKey in data) {
+                    console.log(flowerKey)
+                    rows += `<tr>
+                        <td>${data[flowerKey][0]}</td>
+                        <td>${data[flowerKey][1]}</td>
+                        <td>${data[flowerKey][2]}</td>
+                        <td>${data[flowerKey][3]} inches</td>
+                        <td>${data[flowerKey][4]} inches</td>
+                        <td>${data[flowerKey][3] < data[flowerKey][4] ? "Yes" : "No"}</td>
+                    </tr>`;
+                }
+                document.getElementById("flower-data").innerHTML = rows;
+            });
+    </script>
+
+    <!--fetching the orders from team6-orders-->
+    <script>
+        fetch('http://127.0.0.1:5000/orders')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                let rows = "";
+                for (let orderKey in data) {
+                    console.log(orderKey)
+                    rows += `<tr>
+                        <td>${data[orderKey][0]}</td>
+                        <td>${data[orderKey][1]}</td>
+                        <td>${data[orderKey][2]}</td>
+                        <td>${data[orderKey][3]}</td>
+                    </tr>`;
+                }
+                document.getElementById("order-data").innerHTML = rows;
+            })
+    </script>
+
+    <!-- script for fast query -->
+    <script>
+        function runFastQuery() {
+            fetch('http://127.0.0.1:5000/fast_query_performance')
+                .then(response => response.json())
+                .then(data => {
+                    // Display runtime
+                    document.getElementById('query-runtime').textContent = `Fast Query Runtime: ${data.runtime_ms} ms`;
+
+                    // Build table rows
+                    const table = document.getElementById("fast-query-table");
+                    table.innerHTML = `
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer ID</th>
+                            <th>Flower ID</th>
+                            <th>Order Date</th>
+                        </tr>`; // reset header
+
+                    for (let key in data.orders) {
+                        const order = data.orders[key];
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${order[0]}</td>
+                            <td>${order[1]}</td>
+                            <td>${order[2]}</td>
+                            <td>${order[3]}</td>`;
+                        table.appendChild(row);
+                    }
+                })
+                .catch(error => {
+                    console.error("Fast query error:", error);
+                });
+        }
+    </script>
+
+    <!-- script for the slow query -->
+    <script>
+        function runSlowQuery() {
+            const statusDiv = document.getElementById("slow-query-results");
+            statusDiv.innerText = "Running slow query...";
+    
+            fetch('http://127.0.0.1:5000/slow_query_performance')
+                .then(response => response.json())
+                .then(data => {
+                    const runtimeMs = (data.runtime_ms * 1000).toFixed(2);
+                    statusDiv.innerText = `Slow query completed in ${runtimeMs} ms`;
+                })
+                .catch(error => {
+                    statusDiv.innerText = "Error running slow query.";
+                    console.error(error);
+                });
+        }
+    </script>
+</body>
+
+</html>

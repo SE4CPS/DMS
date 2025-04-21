@@ -239,7 +239,7 @@ def fast_query():
     start_time = time.time()
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
-
+    
     # FAST: efficient join with LIMIT and only recent orders
     cur.execute("""
         SELECT 
