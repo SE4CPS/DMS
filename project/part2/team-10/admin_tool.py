@@ -39,8 +39,8 @@ emailextensions=[
         ]
 
 # get postgresql url
-print("Database Url: postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require")
-DB_URL = "postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
+print("Database Url: postgresql://neondb_owner:npg_K4PbdhY0oTuH@ep-sweet-river-a4g0qfek-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require")
+DB_URL = "postgresql://neondb_owner:npg_K4PbdhY0oTuH@ep-sweet-river-a4g0qfek-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require"
 
 def get_connection():
     try:
