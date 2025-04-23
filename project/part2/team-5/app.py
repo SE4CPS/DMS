@@ -4,7 +4,7 @@ import time
 
 app = Flask(__name__)
 
-DATABASE_URL = "postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
+DATABASE_URL = "postgresql://neondb_owner:npg_tRjAlmCi4y6n@ep-bold-lake-a5wpofnx-pooler.us-east-2.aws.neon.tech/dbms?sslmode=require"
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
@@ -158,7 +158,7 @@ def slow_query():
     cur.close()
     conn.close()
     return jsonify({
-        "duration_seconds": round(duration, 2),
+        "duration_seconds": round(duration,2),
         "sample_records": rows[:10]
     })
 
