@@ -75,6 +75,14 @@
         </div>
         <button class="delete_flower" type="submit">Remove Flower</button>
       </form>
+
+    <!-- Query Performace Section -->
+      <div style="margin-top: 40px;">
+        <h3>Query Performance Test</h3>
+        <button class ="slow_query text_entry_flower" type="submit" onclick="runSlowQuery()">Run Slow Query</button>
+        <button class ="fast_query text_entry_flower" type="submit" onclick="runFastQuery()">Run Fast Query</button>
+        <pre id="query-results" style="white-space: pre-wrap; background-color: #f4f4f4; padding: 10px; border-radius: 5px;"></pre>
+      </div>   
     </div>
 
     <!-- Gathering all the flowers from db -->
@@ -197,6 +205,36 @@
           event.preventDefault();
         }
       });
+    </script>
+
+    <!--Runs Slow and Fast Query-->
+    <script>
+      function runSlowQuery(){
+        fetch('/orders/slow_query')
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById('query-results').textContent =
+              `Slow Query Duration: ${data.duration_seconds}s\nSample Records:\n` +
+              JSON.stringify(data.sample_records, null, 2);
+          })
+          .catch(err => {
+            console.error(err);
+            document.getElementById('query-results').textContent = 'Error running slow query';
+          });
+       
+        }
+      function runFastQuery() {
+        fetch('/fast_query')
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById('query-results').textContent =
+              `Fast Query Duration: ${data.duration_seconds}s\nQuery Used:\n${data.query}`;
+          })
+          .catch(err => {
+            console.error(err);
+            document.getElementById('query-results').textContent = 'Error running fast query';
+          });    
+      }
     </script>
   </body>
 </html>

@@ -36,6 +36,20 @@ body {
   color: #f6f6fb;
 }
 
+.slow_query {
+  border-radius: 4px;
+  border: 2px solid purple;
+  background-color: rgba(128 0 128);
+  color: #f6f6fb;
+}
+
+.fast_query {
+  border-radius: 4px;
+  border: 2px solid purple;
+  background-color: rgba(128 0 128);
+  color: #f6f6fb;
+}
+
 button {
   transition-duration: 0.4s;
 }
@@ -51,6 +65,17 @@ button {
 .delete_flower:hover {
   background-color: red;
 }
+
+.slow_query:hover{
+  background-color: purple;
+  
+}
+
+.fast_query:hover{
+  background-color: purple;
+  
+}
+
 
 .text_entry_flower {
   border-radius: 4px;
