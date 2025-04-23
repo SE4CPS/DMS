@@ -39,15 +39,15 @@
                     </div>
                 </form>
             
-                <form action="/update_flower" method="post">
-                    <div class="form-group">
-                        <div class="form-btn">
-                            <button class="btn" type="submit">Update Flower</button>
-                        </div>
+                <!-- <form action="http://127.0.0.1:5000/update_flower" method="post"> -->
+                <div class="form-group">
+                    <div class="form-btn">
+                        <button class="btn" type="button" onclick="updateFlowers()">Update Flower</button>
                     </div>
-                </form>
+                </div>
+                <!-- </form> -->
             
-                <form action="/delete_flower" method="post">
+                <form action="http://127.0.0.1:5000/delete_flower" method="post">
                     <div class="form-group">
                         <div class="form-field">
                             <input type="number" name="id" placeholder="flower ID" required>
@@ -101,9 +101,19 @@
             .then(data => {
                 console.log(data);
                 let rows = "";
+                rows += `
+                <tr>
+                    <th>ID</th>
+                    <th>Flower name</th>
+                    <th>Date last watered</th>
+                    <th>Current water level</th>
+                    <th>Minimum water level</th>
+                    <th>Need watering?</th>
+                </tr>`;
                 for (let flowerKey in data) {
                     console.log(flowerKey)
-                    rows += `<tr>
+                    rows += `
+                    <tr>
                         <td>${data[flowerKey][0]}</td>
                         <td>${data[flowerKey][1]}</td>
                         <td>${data[flowerKey][2]}</td>
@@ -115,6 +125,57 @@
                 document.getElementById("flower-data").innerHTML = rows;
             });
     </script>
+
+    <!-- script for updating flowers' water level -->
+    <script>
+        function updateFlowers() {
+            fetch('http://127.0.0.1:5000/update_flower', {
+                method: 'POST'
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    fetchFlowers(); // Re-fetch updated flower data
+                } else {
+                    alert("Update failed: " + data.error);
+                }
+            })
+            .catch(err => {
+                console.error("Update error:", err);
+            });
+        }
+
+        function fetchFlowers() {
+            fetch('http://127.0.0.1:5000/flowers')
+                .then(response => response.json())
+                .then(data => {
+                    let rows = `
+                        <tr>
+                            <th>ID</th>
+                            <th>Flower name</th>
+                            <th>Date last watered</th>
+                            <th>Current water level</th>
+                            <th>Minimum water level</th>
+                            <th>Need watering?</th>
+                        </tr>`;
+                    for (let flowerKey in data) {
+                        rows += `
+                            <tr>
+                                <td>${data[flowerKey][0]}</td>
+                                <td>${data[flowerKey][1]}</td>
+                                <td>${data[flowerKey][2]}</td>
+                                <td>${data[flowerKey][3]} inches</td>
+                                <td>${data[flowerKey][4]} inches</td>
+                                <td>${data[flowerKey][3] < data[flowerKey][4] ? "Yes" : "No"}</td>
+                            </tr>`;
+                    }
+                    document.getElementById("flower-data").innerHTML = rows;
+                });
+        }
+        // Call once on page load
+        fetchFlowers();
+    </script>
+
 
     <!--fetching the orders from team6-orders-->
     <script>

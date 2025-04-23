@@ -11,7 +11,9 @@ fake = Faker()
 # ------------------------------------------------
 
 # Neon PostgreSQL connection details
-DATABASE_URL = "postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
+# DATABASE_URL = "postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
+# we're now using Render, which expires on May 22nd
+DATABASE_URL = "postgresql://team6_user:cWWhj2yh0jbqcsRHxQhCzbgRi8k6f4aw@dpg-d041caadbo4c73ca3tgg-a.oregon-postgres.render.com/team6"
 
 try:
     # Connect to PostgreSQL
@@ -113,7 +115,13 @@ try:
     # customers = [(fake.name(), fake.email()) for _ in range(100000)]
     # args_str = ",".join(cur.mogrify("(%s, %s)", customer).decode('utf-8') for customer in customers)
     # ------------ add records into the customer table ---------------------------------------------
-    # cur.execute(f"INSERT INTO team6_customers (name, email) VALUES {args_str}")
+    # instead of: cur.execute(f"INSERT INTO team6_customers (name, email) VALUES {args_str}")
+    # BATCH_SIZE = 5000
+    # for i in range(0, len(customers), BATCH_SIZE):
+    #     batch = customers[i:i + BATCH_SIZE]
+    #     args_str = ",".join(cur.mogrify("(%s, %s)", customer).decode('utf-8') for customer in batch)
+    #     cur.execute(f"INSERT INTO team6_customers (name, email) VALUES {args_str}")
+    #     print(f"Inserted {i + BATCH_SIZE} / {len(customers)} customers")
 
     # print("Inserted 100,000 customers successfully.")
     # cur.execute("SELECT * FROM team6_customers WHERE id=1;")
@@ -123,11 +131,12 @@ try:
     # else:
     #     print("No record found with id=1")
     
-     # Fetch existing customer IDs
+    # ----------- inserting orders ---------------
+    # Fetch existing customer IDs
     # cur.execute("SELECT id FROM team6_customers")
     # customer_ids = [row[0] for row in cur.fetchall()]
 
-    # # Fetch existing flower IDs
+    # Fetch existing flower IDs
     # cur.execute("SELECT id FROM team6_flowers")
     # flower_ids = [row[0] for row in cur.fetchall()]
 
@@ -140,9 +149,16 @@ try:
     #     for _ in range(250000)
     # ]
 
-    # # Batch insert for efficiency
+    # Batch insert for efficiency
     # args_str = ",".join(cur.mogrify("(%s, %s, %s)", order).decode('utf-8') for order in orders)
-    # cur.execute(f"INSERT INTO team6_orders (customer_id, flower_id, order_date) VALUES {args_str}")
+    # instead of: cur.execute(f"INSERT INTO team6_orders (customer_id, flower_id, order_date) VALUES {args_str}")
+    # BATCH_SIZE = 5000
+    # for i in range(0, len(orders), BATCH_SIZE):
+    #     batch = orders[i:i + BATCH_SIZE]
+    #     args_str = ",".join(cur.mogrify("(%s, %s, %s)", order).decode('utf-8') for order in batch)
+    #     cur.execute(f"INSERT INTO team6_orders (customer_id, flower_id, order_date) VALUES {args_str}")
+    #     print(f"Inserted {i + BATCH_SIZE} / {len(orders)} orders")
+
 
     # print("Inserted 250,000 orders successfully.")
 
@@ -200,15 +216,15 @@ try:
     # print(f"Query executed in: {elapsed_time:.4f} seconds")
 
     # ----------- start timer for SELECT query of the encrypted table (run time ~ 25 sec) --------------------
-    start_time = time.time()
+    # start_time = time.time()
 
-    cur.execute("""
-        SELECT 
-            id, 
-            name, 
-            pgp_sym_decrypt(email, 'secret_key') AS email
-        FROM team6_customers_secure
-    """)
+    # cur.execute("""
+    #     SELECT 
+    #         id, 
+    #         name, 
+    #         pgp_sym_decrypt(email, 'secret_key') AS email
+    #     FROM team6_customers_secure
+    # """)
     
     # just to test the query - put LIMIT 1 (or WHERE id=1) to test it out
     # row = cur.fetchone()
@@ -218,10 +234,10 @@ try:
     #     print("No record found with id=1")
 
     # ------------- end timer for SELECT query of the encrypted table ---------------------
-    end_time = time.time()
+    # end_time = time.time()
     # --------------- calculate run time - took about 25 seconds first try --------------------------------------------------
-    elapsed_time = end_time - start_time
-    print(f"Query executed in: {elapsed_time:.4f} seconds")
+    # elapsed_time = end_time - start_time
+    # print(f"Query executed in: {elapsed_time:.4f} seconds")
     
     # -------------------------------------------------------------
     # --- INSERT DATA ---

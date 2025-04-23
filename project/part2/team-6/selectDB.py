@@ -5,7 +5,8 @@ import json
 from flask_cors import CORS
 
 app = Flask(__name__)
-DATABASE_URL = "postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
+# DATABASE_URL = "postgresql://neondb_owner:npg_M5sVheSzQLv4@ep-shrill-tree-a819xf7v-pooler.eastus2.azure.neon.tech/neondb?sslmode=require"
+DATABASE_URL = "postgresql://team6_user:cWWhj2yh0jbqcsRHxQhCzbgRi8k6f4aw@dpg-d041caadbo4c73ca3tgg-a.oregon-postgres.render.com/team6"
 CORS(app)
 
 def get_db_connection():
@@ -62,7 +63,7 @@ def add_flower():
     conn.commit()
     cur.close()
     conn.close()
-    return redirect('http://127.0.0.1:5500/project/part1/team-6/templates/flowers.html')
+    return redirect('http://127.0.0.1:5500/project/part2/team-6/templates/flowers.html')
 
 @app.route('/fast_query_performance', methods=['GET'])
 def fast_query():
@@ -132,14 +133,16 @@ def update_flower():
     try:
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute("UPDATE team6_flowers SET water_level = water_level - (5 * (CURRENT_DATE - last_watered));", None)
+        cur.execute("UPDATE team6_flowers SET water_level = GREATEST(0, water_level - (5 * (CURRENT_DATE - last_watered)));", None)
         conn.commit()
         cur.close()
         conn.close()
-    except:
-        print("Check Failed")
+        return jsonify({'success': True})
+    except Exception as e:
+        print("Check Failed:", e)
+        return jsonify({'success': False, 'error': str(e)})
     
-    return redirect('/')
+    # return redirect('http://127.0.0.1:5500/project/part2/team-6/templates/flowers.html')
 
 
 # Delete a flower by ID
@@ -152,7 +155,7 @@ def delete_flower():
     conn.commit()
     cur.close()
     conn.close()
-    return redirect('/')
+    return redirect('http://127.0.0.1:5500/project/part2/team-6/templates/flowers.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
