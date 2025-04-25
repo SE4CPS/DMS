@@ -6,4 +6,4 @@
 - Validate data as early as possible (data type and data range) 
 - Remove ORDER BY; ENCRYPTION; ADD LIMIT makes query much faster
 - COMMUNICATION IS OFTEN THE BOTTLENECK
--
+- Admin tool to upload data
