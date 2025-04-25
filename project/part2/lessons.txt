@@ -1,1 +1,9 @@
-
+- Decryption can take up to 30 seconds longer from 1 second without decryption
+- It is very easy to make a query slow, particularly if a lot of data is returned
+- The location of the database matters for network latency
+- Indexing makes SELECT queries much faster (noticeable around 10k rows)
+- Perform long-term performance testing early and add LIMIT constraints early
+- Validate data as early as possible (data type and data range) 
+- Remove ORDER BY; ENCRYPTION; ADD LIMIT makes query much faster
+- COMMUNICATION IS OFTEN THE BOTTLENECK
+-
